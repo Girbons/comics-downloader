@@ -14,6 +14,7 @@ import (
 	"github.com/schollz/progressbar"
 )
 
+// Comic contains all the information about a comic.
 type Comic struct {
 	Name        string
 	IssueNumber string
@@ -40,6 +41,7 @@ func imagesLink(res, regex string) []string {
 	return out
 }
 
+// NewComic return a Comic filled with all the needed data.
 func NewComic(name, issueNumber, imageRegex, source string) *Comic {
 	return &Comic{
 		Name:        name,
@@ -49,6 +51,7 @@ func NewComic(name, issueNumber, imageRegex, source string) *Comic {
 	}
 }
 
+// MakeComic create the pdf file.
 func (c *Comic) MakeComic(url, source string, splittedUrl []string) {
 	res, _ := soup.Get(url)
 

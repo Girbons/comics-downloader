@@ -5,6 +5,8 @@ import (
 	"os"
 )
 
+// DetectComic will look for the url source in order to properly
+// instantiate the Comic struct.
 func DetectComic(url string) {
 	source, _ := UrlSource(url)
 	splittedUrl := SplitUrl(url)

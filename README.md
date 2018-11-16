@@ -5,6 +5,12 @@
 
 - http://www.comicextra.com/
 
+## Getting Started
+
+### Installing
+
+Download the latest release that you will find [here](https://github.com/Girbons/go-comics-downloader/releases)
+
 ## Usage
 
 ```bash
