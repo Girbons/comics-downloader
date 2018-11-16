@@ -1,4 +1,5 @@
 # Comics Downloader (Go version)
+[![Go Report Card](https://goreportcard.com/badge/github.com/Girbons/go-comics-downloader)](https://goreportcard.com/report/github.com/Girbons/go-comics-downloader)
 
 ## Supported Sites
 
