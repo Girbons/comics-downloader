@@ -77,12 +77,6 @@ func (c *Comic) MakeComic(url, source string, splittedUrl []string) {
 			}
 		}
 	}
-	source, err := UrlSource(url)
-
-	if err != nil {
-		fmt.Println("Can't detect source ")
-	}
-
 	dir, _ := filepath.Abs(fmt.Sprintf("%s/%s/%s/%s/", filepath.Dir(os.Args[0]), "comics", c.Source, c.Name))
 	os.MkdirAll(dir, os.ModePerm)
 
