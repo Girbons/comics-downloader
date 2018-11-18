@@ -26,6 +26,7 @@ func IsUrlValid(url string) bool {
 	return !strings.Contains(url, ".gif") && !strings.Contains(url, "logo") && !strings.Contains(url, "mobilebanner")
 }
 
+// CheckValueInSlice will check if a value is already inside the slice.
 func CheckValueInSlice(valueToCheck string, values []string) bool {
 	for _, v := range values {
 		if v == valueToCheck {
