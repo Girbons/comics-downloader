@@ -20,3 +20,17 @@ func UrlSource(u string) (string, error) {
 
 	return parsedUrl.Hostname(), nil
 }
+
+// IsUrlValid will exclude those url containing `.gif` and `logo`.
+func IsUrlValid(url string) bool {
+	return !strings.Contains(url, ".gif") && !strings.Contains(url, "logo") && !strings.Contains(url, "mobilebanner")
+}
+
+func CheckValueInSlice(valueToCheck string, values []string) bool {
+	for _, v := range values {
+		if v == valueToCheck {
+			return true
+		}
+	}
+	return false
+}

@@ -4,6 +4,7 @@
 ## Supported Sites
 
 - http://www.comicextra.com/
+- http://www.mangahere.cc/
 
 ## Getting Started
 
@@ -11,11 +12,11 @@
 
 Download the latest release that you will find [here](https://github.com/Girbons/go-comics-downloader/releases)
 
+Put the script under a folder.
+
 ## Usage
 
-```bash
-./comics-downloader -url=http://source
-```
+<img src="img/usage.gif?raw=true" />
 
 ## Built With
 
@@ -23,6 +24,7 @@ Download the latest release that you will find [here](https://github.com/Girbons
 - [gofpdf](https://github.com/jung-kurt/gofpdf)
 - [soup](https://github.com/anaskhan96/soup)
 - [progressbar](https://github.com/schollz/progressbar)
+- [logrus](https://github.com/sirupsen/logrus)
 
 ## Contribuiting
 

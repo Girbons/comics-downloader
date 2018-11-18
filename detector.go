@@ -18,6 +18,12 @@ func DetectComic(url string) {
 		imageRegex := `<img[^>]+src="([^">]+)"`
 		comic := NewComic(name, issueNumber, imageRegex, source)
 		comic.MakeComic(url, source, splittedUrl)
+	case "www.mangahere.cc":
+		name := splittedUrl[4]
+		issueNumber := splittedUrl[5]
+		imageRegex := `<img[^>]+src="([^">]+)"`
+		comic := NewComic(name, issueNumber, imageRegex, source)
+		comic.MakeComic(url, source, splittedUrl)
 	default:
 		fmt.Println("This site is not supported :(")
 		os.Exit(0)
