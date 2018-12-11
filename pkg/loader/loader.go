@@ -7,10 +7,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func loadComicExtra(c *core.Comic, splittedUrl []string) error {
-	return sites.SetupComicExtra(c, splittedUrl)
-}
-
 func LoadComicFromSource(source, url string) *core.Comic {
 	var (
 		comic       *core.Comic
@@ -28,8 +24,8 @@ func LoadComicFromSource(source, url string) *core.Comic {
 		sites.SetupComicExtra(comic, splittedUrl)
 	case "www.mangahere.cc":
 		sites.SetupMangaHere(comic, splittedUrl)
-	//case "mangarock.com":
-	//sites.SetupMangaRock(comic, splittedUrl)
+	case "mangarock.com":
+		sites.SetupMangaRock(comic, splittedUrl)
 	default:
 		log.Warning("Cannot select a right strategy")
 	}

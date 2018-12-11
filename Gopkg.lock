@@ -2,6 +2,22 @@
 
 
 [[projects]]
+  branch = "master"
+  digest = "1:848e907cd908371682ec90e10b255581dc87af982dedf9d7fa5a2b62257863bc"
+  name = "github.com/BakeRolls/mri"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "25f68b16ae00d5411ec3335b3e224c248d8a930c"
+
+[[projects]]
+  digest = "1:6f95b8c09afaaa24fc9e6c254c6dd132e3d6a3dab0c5deb7154667b69f3ae8b8"
+  name = "github.com/Girbons/mangarock"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "db48683891fb45f784689af76fc28233f57a2fb1"
+  version = "1.2.1"
+
+[[projects]]
   digest = "1:e85c733f47f7e633fce4eb46a3b2d3616dd95517dcf670ba36bb6da0394dbf16"
   name = "github.com/anaskhan96/soup"
   packages = ["."]
@@ -42,6 +58,14 @@
   revision = "8631ce90f28644f54aeedcb3e389a85174e067d1"
 
 [[projects]]
+  digest = "1:40e195917a951a8bf867cd05de2a46aaf1806c50cf92eebf4c16f78cd196f747"
+  name = "github.com/pkg/errors"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
+  version = "v0.8.0"
+
+[[projects]]
   digest = "1:0028cb19b2e4c3112225cd871870f2d9cf49b9b4276531f03438a88e94be86fe"
   name = "github.com/pmezard/go-difflib"
   packages = ["difflib"]
@@ -75,11 +99,24 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:3f3a05ae0b95893d90b9b3b5afdb79a9b3d96e4e36e099d841ae602e4aca0da8"
+  digest = "1:38f553aff0273ad6f367cb0a0f8b6eecbaef8dc6cb8b50e57b6a81c1d5b1e332"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
   pruneopts = "UT"
-  revision = "3d3f9f413869b949e48070b5bc593aa22cc2b8f2"
+  revision = "505ab145d0a99da450461ae2c1a9f6cd10d1f447"
+
+[[projects]]
+  branch = "master"
+  digest = "1:e07483c90d27239c7121fb733d0a6c42ab229f67ecf0c2edcceb13ef1599d8a5"
+  name = "golang.org/x/image"
+  packages = [
+    "riff",
+    "vp8",
+    "vp8l",
+    "webp",
+  ]
+  pruneopts = "UT"
+  revision = "cd38e8056d9b27bb2f265effa37fb0ea6b8a7f0f"
 
 [[projects]]
   branch = "master"
@@ -90,23 +127,25 @@
     "html/atom",
   ]
   pruneopts = "UT"
-  revision = "adae6a3d119ae4890b46832a2e88a95adc62b8e7"
+  revision = "610586996380ceef02dd726cc09df7e00a3f8e56"
 
 [[projects]]
   branch = "master"
-  digest = "1:a089387bbfcfa884e5aafeebb85929993195bb8959766b1d20102841d47e0b0e"
+  digest = "1:268575c4d9e27391ede5e3559c7f41a15dbf108678672afade864e08d6c34574"
   name = "golang.org/x/sys"
   packages = [
     "unix",
     "windows",
   ]
   pruneopts = "UT"
-  revision = "93218def8b18e66adbdab3eca8ec334700329f1f"
+  revision = "2a47403f2ae58167c4d75973960ccc62b28cb0d8"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/BakeRolls/mri",
+    "github.com/Girbons/mangarock",
     "github.com/anaskhan96/soup",
     "github.com/jung-kurt/gofpdf",
     "github.com/schollz/progressbar",

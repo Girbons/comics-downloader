@@ -9,6 +9,7 @@
 
 - http://www.comicextra.com/
 - http://www.mangahere.cc/
+- https://mangarock.com/
 
 ## Getting Started
 
@@ -29,6 +30,7 @@ Put the script under a folder.
 - [soup](https://github.com/anaskhan96/soup)
 - [progressbar](https://github.com/schollz/progressbar)
 - [logrus](https://github.com/sirupsen/logrus)
+- [mri](https://github.com/BakeRolls/mri/blob/master/mri.go)
 
 ## Contribuiting
 

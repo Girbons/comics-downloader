@@ -1,6 +1,10 @@
 package util
 
 import (
+	"bytes"
+	"image"
+	"image/color"
+	"image/png"
 	"net/url"
 	"strings"
 )
@@ -34,4 +38,24 @@ func IsValueInSlice(valueToCheck string, values []string) bool {
 		}
 	}
 	return false
+}
+
+// Converts an image of any type to a PNG with 8-bit color depth
+func ConvertTo8BitPNG(img image.Image, imgData *bytes.Buffer) error {
+	b := img.Bounds()
+	imgSet := image.NewRGBA(b)
+	// Converts each pixel to a 32-bit RGBA pixel
+	for y := 0; y < b.Max.Y; y++ {
+		for x := 0; x < b.Max.X; x++ {
+			newPixel := color.RGBAModel.Convert(img.At(x, y))
+			imgSet.Set(x, y, newPixel)
+		}
+	}
+
+	err := png.Encode(imgData, imgSet)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

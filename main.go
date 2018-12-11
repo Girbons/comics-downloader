@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Girbons/comics-downloader/pkg/core"
 	"github.com/Girbons/comics-downloader/pkg/detector"
 	"github.com/Girbons/comics-downloader/pkg/loader"
 	log "github.com/sirupsen/logrus"
@@ -18,11 +17,6 @@ func usage() {
 }
 
 func main() {
-	var (
-		source string
-		check  bool
-		comic  *core.Comic
-	)
 	// by default use log INFO Level
 	log.SetLevel(log.InfoLevel)
 	// setup the arguments
@@ -42,14 +36,14 @@ func main() {
 		log.SetLevel(log.DebugLevel)
 	}
 	// call the detect, to check if the url is supported
-	source, check = detector.DetectComic(*url)
+	source, check := detector.DetectComic(*url)
 	if !check {
 		log.Error("This site is not supported yet :(")
 		os.Exit(1)
 	}
 	// in case the url is supported
 	// setup the right strategy to parse a comic
-	comic = loader.LoadComicFromSource(source, *url)
+	comic := loader.LoadComicFromSource(source, *url)
 	// make the PDF
 	comic.MakeComic()
 }

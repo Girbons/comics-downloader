@@ -12,35 +12,23 @@ import (
 
 func retrieveMangaHereImageLinks(c *core.Comic) ([]string, error) {
 	var (
-		re       *regexp.Regexp
-		response string
-		err      error
-		document soup.Root
-		newLink  string
-
-		links     []soup.Root
 		pageLinks []string
 		imgLinks  []string
-
-		match [][]string
-
-		imgResponse      string
-		imgResponseError error
 	)
 	// compile the image regex
-	re = regexp.MustCompile(c.ImageRegex)
+	re := regexp.MustCompile(c.ImageRegex)
 
-	response, err = soup.Get(c.URLSource)
+	response, err := soup.Get(c.URLSource)
 
 	if err != nil {
 		log.Error(err)
 	}
 
-	document = soup.HTMLParse(response)
-	links = document.FindAll("option")
+	document := soup.HTMLParse(response)
+	links := document.FindAll("option")
 
 	for _, link := range links {
-		newLink = fmt.Sprintf("http://%s", link.Attrs()["value"][2:])
+		newLink := fmt.Sprintf("http://%s", link.Attrs()["value"][2:])
 		if !util.IsValueInSlice(newLink, pageLinks) {
 			pageLinks = append(pageLinks, newLink)
 		}
@@ -48,13 +36,13 @@ func retrieveMangaHereImageLinks(c *core.Comic) ([]string, error) {
 
 	for _, link := range pageLinks {
 		if link != "" {
-			imgResponse, imgResponseError = soup.Get(link)
+			imgResponse, imgResponseError := soup.Get(link)
 
 			if imgResponseError != nil {
 				log.Error(imgResponseError)
 			}
 
-			match = re.FindAllStringSubmatch(imgResponse, -1)
+			match := re.FindAllStringSubmatch(imgResponse, -1)
 			for _, f := range match {
 				if util.IsUrlValid(f[1]) {
 					imgLinks = append(imgLinks, f[1])
@@ -68,20 +56,12 @@ func retrieveMangaHereImageLinks(c *core.Comic) ([]string, error) {
 // SetupMangaHere will initialize the comic based
 // on mangahere.cc
 func SetupMangaHere(c *core.Comic, splittedUrl []string) error {
-	var (
-		name        string
-		issueNumber string
-		imageRegex  string
-		links       []string
-		err         error
-	)
-
-	name = splittedUrl[4]
-	issueNumber = splittedUrl[5]
-	imageRegex = `<img[^>]+src="([^">]+)"`
+	name := splittedUrl[4]
+	issueNumber := splittedUrl[5]
+	imageRegex := `<img[^>]+src="([^">]+)"`
 	c.SetInfo(name, issueNumber, imageRegex)
 
-	links, err = retrieveMangaHereImageLinks(c)
+	links, err := retrieveMangaHereImageLinks(c)
 	c.SetImageLinks(links)
 
 	return err
