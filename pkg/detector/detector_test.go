@@ -1,40 +1,35 @@
 package detector
 
 import (
-	"fmt"
-	"os"
-	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-// exists returns whether the given file or directory exists
-func exists(path string) (bool, error) {
-	_, err := os.Stat(path)
-	if err == nil {
-		return true, nil
-	}
-	if os.IsNotExist(err) {
-		return false, nil
-	}
-	return true, err
-}
-
 func TestDetectComicExtra(t *testing.T) {
-	DetectComic("http://www.comicextra.com/daredevil-2016/chapter-600/full")
+	source, check := DetectComic("http://www.comicextra.com/daredevil-2016/chapter-600/full")
 
-	dir, _ := filepath.Abs(fmt.Sprintf("%s/%s/%s/%s/", filepath.Dir(os.Args[0]), "comics", "www.comicextra.com", "daredevil-2016"))
-	result, _ := exists(dir)
-
-	assert.Equal(t, true, result)
+	assert.Equal(t, true, check)
+	assert.Equal(t, "www.comicextra.com", source)
 }
 
 func TestDetectMangaHere(t *testing.T) {
-	DetectComic("http://www.mangahere.cc/manga/shingeki_no_kyojin_before_the_fall/c048/")
+	source, check := DetectComic("http://www.mangahere.cc/manga/shingeki_no_kyojin_before_the_fall/c048/")
 
-	dir, _ := filepath.Abs(fmt.Sprintf("%s/%s/%s/%s/", filepath.Dir(os.Args[0]), "comics", "www.mangahere.cc", "shingeki_no_kyojin_before_the_fall"))
-	result, _ := exists(dir)
+	assert.Equal(t, true, check)
+	assert.Equal(t, "www.mangahere.cc", source)
+}
 
-	assert.Equal(t, true, result)
+func TestDetectMangaRock(t *testing.T) {
+	source, check := DetectComic("https://mangarock.com/manga/mrs-serie-35593/chapter/mrs-chapter-100051049")
+
+	assert.Equal(t, true, check)
+	assert.Equal(t, "mangarock.com", source)
+}
+
+func TestUnsupportedSource(t *testing.T) {
+	source, check := DetectComic("http://example.com")
+
+	assert.Equal(t, false, check)
+	assert.Equal(t, "", source)
 }

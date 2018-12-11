@@ -7,17 +7,13 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// LoadComicFromSource load the right comic strategy
 func LoadComicFromSource(source, url string) *core.Comic {
-	var (
-		comic       *core.Comic
-		splittedUrl []string
-	)
-
-	comic = new(core.Comic)
+	comic := new(core.Comic)
 	comic.SetURLSource(url)
 	comic.SetSource(source)
 	// split the url
-	splittedUrl = util.SplitUrl(url)
+	splittedUrl := util.SplitUrl(url)
 
 	switch source {
 	case "www.comicextra.com":
