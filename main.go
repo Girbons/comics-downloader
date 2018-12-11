@@ -24,18 +24,20 @@ func main() {
 	debug := flag.Bool("debug", false, "Run the script in debug mode")
 	// when you invoke `-- help` usage will appear
 	flag.Usage = usage
-	// parse arguments
 	flag.Parse()
+
 	// url is required
 	if *url == "" {
 		fmt.Println("url is required")
 		os.Exit(1)
 	}
+
 	// if debug is true change log level to DEBUG
 	if *debug {
 		log.SetLevel(log.DebugLevel)
 	}
-	// call the detect, to check if the url is supported
+
+	// check if the url is supported
 	source, check := detector.DetectComic(*url)
 	if !check {
 		log.Error("This site is not supported yet :(")

@@ -15,9 +15,9 @@ func findChapterName(chapterID string, chapters []*mangarock.Chapter) (string, b
 	return "", false
 }
 
-func SetupMangaRock(c *core.Comic, splittedUrl []string) {
-	series := splittedUrl[4]
-	chapterID := splittedUrl[6]
+func SetupMangaRock(c *core.Comic) {
+	series := c.SplitURL()[4]
+	chapterID := c.SplitURL()[6]
 
 	client := mangarock.NewClient()
 	// get info about the manga

@@ -35,7 +35,7 @@ func TestSiteLoaderMangahere(t *testing.T) {
 	assert.Equal(t, url, result.URLSource)
 	assert.Equal(t, "shingeki_no_kyojin_before_the_fall", result.Name)
 	assert.Equal(t, "c048", result.IssueNumber)
-	// TODO must be fixed because links are 65...
+	// FIXME links are only 65...
 	assert.Equal(t, 130, len(result.Links))
 }
 

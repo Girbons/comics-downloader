@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/BakeRolls/mri"
 	"github.com/Girbons/comics-downloader/pkg/util"
@@ -60,6 +61,11 @@ func (c *Comic) SetInfo(name, issueNumber, imageRegex string) {
 	c.Name = name
 	c.IssueNumber = issueNumber
 	c.ImageRegex = imageRegex
+}
+
+// SplitURL return the url splitted by "/"
+func (c *Comic) SplitURL() []string {
+	return strings.Split(c.URLSource, "/")
 }
 
 // MakeComic create the pdf file

@@ -34,9 +34,9 @@ func retrieveComicExtraImageLinks(c *core.Comic) ([]string, error) {
 
 // SetupComicExtra will initialize the comic based
 // on comicextra.com
-func SetupComicExtra(c *core.Comic, splittedUrl []string) error {
-	name := splittedUrl[3]
-	issueNumber := splittedUrl[4]
+func SetupComicExtra(c *core.Comic) error {
+	name := c.SplitURL()[3]
+	issueNumber := c.SplitURL()[4]
 	imageRegex := `<img[^>]+src="([^">]+)"`
 	c.SetInfo(name, issueNumber, imageRegex)
 

@@ -55,9 +55,9 @@ func retrieveMangaHereImageLinks(c *core.Comic) ([]string, error) {
 
 // SetupMangaHere will initialize the comic based
 // on mangahere.cc
-func SetupMangaHere(c *core.Comic, splittedUrl []string) error {
-	name := splittedUrl[4]
-	issueNumber := splittedUrl[5]
+func SetupMangaHere(c *core.Comic) error {
+	name := c.SplitURL()[4]
+	issueNumber := c.SplitURL()[5]
 	imageRegex := `<img[^>]+src="([^">]+)"`
 	c.SetInfo(name, issueNumber, imageRegex)
 
