@@ -8,6 +8,7 @@
 - http://www.comicextra.com/
 - http://www.mangahere.cc/
 - https://mangarock.com/
+- https://www.mangareader.net/
 
 ## Getting Started
 

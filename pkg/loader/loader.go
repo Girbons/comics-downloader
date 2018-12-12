@@ -20,6 +20,8 @@ func LoadComicFromSource(source, url string) *core.Comic {
 		sites.SetupMangaHere(comic)
 	case "mangarock.com":
 		sites.SetupMangaRock(comic)
+	case "www.mangareader.net":
+		sites.SetupMangaReader(comic)
 	default:
 		log.Warning("Cannot select a right strategy")
 	}

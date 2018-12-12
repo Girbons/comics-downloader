@@ -23,19 +23,19 @@ func SetupMangaRock(c *core.Comic) {
 	// get info about the manga
 	info, infoErr := client.Info(series)
 	if infoErr != nil {
-		log.Error(infoErr)
+		log.Error("[MANGAROCK] Cannot retrieve info for series: ", series, infoErr)
 	}
 	// retrieve pages
 	pages, pagesErr := client.Pages(chapterID)
 	if pagesErr != nil {
-		log.Error(pagesErr)
+		log.Error("[MANGAROCK] Cannot retrieve pages for chapter: ", chapterID, pagesErr)
 	}
 
 	name := info.Data.Name
 	chapter, found := findChapterName(chapterID, info.Data.Chapters)
 
 	if !found {
-		log.Info("Chapter not found")
+		log.Info("[MANGAROCK] Chapter not found")
 		chapter = chapterID
 	}
 

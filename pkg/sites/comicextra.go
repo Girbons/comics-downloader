@@ -13,7 +13,7 @@ func retrieveComicExtraImageLinks(c *core.Comic) ([]string, error) {
 	response, err := soup.Get(c.URLSource)
 
 	if err != nil {
-		log.Error(err)
+		log.Error("[COMICEXTRA] Something went wrong with: ", c.URLSource, err)
 	}
 
 	re := regexp.MustCompile(c.ImageRegex)
