@@ -141,7 +141,7 @@ func (c *Comic) MakeComic() {
 	fmt.Printf("\n")
 	if pdf.Ok() {
 		log.Info("Download Completed")
+	} else {
+		log.Info("Download failed...")
 	}
-
-	log.Info("Download failed...")
 }
