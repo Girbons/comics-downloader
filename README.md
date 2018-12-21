@@ -14,7 +14,11 @@
 
 ### Installing
 
-Download the latest [release](https://github.com/Girbons/go-comics-downloader/releases)
+Download the latest release:
+
+- [Linux](https://github.com/Girbons/comics-downloader/releases/download/v0.4.0/comics-downloader)
+- [OSX](https://github.com/Girbons/comics-downloader/releases/download/v0.4.0/comics-downloader-osx)
+- [Windows](https://github.com/Girbons/comics-downloader/releases/download/v0.4.0/comic-downloader.exe)
 
 Put the script under a folder.
 
