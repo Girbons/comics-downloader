@@ -85,8 +85,8 @@ func (c *Comic) MakeComic() {
 	for i, link := range c.Links {
 		if link != "" {
 			rsp, err := http.Get(link)
-			defer rsp.Body.Close()
 			if err == nil {
+				defer rsp.Body.Close()
 				// add a new PDF page
 				pdf.AddPage()
 				switch c.Source {
@@ -113,6 +113,7 @@ func (c *Comic) MakeComic() {
 				// increase the progressbar
 				bar.Add(i)
 			} else {
+				log.Error("Something went wrong with url: ", link, err)
 				pdf.SetError(err)
 			}
 		}
@@ -138,5 +139,9 @@ func (c *Comic) MakeComic() {
 	}
 
 	fmt.Printf("\n")
-	log.Info("Download Completed")
+	if pdf.Ok() {
+		log.Info("Download Completed")
+	}
+
+	log.Info("Download failed...")
 }
