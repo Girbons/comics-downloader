@@ -9,16 +9,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// exists returns whether the given file or directory exists
-func exists(path string) (bool, error) {
-	_, err := os.Stat(path)
-	if err == nil {
-		return true, nil
-	}
+func exists(f string) bool {
+	_, err := os.Stat(f)
 	if os.IsNotExist(err) {
-		return false, nil
+		return false
 	}
-	return true, err
+	return err == nil
 }
 
 func TestNewComic(t *testing.T) {
@@ -72,8 +68,7 @@ func TestMakeComic(t *testing.T) {
 	comic.SetImageLinks(links)
 	comic.MakeComic()
 
-	dir, _ := filepath.Abs(fmt.Sprintf("%s/%s/%s/%s/", filepath.Dir(os.Args[0]), "comics", "example.com", "example-chapter-1"))
-	result, _ := exists(dir)
+	dir, _ := filepath.Abs(fmt.Sprintf("%s/%s/%s/%s/", filepath.Dir(os.Args[0]), "comics", "example.com", "example-chapter-1.pdf"))
 
-	assert.Equal(t, true, result)
+	assert.Equal(t, true, exists(dir))
 }
