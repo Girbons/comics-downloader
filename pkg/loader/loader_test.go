@@ -7,7 +7,7 @@ import (
 )
 
 func TestSiteLoaderMangarock(t *testing.T) {
-	url := "https://mangarock.com/manga/mrs-serie-35593/chapter/mrs-chapter-100051049"
+	url := "https://mangarock.com/manga/mrs-serie-35593/chapter/mrs-chapter-100051049&country=italy"
 	result := LoadComicFromSource("mangarock.com", url)
 
 	assert.Equal(t, "mangarock.com", result.Source)
