@@ -1,5 +1,6 @@
 # Comics Downloader (Go version)
 
+[![Build Status](https://travis-ci.org/Girbons/comics-downloader.svg?branch=master)](https://travis-ci.org/Girbons/comics-downloader)
 [![Go Report Card](https://goreportcard.com/badge/github.com/Girbons/go-comics-downloader)](https://goreportcard.com/report/github.com/Girbons/go-comics-downloader)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
