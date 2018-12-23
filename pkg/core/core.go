@@ -24,6 +24,7 @@ type Comic struct {
 	Source      string
 	URLSource   string
 	Links       []string
+	Options     map[string]string
 }
 
 // SetName sets the comic name
@@ -66,6 +67,11 @@ func (c *Comic) SetInfo(name, issueNumber, imageRegex string) {
 // SplitURL return the url splitted by "/"
 func (c *Comic) SplitURL() []string {
 	return strings.Split(c.URLSource, "/")
+}
+
+// SetOptions set options to the current comic
+func (c *Comic) SetOptions(options map[string]string) {
+	c.Options = options
 }
 
 // MakeComic create the pdf file

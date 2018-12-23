@@ -7,7 +7,7 @@ import (
 )
 
 // LoadComicFromSource load the right comic strategy
-func LoadComicFromSource(source, url string) *core.Comic {
+func LoadComicFromSource(source, url, country string) *core.Comic {
 	comic := new(core.Comic)
 
 	comic.SetURLSource(url)
@@ -19,6 +19,10 @@ func LoadComicFromSource(source, url string) *core.Comic {
 	case "www.mangahere.cc":
 		sites.SetupMangaHere(comic)
 	case "mangarock.com":
+		if country != "" {
+			options := map[string]string{"country": country}
+			comic.SetOptions(options)
+		}
 		sites.SetupMangaRock(comic)
 	case "www.mangareader.net":
 		sites.SetupMangaReader(comic)

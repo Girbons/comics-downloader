@@ -7,8 +7,9 @@ import (
 )
 
 func TestSiteLoaderMangarock(t *testing.T) {
-	url := "https://mangarock.com/manga/mrs-serie-35593/chapter/mrs-chapter-100051049&country=italy"
-	result := LoadComicFromSource("mangarock.com", url)
+	url := "https://mangarock.com/manga/mrs-serie-35593/chapter/mrs-chapter-100051049"
+
+	result := LoadComicFromSource("mangarock.com", url, "italy")
 
 	assert.Equal(t, "mangarock.com", result.Source)
 	assert.Equal(t, url, result.URLSource)
@@ -19,7 +20,7 @@ func TestSiteLoaderMangarock(t *testing.T) {
 
 func TestSiteLoaderComicExtra(t *testing.T) {
 	url := "https://www.comicextra.com/daredevil-2016/chapter-600/full"
-	result := LoadComicFromSource("www.comicextra.com", url)
+	result := LoadComicFromSource("www.comicextra.com", url, "")
 
 	assert.Equal(t, "www.comicextra.com", result.Source)
 	assert.Equal(t, url, result.URLSource)
@@ -30,7 +31,9 @@ func TestSiteLoaderComicExtra(t *testing.T) {
 
 func TestSiteLoaderMangahere(t *testing.T) {
 	url := "http://www.mangahere.cc/manga/shingeki_no_kyojin_before_the_fall/c048/"
-	result := LoadComicFromSource("www.mangahere.cc", url)
+
+	result := LoadComicFromSource("www.mangahere.cc", url, "")
+
 	assert.Equal(t, "www.mangahere.cc", result.Source)
 	assert.Equal(t, url, result.URLSource)
 	assert.Equal(t, "shingeki_no_kyojin_before_the_fall", result.Name)
@@ -41,7 +44,8 @@ func TestSiteLoaderMangahere(t *testing.T) {
 
 func TestLoaderUnknownSource(t *testing.T) {
 	url := "http://example.com"
-	result := LoadComicFromSource("example.com", url)
+
+	result := LoadComicFromSource("example.com", url, "")
 
 	assert.Equal(t, "example.com", result.Source)
 }

@@ -20,6 +20,9 @@ func SetupMangaRock(c *core.Comic) {
 	chapterID := c.SplitURL()[6]
 
 	client := mangarock.NewClient()
+	if _, ok := c.Options["country"]; ok {
+		client.SetOptions(c.Options)
+	}
 	// get info about the manga
 	info, infoErr := client.Info(series)
 	if infoErr != nil {

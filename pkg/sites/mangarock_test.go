@@ -9,7 +9,9 @@ import (
 
 func TestMangarockSetup(t *testing.T) {
 	comic := new(core.Comic)
-	comic.URLSource = "https://mangarock.com/manga/mrs-serie-35593/chapter/mrs-chapter-100051049&country=italy"
+	options := map[string]string{"country": "italy"}
+	comic.SetOptions(options)
+	comic.URLSource = "https://mangarock.com/manga/mrs-serie-35593/chapter/mrs-chapter-100051049"
 
 	SetupMangaRock(comic)
 
