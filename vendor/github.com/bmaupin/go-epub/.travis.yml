@@ -1,0 +1,17 @@
+language: go
+go:
+  # This is the latest 1.x version of Go
+  - "1.x"
+  - "1.7.x"
+  - "1.8.x"
+  - "1.9.x"
+  - "1.10.x"
+  - "1.11.x"
+# Use Go modules for dependency management (https://github.com/golang/go/wiki/Modules)
+env:
+  - GO111MODULE=on
+before_install:
+  - go get github.com/mattn/goveralls
+# This replaces the default script, which runs go test, because goveralls runs the entire test suite
+script:
+  - $HOME/gopath/bin/goveralls -service=travis-ci

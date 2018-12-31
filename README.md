@@ -27,10 +27,17 @@ Put the script under a folder.
 
 <img src="img/usage.gif?raw=true" />
 
+### Download as EPUB
+
+```bash
+./comics-downloader -url=[your url] -format=epub
+```
+
 ## Built With
 
 - [go](https://github.com/golang/go)
 - [gofpdf](https://github.com/jung-kurt/gofpdf)
+- [go-epub](http://github.com/bmaupin/go-epub)
 - [soup](https://github.com/anaskhan96/soup)
 - [progressbar](https://github.com/schollz/progressbar)
 - [logrus](https://github.com/sirupsen/logrus)
