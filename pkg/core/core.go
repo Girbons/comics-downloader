@@ -254,8 +254,6 @@ func (c *Comic) makePDF() {
 	fmt.Printf("\n")
 	if pdf.Ok() {
 		log.Info("pdf file correctly saved")
-	} else {
-		log.Error("There was an error while creating the pdf file")
 	}
 }
 
