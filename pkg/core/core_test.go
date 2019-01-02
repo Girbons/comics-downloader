@@ -58,7 +58,7 @@ func TestComicSetURLSource(t *testing.T) {
 	assert.Equal(t, "http://example.com", comic.URLSource)
 }
 
-func TestMakeComic(t *testing.T) {
+func TestMakeComicPDF(t *testing.T) {
 	comic := new(Comic)
 
 	comic.SetName("example.com")
@@ -66,9 +66,24 @@ func TestMakeComic(t *testing.T) {
 
 	links := []string{"http://via.placeholder.com/150", "http://via.placeholder.com/150", "http://via.placeholder.com/150"}
 	comic.SetImageLinks(links)
-	comic.MakeComic()
+	comic.MakeComic("pdf")
 
 	dir, _ := filepath.Abs(fmt.Sprintf("%s/%s/%s/%s/", filepath.Dir(os.Args[0]), "comics", "example.com", "example-chapter-1.pdf"))
+
+	assert.Equal(t, true, exists(dir))
+}
+
+func TestMakeComicEPUB(t *testing.T) {
+	comic := new(Comic)
+
+	comic.SetName("example.com")
+	comic.SetIssueNumber("example-chapter-1")
+
+	links := []string{"http://via.placeholder.com/150", "http://via.placeholder.com/150", "http://via.placeholder.com/150"}
+	comic.SetImageLinks(links)
+	comic.MakeComic("epub")
+
+	dir, _ := filepath.Abs(fmt.Sprintf("%s/%s/%s/%s/", filepath.Dir(os.Args[0]), "comics", "example.com", "example-chapter-1.epub"))
 
 	assert.Equal(t, true, exists(dir))
 }
