@@ -54,3 +54,20 @@ func ConvertTo8BitPNG(img image.Image, imgData *bytes.Buffer) error {
 
 	return nil
 }
+
+// ImageType return the image type
+func ImageType(mimeStr string) (tp string) {
+	switch mimeStr {
+	case "image/png":
+		tp = "png"
+	case "image/jpg":
+		tp = "jpg"
+	case "image/jpeg":
+		tp = "jpg"
+	case "image/gif":
+		tp = "gif"
+	default:
+		tp = "unknown"
+	}
+	return
+}

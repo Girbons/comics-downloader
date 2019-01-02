@@ -14,14 +14,16 @@ func usage() {
 	fmt.Println("comics-download -url=http://comic-source")
 	fmt.Println("comics-download -url=http://comic-source -debug")
 	fmt.Println("comics-download -url=http://comic-source -country=italy")
+	fmt.Println("comics-download -url=http://comic-source -format=epub")
 	os.Exit(0)
 }
 
 func main() {
 	// by default use log INFO Level
 	log.SetLevel(log.InfoLevel)
-	// setup the arguments
+	// arguments setup
 	url := flag.String("url", "", "Comic URL")
+	format := flag.String("format", "pdf", "Comic format, supported formats are pdf and epub")
 	debug := flag.Bool("debug", false, "Run the script in debug mode")
 	country := flag.String("country", "", "Set the country to retrieve a manga, Used by MangaRock")
 	// when you invoke `-- help` usage will appear
@@ -48,6 +50,5 @@ func main() {
 	// in case the url is supported
 	// setup the right strategy to parse a comic
 	comic := loader.LoadComicFromSource(source, *url, *country)
-	// make the PDF
-	comic.MakeComic()
+	comic.MakeComic(*format)
 }

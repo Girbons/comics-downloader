@@ -43,5 +43,6 @@ func SetupMangaRock(c *core.Comic) {
 	}
 
 	c.SetInfo(name, chapter, "")
+	c.SetAuthor(info.Data.Author)
 	c.SetImageLinks(pages.Data)
 }

@@ -1,6 +1,7 @@
 # Comics Downloader (Go version)
 
 [![Build Status](https://travis-ci.org/Girbons/comics-downloader.svg?branch=master)](https://travis-ci.org/Girbons/comics-downloader)
+[![Coverage Status](https://coveralls.io/repos/github/Girbons/comics-downloader/badge.svg?branch=master)](https://coveralls.io/github/Girbons/comics-downloader?branch=master)
 [![Go Report Card](https://goreportcard.com/badge/github.com/Girbons/go-comics-downloader)](https://goreportcard.com/report/github.com/Girbons/go-comics-downloader)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
@@ -27,10 +28,17 @@ Put the script under a folder.
 
 <img src="img/usage.gif?raw=true" />
 
+### Download as EPUB
+
+```bash
+./comics-downloader -url=[your url] -format=epub
+```
+
 ## Built With
 
 - [go](https://github.com/golang/go)
 - [gofpdf](https://github.com/jung-kurt/gofpdf)
+- [go-epub](http://github.com/bmaupin/go-epub)
 - [soup](https://github.com/anaskhan96/soup)
 - [progressbar](https://github.com/schollz/progressbar)
 - [logrus](https://github.com/sirupsen/logrus)
