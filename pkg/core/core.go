@@ -128,7 +128,7 @@ func (c *Comic) makeEPUB() {
 					tp = "png"
 				default:
 					content = rsp.Body
-					tp = util.ImageTypeFromMime(rsp.Header["Content-Type"][0])
+					tp = util.ImageType(rsp.Header["Content-Type"][0])
 				}
 
 				tmpfile, err := ioutil.TempFile(tempDir, fmt.Sprintf("image.*.%s", tp))
@@ -216,7 +216,7 @@ func (c *Comic) makePDF() {
 					content = imgData
 				default:
 					// retrieve the image format from the response header (jpeg, png...)
-					tp = pdf.ImageTypeFromMime(rsp.Header["Content-Type"][0])
+					tp = util.ImageType(rsp.Header["Content-Type"][0])
 					content = rsp.Body
 				}
 				// The image is directly added to the pdf without being saved to the disk
