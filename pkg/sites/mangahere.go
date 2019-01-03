@@ -3,6 +3,7 @@ package sites
 import (
 	"fmt"
 	"regexp"
+	"strconv"
 
 	"github.com/Girbons/comics-downloader/pkg/core"
 	"github.com/Girbons/comics-downloader/pkg/util"
@@ -16,7 +17,7 @@ func retrieveMangaHereImageLinks(c *core.Comic) ([]string, error) {
 		imgLinks  []string
 	)
 	// compile the image regex
-	re := regexp.MustCompile(c.ImageRegex)
+	re := regexp.MustCompile(util.IMAGEREGEX)
 
 	response, err := soup.Get(c.URLSource)
 
@@ -25,10 +26,18 @@ func retrieveMangaHereImageLinks(c *core.Comic) ([]string, error) {
 	}
 
 	document := soup.HTMLParse(response)
-	links := document.FindAll("option")
+	links := document.Find("div", "class", "cp-pager-list").Find("div").Find("span").FindAll("a")
 
-	for _, link := range links {
-		newLink := fmt.Sprintf("http://%s", link.Attrs()["value"][2:])
+	var pages []int
+	for _, val := range links {
+		index, _ := strconv.Atoi(val.Attrs()["data-page"])
+		pages = append(pages, index)
+	}
+
+	lastPageIndex := util.FindMaxValueInSlice(pages)
+
+	for i := 1; i <= lastPageIndex; i++ {
+		newLink := fmt.Sprintf("http://www.mangahere.cc/manga/%s/%s/%s/%d.html", c.Name, c.SplitURL()[6], c.IssueNumber, i)
 		if !util.IsValueInSlice(newLink, pageLinks) {
 			pageLinks = append(pageLinks, newLink)
 		}
@@ -44,7 +53,7 @@ func retrieveMangaHereImageLinks(c *core.Comic) ([]string, error) {
 
 			match := re.FindAllStringSubmatch(imgResponse, -1)
 			for _, f := range match {
-				if util.IsUrlValid(f[1]) {
+				if util.IsURLValid(f[1]) {
 					imgLinks = append(imgLinks, f[1])
 				}
 			}
@@ -58,8 +67,7 @@ func retrieveMangaHereImageLinks(c *core.Comic) ([]string, error) {
 func SetupMangaHere(c *core.Comic) error {
 	name := c.SplitURL()[4]
 	issueNumber := c.SplitURL()[5]
-	imageRegex := `<img[^>]+src="([^">]+)"`
-	c.SetInfo(name, issueNumber, imageRegex)
+	c.SetInfo(name, issueNumber)
 
 	links, err := retrieveMangaHereImageLinks(c)
 	c.SetImageLinks(links)

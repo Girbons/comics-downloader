@@ -10,21 +10,20 @@ import (
 )
 
 func retrieveComicExtraImageLinks(c *core.Comic) ([]string, error) {
-	response, err := soup.Get(c.URLSource)
+	var links []string
 
+	response, err := soup.Get(c.URLSource)
 	if err != nil {
 		log.Error("[COMICEXTRA] Something went wrong with: ", c.URLSource, err)
 	}
 
-	re := regexp.MustCompile(c.ImageRegex)
+	re := regexp.MustCompile(util.IMAGEREGEX)
 	match := re.FindAllStringSubmatch(response, -1)
 
-	links := make([]string, len(match))
-
-	for i := range links {
+	for i := range match {
 		url := match[i][1]
-		if util.IsUrlValid(url) {
-			links[i] = url
+		if util.IsURLValid(url) {
+			links = append(links, url)
 		}
 	}
 
@@ -37,8 +36,7 @@ func retrieveComicExtraImageLinks(c *core.Comic) ([]string, error) {
 func SetupComicExtra(c *core.Comic) error {
 	name := c.SplitURL()[3]
 	issueNumber := c.SplitURL()[4]
-	imageRegex := `<img[^>]+src="([^">]+)"`
-	c.SetInfo(name, issueNumber, imageRegex)
+	c.SetInfo(name, issueNumber)
 
 	links, err := retrieveComicExtraImageLinks(c)
 	c.SetImageLinks(links)

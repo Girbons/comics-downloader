@@ -1,14 +1,15 @@
-# Comics Downloader (Go version)
+# Comics Downloader
 
-[![Build Status](https://travis-ci.org/Girbons/comics-downloader.svg?branch=master)](https://travis-ci.org/Girbons/comics-downloader)
-[![Coverage Status](https://coveralls.io/repos/github/Girbons/comics-downloader/badge.svg?branch=master)](https://coveralls.io/github/Girbons/comics-downloader?branch=master)
-[![Go Report Card](https://goreportcard.com/badge/github.com/Girbons/go-comics-downloader)](https://goreportcard.com/report/github.com/Girbons/go-comics-downloader)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Build Status](https://img.shields.io/travis/Girbons/comics-downloader.svg?style=flat-square)](https://travis-ci.org/Girbons/comics-downloader)
+[![Coverage Status](https://img.shields.io/coveralls/github/Girbons/comics-downloader.svg?style=flat-square)](https://coveralls.io/github/Girbons/comics-downloader?branch=master)
+[![Go Report Card](https://goreportcard.com/badge/github.com/Girbons/comics-downloader)](https://goreportcard.com/report/github.com/Girbons/comics-downloader)
+[![Github All Releases](https://img.shields.io/github/downloads/Girbons/comics-downloader/total.svg?style=flat-square)]()
+[![Release](https://img.shields.io/github/release/Girbons/comics-downloader.svg?style=flat-square)](https://github.com/Girbons/comics-downlowader/releases/latest)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
 
 ## Supported Sites
 
 - http://www.comicextra.com/
-- http://www.mangahere.cc/
 - https://mangarock.com/
 - https://www.mangareader.net/
 
@@ -28,7 +29,18 @@ Put the script under a folder.
 
 <img src="img/usage.gif?raw=true" />
 
-### Download as EPUB
+### Specify the format output
+
+available formats:
+
+- pdf
+- epub
+- cbr
+- cbz
+
+Default format is __pdf__.
+
+example:
 
 ```bash
 ./comics-downloader -url=[your url] -format=epub
@@ -43,6 +55,7 @@ Put the script under a folder.
 - [progressbar](https://github.com/schollz/progressbar)
 - [logrus](https://github.com/sirupsen/logrus)
 - [mri](https://github.com/BakeRolls/mri/blob/master/mri.go)
+- [archiver](https://github.com/mholt/archiver)
 
 ## Contribuiting
 

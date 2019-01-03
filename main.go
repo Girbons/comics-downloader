@@ -10,45 +10,40 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func usage() {
-	fmt.Println("comics-download -url=http://comic-source")
-	fmt.Println("comics-download -url=http://comic-source -debug")
-	fmt.Println("comics-download -url=http://comic-source -country=italy")
-	fmt.Println("comics-download -url=http://comic-source -format=epub")
-	os.Exit(0)
-}
-
 func main() {
-	// by default use log INFO Level
+	// use log INFO Level
 	log.SetLevel(log.InfoLevel)
 	// arguments setup
 	url := flag.String("url", "", "Comic URL")
-	format := flag.String("format", "pdf", "Comic format, supported formats are pdf and epub")
-	debug := flag.Bool("debug", false, "Run the script in debug mode")
+	format := flag.String("format", "pdf", "Comic format output, supported formats are pdf,epub,cbr,cbz")
 	country := flag.String("country", "", "Set the country to retrieve a manga, Used by MangaRock")
-	// when you invoke `-- help` usage will appear
-	flag.Usage = usage
 	flag.Parse()
 
 	// url is required
 	if *url == "" {
-		fmt.Println("url is required")
+		fmt.Println("url parameter is required")
 		os.Exit(1)
-	}
-
-	// if debug is true change log level to DEBUG
-	if *debug {
-		log.SetLevel(log.DebugLevel)
 	}
 
 	// check if the url is supported
 	source, check := detector.DetectComic(*url)
 	if !check {
-		log.Error("This site is not supported yet :(")
+		log.WithFields(log.Fields{
+			"site": *url,
+		}).Error("This site is not supported :(")
 		os.Exit(1)
 	}
+
+	// check if the format is supported
+	if !detector.DetectFormatOutput(*format) {
+		log.WithFields(log.Fields{
+			"format": *format,
+		}).Info("Format not supported pdf will be used instead")
+	}
+
 	// in case the url is supported
 	// setup the right strategy to parse a comic
 	comic := loader.LoadComicFromSource(source, *url, *country)
-	comic.MakeComic(*format)
+	comic.SetFormat(*format)
+	comic.MakeComic()
 }

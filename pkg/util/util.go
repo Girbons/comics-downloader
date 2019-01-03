@@ -2,15 +2,29 @@ package util
 
 import (
 	"bytes"
+	"fmt"
 	"image"
 	"image/color"
 	"image/png"
 	"net/url"
+	"os"
+	"path/filepath"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
 )
 
-// UrlSource will retrieve the url hostname.
-func UrlSource(u string) (string, error) {
+const (
+	CBR  = "cbr"
+	CBZ  = "cbz"
+	EPUB = "epub"
+	PDF  = "pdf"
+)
+
+const IMAGEREGEX = `<img[^>]+src="([^">]+)"`
+
+// URLSource will retrieve the url hostname.
+func URLSource(u string) (string, error) {
 	parsedUrl, err := url.Parse(u)
 
 	if err != nil {
@@ -21,11 +35,17 @@ func UrlSource(u string) (string, error) {
 }
 
 // IsUrlValid will exclude those url containing `.gif` and `logo`.
-func IsUrlValid(url string) bool {
-	return !strings.Contains(url, ".gif") && !strings.Contains(url, "logo") && !strings.Contains(url, "mobilebanner")
+func IsURLValid(value string) bool {
+	check := value != "" && !strings.Contains(value, ".gif") && !strings.Contains(value, "logo") && !strings.Contains(value, "mobilebanner")
+
+	if check {
+		return strings.HasPrefix(value, "http") || strings.HasPrefix(value, "https")
+	}
+
+	return check
 }
 
-// ValueInSlice will check if a value is already inside the slice.
+// ValueInSlice will check if a value is already in a slice.
 func IsValueInSlice(valueToCheck string, values []string) bool {
 	for _, v := range values {
 		if v == valueToCheck {
@@ -70,4 +90,33 @@ func ImageType(mimeStr string) (tp string) {
 		tp = "unknown"
 	}
 	return
+}
+
+// PathSetup will create the folders where the comic will be saved
+func PathSetup(source, name string) (string, error) {
+	// this will create the path where the file will be saved
+	dir, err := filepath.Abs(fmt.Sprintf("%s/%s/%s/%s/", filepath.Dir(os.Args[0]), "comics", source, name))
+
+	if err != nil {
+		log.Error("There was an error: ", err)
+	}
+	// create folders
+	err = os.MkdirAll(dir, os.ModePerm)
+	if err != nil {
+		log.Error("There was an error while creating the needed folders: ", err)
+	}
+
+	return dir, err
+}
+
+// FindMaxValueInSlice
+func FindMaxValueInSlice(values []int) int {
+	max := 0
+	for _, currentValue := range values {
+		if currentValue > max {
+			max = currentValue
+		}
+	}
+
+	return max
 }
