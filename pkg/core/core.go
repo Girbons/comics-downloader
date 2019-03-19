@@ -271,7 +271,7 @@ func (c *Comic) makeCBRZ() {
 				// retrieve the image from the response
 				content, tp := c.retrieveImageFromResponse(rsp)
 				// create a tempfile to store the image
-				tmpfile, err := ioutil.TempFile(tempDir, fmt.Sprintf("%d.image.%s", i, tp))
+				tmpfile, err := ioutil.TempFile(tempDir, fmt.Sprintf("%d-image.*.%s", i, tp))
 				defer os.Remove(tmpfile.Name()) // clean up
 				if err != nil {
 					log.Fatal(err)
