@@ -10,24 +10,24 @@ import (
 )
 
 func TestUrlSource(t *testing.T) {
-	result, _ := UrlSource("http://example.com")
+	result, _ := URLSource("http://example.com")
 	assert.Equal(t, "example.com", result)
 }
 
 func TestIsValueInSlice(t *testing.T) {
 	s := []string{"foo"}
-	assert.Equal(t, true, IsValueInSlice("foo", s))
-	assert.Equal(t, false, IsValueInSlice("bar", s))
+	assert.True(t, IsValueInSlice("foo", s))
+	assert.False(t, IsValueInSlice("bar", s))
 }
 
 func TestIsUrlValid(t *testing.T) {
-	validUrl := IsUrlValid("http://example.com")
-	gifUrl := IsUrlValid("http://foo.gif")
-	logoUrl := IsUrlValid("http://foo.logo")
+	validUrl := IsURLValid("http://example.com")
+	gifUrl := IsURLValid("http://foo.gif")
+	logoUrl := IsURLValid("http://foo.logo")
 
-	assert.Equal(t, true, validUrl)
-	assert.Equal(t, false, gifUrl)
-	assert.Equal(t, false, logoUrl)
+	assert.True(t, validUrl)
+	assert.False(t, gifUrl)
+	assert.False(t, logoUrl)
 }
 
 func TestImageType(t *testing.T) {
@@ -47,4 +47,12 @@ func TestConvertImage(t *testing.T) {
 	img, _ := png.Decode(resp.Body)
 	imgData := new(bytes.Buffer)
 	ConvertTo8BitPNG(img, imgData)
+}
+
+func TestPathSetup(t *testing.T) {
+	result, err := PathSetup("example-source", "comic-name")
+
+	assert.Nil(t, err)
+	assert.Contains(t, result, "example-source")
+	assert.Contains(t, result, "comic-name")
 }

@@ -15,5 +15,5 @@ func TestComicExtraSetup(t *testing.T) {
 
 	assert.Equal(t, "batman-2016", comic.Name)
 	assert.Equal(t, "chapter-58", comic.IssueNumber)
-	assert.Equal(t, 26, len(comic.Links))
+	assert.Equal(t, 24, len(comic.Links))
 }

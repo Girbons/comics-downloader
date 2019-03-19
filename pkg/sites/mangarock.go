@@ -26,12 +26,16 @@ func SetupMangaRock(c *core.Comic) {
 	// get info about the manga
 	info, infoErr := client.Info(series)
 	if infoErr != nil {
-		log.Error("[MANGAROCK] Cannot retrieve info for series: ", series, infoErr)
+		log.WithFields(log.Fields{
+			"series": series,
+		}).Error("[MANGAROCK] Cannot retrieve info for this series", infoErr)
 	}
 	// retrieve pages
 	pages, pagesErr := client.Pages(chapterID)
 	if pagesErr != nil {
-		log.Error("[MANGAROCK] Cannot retrieve pages for chapter: ", chapterID, pagesErr)
+		log.WithFields(log.Fields{
+			"chapterID": chapterID,
+		}).Error("[MANGAROCK] Cannot retrieve pages for this chapter", pagesErr)
 	}
 
 	name := info.Data.Name
@@ -42,7 +46,7 @@ func SetupMangaRock(c *core.Comic) {
 		chapter = chapterID
 	}
 
-	c.SetInfo(name, chapter, "")
+	c.SetInfo(name, chapter)
 	c.SetAuthor(info.Data.Author)
 	c.SetImageLinks(pages.Data)
 }

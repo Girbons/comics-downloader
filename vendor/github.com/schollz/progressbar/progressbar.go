@@ -26,14 +26,14 @@ type ProgressBar struct {
 type State struct {
 	CurrentPercent float64
 	CurrentBytes   float64
-	MaxBytes       int
+	MaxBytes       int64
 	SecondsSince   float64
 	SecondsLeft    float64
 	KBsPerSecond   float64
 }
 
 type state struct {
-	currentNum        int
+	currentNum        int64
 	currentPercent    int
 	lastPercent       int
 	currentSaucerSize int
@@ -46,7 +46,7 @@ type state struct {
 }
 
 type config struct {
-	max                  int // max number of the counter
+	max                  int64 // max number of the counter
 	width                int
 	writer               io.Writer
 	theme                Theme
@@ -54,9 +54,10 @@ type config struct {
 	description          string
 	// whether the output is expected to contain color codes
 	colorCodes bool
-	maxBytes   int
+	maxBytes   int64
 	// show the iterations per second
 	showIterationsPerSecond bool
+	showIterationsCount     bool
 
 	// minimum time to wait in between updates
 	throttleDuration time.Duration
@@ -119,8 +120,20 @@ func OptionEnableColorCodes(colorCodes bool) Option {
 
 // OptionSetBytes will also print the bytes/second
 func OptionSetBytes(maxBytes int) Option {
+	return OptionSetBytes64(int64(maxBytes))
+}
+
+// OptionSetBytes64 will also print the bytes/second
+func OptionSetBytes64(maxBytes int64) Option {
 	return func(p *ProgressBar) {
 		p.config.maxBytes = maxBytes
+	}
+}
+
+// OptionShowCount will also print current count out of total
+func OptionShowCount() Option {
+	return func(p *ProgressBar) {
+		p.config.showIterationsCount = true
 	}
 }
 
@@ -143,6 +156,11 @@ var defaultTheme = Theme{Saucer: "█", SaucerPadding: " ", BarStart: "|", BarEn
 
 // NewOptions constructs a new instance of ProgressBar, with any options you specify
 func NewOptions(max int, options ...Option) *ProgressBar {
+	return NewOptions64(int64(max), options...)
+}
+
+// NewOptions64 constructs a new instance of ProgressBar, with any options you specify
+func NewOptions64(max int64, options ...Option) *ProgressBar {
 	b := ProgressBar{
 		state: getBlankState(),
 		config: config{
@@ -202,14 +220,19 @@ func (p *ProgressBar) Finish() error {
 }
 
 // Add with increase the current count on the progress bar
-func (p *ProgressBar) Add(num int) error {
+func (p *ProgressBar) Set(num int) error {
+	return p.Set64(int64(num))
+}
+
+// Add with increase the current count on the progress bar
+func (p *ProgressBar) Set64(num int64) error {
 	p.lock.Lock()
 	defer p.lock.Unlock()
 
 	if p.config.max == 0 {
 		return errors.New("max must be greater than 0")
 	}
-	p.state.currentNum += num
+	p.state.currentNum = num
 	percent := float64(p.state.currentNum) / float64(p.config.max)
 	p.state.currentSaucerSize = int(percent * float64(p.config.width))
 	p.state.currentPercent = int(percent * 100)
@@ -227,6 +250,14 @@ func (p *ProgressBar) Add(num int) error {
 	}
 
 	return nil
+}
+
+func (p *ProgressBar) Add(num int) error {
+	return p.Add64(int64(num))
+}
+
+func (p *ProgressBar) Add64(num int64) error {
+	return p.Set64(p.state.currentNum + num)
 }
 
 // Clear erases the progress bar from the current line
@@ -312,9 +343,13 @@ func renderProgressBar(c config, s state) (int, error) {
 		bytesString = fmt.Sprintf("(%2.1f kB/s)", kbPerSecond)
 	}
 
-	if c.showIterationsPerSecond {
+	if c.showIterationsPerSecond && !c.showIterationsCount {
 		// replace bytesString if used
 		bytesString = fmt.Sprintf("(%2.0f it/s)", float64(s.currentNum)/time.Since(s.startTime).Seconds())
+	} else if !c.showIterationsPerSecond && c.showIterationsCount {
+		bytesString = fmt.Sprintf("(%d/%d)", s.currentNum, c.max)
+	} else if c.showIterationsPerSecond && c.showIterationsCount {
+		bytesString = fmt.Sprintf("(%d/%d, %2.0f it/s)", s.currentNum, c.max, float64(s.currentNum)/time.Since(s.startTime).Seconds())
 	}
 
 	str := fmt.Sprintf("\r%s%4d%% %s%s%s%s %s [%s:%s]",
@@ -373,4 +408,38 @@ func writeString(c config, str string) error {
 	}
 
 	return nil
+}
+
+// Reader is the progressbar io.Reader struct
+type Reader struct {
+	io.Reader
+	bar *ProgressBar
+}
+
+func (r *Reader) Read(p []byte) (n int, err error) {
+	n, err = r.Reader.Read(p)
+	r.bar.Add(n)
+	return
+}
+
+// Close the reader when it implements io.Closer
+func (r *Reader) Close() (err error) {
+	if closer, ok := r.Reader.(io.Closer); ok {
+		return closer.Close()
+	}
+	return
+}
+
+// Write implement io.Writer
+func (p *ProgressBar) Write(b []byte) (n int, err error) {
+	n = len(b)
+	p.Add(n)
+	return
+}
+
+// Read implement io.Reader
+func (p *ProgressBar) Read(b []byte) (n int, err error) {
+	n = len(b)
+	p.Add(n)
+	return
 }

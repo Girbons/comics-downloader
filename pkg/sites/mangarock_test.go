@@ -16,6 +16,6 @@ func TestMangarockSetup(t *testing.T) {
 	SetupMangaRock(comic)
 
 	assert.Equal(t, "Boruto: Naruto Next Generations", comic.Name)
-	assert.Equal(t, "Vol.TBD Chapter 14: Teamwork...!!", comic.IssueNumber)
+	assert.Equal(t, "Vol.4 Chapter 14: Teamwork...!!", comic.IssueNumber)
 	assert.Equal(t, 49, len(comic.Links))
 }
