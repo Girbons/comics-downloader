@@ -19,6 +19,14 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// manga output format supported
+const (
+	CBR  = "cbr"
+	CBZ  = "cbz"
+	EPUB = "epub"
+	PDF  = "pdf"
+)
+
 // Comic struct contains all the informations about a comic
 type Comic struct {
 	Author      string
@@ -64,14 +72,14 @@ func (c *Comic) SetImageLinks(links []string) {
 // SetFormat sets the comic output format
 func (c *Comic) SetFormat(format string) {
 	switch strings.ToLower(format) {
-	case util.EPUB:
-		c.Format = util.EPUB
-	case util.CBR:
-		c.Format = util.CBR
-	case util.CBZ:
-		c.Format = util.CBZ
+	case EPUB:
+		c.Format = EPUB
+	case CBR:
+		c.Format = CBR
+	case CBZ:
+		c.Format = CBZ
 	default:
-		c.Format = util.PDF
+		c.Format = PDF
 	}
 }
 
@@ -123,7 +131,7 @@ func (c *Comic) retrieveImageFromResponse(response *http.Response) (io.Reader, s
 
 }
 
-// MakeEPUB create the epub file
+// makeEPUB create the epub file
 func (c *Comic) makeEPUB() {
 	// used to check if the epub cover already exists
 	isCoverSet := false
@@ -199,9 +207,8 @@ func (c *Comic) makeEPUB() {
 	}
 }
 
-// MakeComic create the pdf file
+// makePDF create the pdf file
 func (c *Comic) makePDF() {
-	c.Format = util.PDF
 	// setup the pdf
 	pdf := gofpdf.New("P", "mm", "A4", "")
 	// setup the progress bar
@@ -303,11 +310,12 @@ func (c *Comic) makeCBRZ() {
 	}
 }
 
+// MakeComic will create the file based on the output format selected.
 func (c *Comic) MakeComic() {
 	switch c.Format {
-	case util.EPUB:
+	case EPUB:
 		c.makeEPUB()
-	case util.CBR, util.CBZ:
+	case CBR, CBZ:
 		c.makeCBRZ()
 	default:
 		c.makePDF()

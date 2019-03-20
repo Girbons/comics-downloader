@@ -1,6 +1,7 @@
 package detector
 
 import (
+	"github.com/Girbons/comics-downloader/pkg/core"
 	"github.com/Girbons/comics-downloader/pkg/util"
 	log "github.com/sirupsen/logrus"
 )
@@ -29,7 +30,7 @@ func DetectComic(url string) (string, bool) {
 
 // DetectFormatOutput will check if the format is supported
 func DetectFormatOutput(format string) bool {
-	var supportedFormat = []string{util.PDF, util.EPUB, util.CBR, util.CBZ}
+	var supportedFormat = []string{core.PDF, core.EPUB, core.CBR, core.CBZ}
 	return util.IsValueInSlice(format, supportedFormat)
 
 }

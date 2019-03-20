@@ -14,13 +14,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const (
-	CBR  = "cbr"
-	CBZ  = "cbz"
-	EPUB = "epub"
-	PDF  = "pdf"
-)
-
+// Regex to extract the image html tag
 const IMAGEREGEX = `<img[^>]+src="([^">]+)"`
 
 // URLSource will retrieve the url hostname.
@@ -94,7 +88,6 @@ func ImageType(mimeStr string) (tp string) {
 
 // PathSetup will create the folders where the comic will be saved
 func PathSetup(source, name string) (string, error) {
-	// this will create the path where the file will be saved
 	dir, err := filepath.Abs(fmt.Sprintf("%s/%s/%s/%s/", filepath.Dir(os.Args[0]), "comics", source, name))
 
 	if err != nil {
