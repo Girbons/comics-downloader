@@ -29,6 +29,12 @@ Put the script under a folder.
 
 <img src="img/usage.gif?raw=true" />
 
+### Multiple URLs
+
+```bash
+./comics-downloader -url=url,url2,url3
+```
+
 ### Specify the format output
 
 available formats:
