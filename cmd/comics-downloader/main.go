@@ -45,6 +45,7 @@ func main() {
 				log.WithFields(log.Fields{"site": u}).Error("This site is not supported :(")
 				continue
 			}
+
 			log.WithFields(log.Fields{"url": u}).Info("Downloading...")
 			// in case the url is supported
 			// setup the right strategy to parse a comic

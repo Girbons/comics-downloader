@@ -3,13 +3,13 @@ help:                              # this command
 	@egrep '^[A-Za-z0-9_-]+:' Makefile
 
 osx-build: # Create the executable for OSX
-	@GOOS=darwin GOARCH=amd64 go build -o comics-downloader-osx .
+	@GOOS=darwin GOARCH=amd64 go build -o comics-downloader-osx ./cmd/comics-downloader/
 
 windows-build: # Create the executable for WINDOWS
-	@GOOS=windows GOARCH=amd64 go build -o comics-downloader.exe .
+	@GOOS=windows GOARCH=amd64 go build -o comics-downloader.exe ./cmd/comics-downloader/
 
 linux-build: # Create the executable for LINUX
-	@GOOS=linux GOARCH=amd64 go build -o comics-downloader .
+	@GOOS=linux GOARCH=amd64 go build -o comics-downloader ./cmd/comics-downloader/
 
 builds: # Create the executables for OSX/Windows/Linux
 	@make osx-build
