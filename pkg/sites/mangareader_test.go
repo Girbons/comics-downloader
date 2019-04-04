@@ -33,6 +33,6 @@ func TestSetupMangaReader(t *testing.T) {
 	err := SetupMangaReader(comic)
 	comic.SetSource("www.mangareader.net")
 
-	assert.Equal(t, nil, err)
+	assert.Nil(t, err)
 	assert.Equal(t, 53, len(comic.Links))
 }

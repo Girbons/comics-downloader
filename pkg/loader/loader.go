@@ -1,20 +1,24 @@
 package loader
 
 import (
+	"fmt"
+
 	"github.com/Girbons/comics-downloader/pkg/core"
 	"github.com/Girbons/comics-downloader/pkg/sites"
 	log "github.com/sirupsen/logrus"
 )
 
 // LoadComicFromSource load the right comic strategy
-func LoadComicFromSource(source, url, country string) *core.Comic {
+func LoadComicFromSource(source, url, country string) (*core.Comic, error) {
+	var err error
+
 	comic := new(core.Comic)
 	comic.SetURLSource(url)
 	comic.SetSource(source)
 
 	switch source {
 	case "www.comicextra.com":
-		sites.SetupComicExtra(comic)
+		err = sites.SetupComicExtra(comic)
 	//case "www.mangahere.cc":
 	//sites.SetupMangaHere(comic)
 	case "mangarock.com":
@@ -22,12 +26,13 @@ func LoadComicFromSource(source, url, country string) *core.Comic {
 			options := map[string]string{"country": country}
 			comic.SetOptions(options)
 		}
-		sites.SetupMangaRock(comic)
+		err = sites.SetupMangaRock(comic)
 	case "www.mangareader.net":
-		sites.SetupMangaReader(comic)
+		err = sites.SetupMangaReader(comic)
 	default:
-		log.Warning("Cannot select a right strategy")
+		log.Error("Cannot select a right strategy")
+		err = fmt.Errorf("It was not possible to determine the source")
 	}
 
-	return comic
+	return comic, err
 }

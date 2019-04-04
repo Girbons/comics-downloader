@@ -11,8 +11,9 @@ func TestComicExtraSetup(t *testing.T) {
 	comic := new(core.Comic)
 	comic.URLSource = "https://www.comicextra.com/batman-2016/chapter-58/full"
 
-	SetupComicExtra(comic)
+	err := SetupComicExtra(comic)
 
+	assert.Nil(t, err)
 	assert.Equal(t, "batman-2016", comic.Name)
 	assert.Equal(t, "chapter-58", comic.IssueNumber)
 	assert.Equal(t, 24, len(comic.Links))

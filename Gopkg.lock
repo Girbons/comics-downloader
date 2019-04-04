@@ -42,8 +42,7 @@
   version = "v1.1.1"
 
 [[projects]]
-  branch = "master"
-  digest = "1:988cfde37f089c50ba1ac8a1032c3f81d2ac0359e1872093b946a30139665eb6"
+  digest = "1:d052bda13fd17bd8cf52ccae57b0a03ffeea80cffc2cffc62741235fa34f92cf"
   name = "github.com/dsnet/compress"
   packages = [
     ".",
@@ -54,7 +53,8 @@
     "internal/prefix",
   ]
   pruneopts = "UT"
-  revision = "cc9eb1d7ad760af14e8f918698f745e80377af4f"
+  revision = "da652975a8eea9fa0735aba8056747a751db0bd3"
+  version = "v0.0.1"
 
 [[projects]]
   digest = "1:bed9d72d596f94e65fff37f4d6c01398074a6bb1c3f3ceff963516bd01db6ff5"
@@ -73,12 +73,12 @@
   version = "v0.0.1"
 
 [[projects]]
-  digest = "1:24c520a812f7d0ea202c5801fe7f3fc2353706620ab1b44d844641cfbfde99d2"
+  digest = "1:20011645d7e842fd4dbadc6bb4cb60956c0de9c8814923bb6149c6e4081ce1d4"
   name = "github.com/jung-kurt/gofpdf"
   packages = ["."]
   pruneopts = "UT"
-  revision = "2de34391fba1b7fcfb5b7e2ca00bd813709ee68f"
-  version = "v2.1.2"
+  revision = "70a9e1699f5ab939c2306961cf80517e19885a92"
+  version = "v2.1.4"
 
 [[projects]]
   digest = "1:31e761d97c76151dde79e9d28964a812c46efc5baee4085b86f68f0c654450de"
@@ -113,15 +113,15 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:d4c88b5ad20151a96c1e5a55547a944b6af623aa315f69ee0d172b00f95d27fb"
+  digest = "1:d886a3c32c8c1a770d07e36340f061d3afc948d065ffc3c9a19b01b34d4f0b65"
   name = "github.com/pierrec/lz4"
   packages = [
     ".",
     "internal/xxh32",
   ]
   pruneopts = "UT"
-  revision = "062282ea0dcff40c9fb8525789eef9644b1fbd6e"
-  version = "v2.1.0"
+  revision = "315a67e90e415bcdaff33057da191569bf4d8479"
+  version = "v2.1.1"
 
 [[projects]]
   digest = "1:cf31692c14422fa27c83a05292eb5cbe0fb2775972e8f1f8446a71549bd8980b"
@@ -140,20 +140,20 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:f61d39f75a32c64b077eb8ce92fad427976c4e9d080ea04c667ba3295e95b80e"
+  digest = "1:d7aee6810f676ba84c2e77559b27352c8ecd0a2e803d4a30578445202caf5d6e"
   name = "github.com/schollz/progressbar"
   packages = ["."]
   pruneopts = "UT"
-  revision = "361d2c6a78c0d1cafe51f2d1f96942b946ff078a"
-  version = "v2.9.1"
+  revision = "a77c9589c5cb6769d5c3d08ee2a39aa62bf69a16"
+  version = "v2.11.0"
 
 [[projects]]
-  digest = "1:87c2e02fb01c27060ccc5ba7c5a407cc91147726f8f40b70cceeedbc52b1f3a8"
+  digest = "1:fd61cf4ae1953d55df708acb6b91492d538f49c305b364a014049914495db426"
   name = "github.com/sirupsen/logrus"
   packages = ["."]
   pruneopts = "UT"
-  revision = "e1e72e9de974bd926e5c56f83753fba2df402ce5"
-  version = "v1.3.0"
+  revision = "8bdbc7bcc01dcbb8ec23dc8a28e332258d25251f"
+  version = "v1.4.1"
 
 [[projects]]
   digest = "1:972c2427413d41a1e06ca4897e8528e5a1622894050e2f527b38ddf0f343f759"
@@ -186,14 +186,6 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:058e9504b9a79bfe86092974d05bb3298d2aa0c312d266d43148de289a5065d9"
-  name = "golang.org/x/crypto"
-  packages = ["ssh/terminal"]
-  pruneopts = "UT"
-  revision = "8dd112bcdc25174059e45e07517d9fc663123347"
-
-[[projects]]
-  branch = "master"
   digest = "1:e07483c90d27239c7121fb733d0a6c42ab229f67ecf0c2edcceb13ef1599d8a5"
   name = "golang.org/x/image"
   packages = [
@@ -203,29 +195,26 @@
     "webp",
   ]
   pruneopts = "UT"
-  revision = "0694c2d4d067f97ebef574d63a763ee8ab559da7"
+  revision = "3fc05d484e9f77dd51816890e05f2602e4ca4d65"
 
 [[projects]]
   branch = "master"
-  digest = "1:de4815ce3ca5b624af2733716ecd471de1ef50cda8afec39491aab517f73139c"
+  digest = "1:81e1a7dd1ab100e3ac0ad948e844959a0ebb225ad22849ccfa028503da17caed"
   name = "golang.org/x/net"
   packages = [
     "html",
     "html/atom",
   ]
   pruneopts = "UT"
-  revision = "16b79f2e4e95ea23b2bf9903c9809ff7b013ce85"
+  revision = "b630fd6fe46bcfc98f989005d8b8ec1400e60a6e"
 
 [[projects]]
   branch = "master"
-  digest = "1:1be6480d6816d23e125645a42e38c9a2637a460d8470f432be6ffc02306c5488"
+  digest = "1:e18c1645adfe83d66f80d3676040e478895669f9456ca8bafa6a7290656c1b48"
   name = "golang.org/x/sys"
-  packages = [
-    "unix",
-    "windows",
-  ]
+  packages = ["unix"]
   pruneopts = "UT"
-  revision = "70f52985063808f21fd6dd197895cdb9729443a5"
+  revision = "81d4e9dc473e5e8c933f2aaeba2a3d81efb9aed2"
 
 [solve-meta]
   analyzer-name = "dep"

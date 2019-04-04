@@ -15,8 +15,9 @@ func retrieveMangareaderImageLinks(c *core.Comic) ([]string, error) {
 
 	if err != nil {
 		log.WithFields(log.Fields{
-			"url": c.URLSource,
-		}).Error("[MANGAREADER] Something went wrong", err)
+			"url":    c.URLSource,
+			"source": c.Source,
+		}).Error(err)
 	}
 
 	doc := soup.HTMLParse(response)
@@ -28,8 +29,9 @@ func retrieveMangareaderImageLinks(c *core.Comic) ([]string, error) {
 		rsp, soupErr := soup.Get(pageLink)
 		if soupErr != nil {
 			log.WithFields(log.Fields{
-				"url": pageLink,
-			}).Error("[MANGAREADER] Oops something went wrong while parsing the current url", soupErr)
+				"url":    pageLink,
+				"source": c.Source,
+			}).Error(soupErr)
 		}
 
 		doc = soup.HTMLParse(rsp)

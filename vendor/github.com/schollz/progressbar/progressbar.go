@@ -43,6 +43,8 @@ type state struct {
 
 	maxLineWidth int
 	currentBytes float64
+
+	finished bool
 }
 
 type config struct {
@@ -61,6 +63,9 @@ type config struct {
 
 	// minimum time to wait in between updates
 	throttleDuration time.Duration
+
+	// clear bar once finished
+	clearOnFinish bool
 }
 
 // Theme defines the elements of the bar
@@ -149,6 +154,13 @@ func OptionShowIts() Option {
 func OptionThrottle(duration time.Duration) Option {
 	return func(p *ProgressBar) {
 		p.config.throttleDuration = duration
+	}
+}
+
+// OptionClearOnFinish will clear the bar once its finished
+func OptionClearOnFinish() Option {
+	return func(p *ProgressBar) {
+		p.config.clearOnFinish = true
 	}
 }
 
@@ -265,6 +277,12 @@ func (p *ProgressBar) Clear() error {
 	return clearProgressBar(p.config, p.state)
 }
 
+// Describe will change the description shown before the progress, which
+// can be changed on the fly (as for a slow running process).
+func (p *ProgressBar) Describe(description string) {
+	p.config.description = description
+}
+
 // render renders the progress bar, updating the maximum
 // rendered line width. this function is not thread-safe,
 // so it must be called with an acquired lock.
@@ -280,6 +298,15 @@ func (p *ProgressBar) render() error {
 	err := clearProgressBar(p.config, p.state)
 	if err != nil {
 		return err
+	}
+
+	// check if the progress bar is finished
+	if p.state.finished || p.state.currentNum >= p.config.max {
+		p.state.finished = true
+		if p.config.clearOnFinish {
+			// if the progressbar is finished, return
+			return nil
+		}
 	}
 
 	// then, re-render the current progress bar

@@ -15,7 +15,7 @@ func findChapterName(chapterID string, chapters []*mangarock.Chapter) (string, b
 	return "", false
 }
 
-func SetupMangaRock(c *core.Comic) {
+func SetupMangaRock(c *core.Comic) error {
 	series := c.SplitURL()[4]
 	chapterID := c.SplitURL()[6]
 
@@ -28,25 +28,23 @@ func SetupMangaRock(c *core.Comic) {
 	if infoErr != nil {
 		log.WithFields(log.Fields{
 			"series": series,
-		}).Error("[MANGAROCK] Cannot retrieve info for this series", infoErr)
+			"source": c.Source,
+		}).Error(infoErr)
 	}
 	// retrieve pages
 	pages, pagesErr := client.Pages(chapterID)
-	if pagesErr != nil {
-		log.WithFields(log.Fields{
-			"chapterID": chapterID,
-		}).Error("[MANGAROCK] Cannot retrieve pages for this chapter", pagesErr)
-	}
 
-	name := info.Data.Name
 	chapter, found := findChapterName(chapterID, info.Data.Chapters)
-
 	if !found {
-		log.Info("[MANGAROCK] Chapter not found")
+		log.WithFields(log.Fields{
+			"source": c.Source,
+		}).Warning("Chapter not found")
 		chapter = chapterID
 	}
 
-	c.SetInfo(name, chapter)
+	c.SetInfo(info.Data.Name, chapter)
 	c.SetAuthor(info.Data.Author)
 	c.SetImageLinks(pages.Data)
+
+	return pagesErr
 }

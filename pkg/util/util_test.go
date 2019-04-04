@@ -41,12 +41,16 @@ func TestImageType(t *testing.T) {
 func TestConvertImage(t *testing.T) {
 	imgURL := "http://via.placeholder.com/150"
 
-	resp, _ := http.Get(imgURL)
+	resp, err := http.Get(imgURL)
+	assert.Nil(t, err)
+
 	defer resp.Body.Close()
 
 	img, _ := png.Decode(resp.Body)
 	imgData := new(bytes.Buffer)
-	ConvertTo8BitPNG(img, imgData)
+	err = ConvertTo8BitPNG(img, imgData)
+
+	assert.Nil(t, err)
 }
 
 func TestPathSetup(t *testing.T) {

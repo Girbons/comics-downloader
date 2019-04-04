@@ -91,12 +91,12 @@ func PathSetup(source, name string) (string, error) {
 	dir, err := filepath.Abs(fmt.Sprintf("%s/%s/%s/%s/", filepath.Dir(os.Args[0]), "comics", source, name))
 
 	if err != nil {
-		log.Error("There was an error: ", err)
+		log.Error(err)
 	}
 	// create folders
 	err = os.MkdirAll(dir, os.ModePerm)
 	if err != nil {
-		log.Error("There was an error while creating the needed folders: ", err)
+		log.Error(err)
 	}
 
 	return dir, err
