@@ -14,13 +14,15 @@ jobs:
       - checkout
       - run:
           name: Get dependencies
-          command: go get -t -d -v ./...
-      - run:
-          name: Installing golangci-lint
-          command: curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(go env GOPATH)/bin v1.16.0
-      - run:
-          name: Run golangci-lint
-          command: golangci-lint run
+          command: |
+            curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(go env GOPATH)/bin v1.16.0
+            go get github.com/mattn/goveralls
+            curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+            dep ensure
       - run:
           name: Run tests
           command: go test -v ./...
+
+      - run:
+          name: Run golangci-lint
+          command: golangci-lint run

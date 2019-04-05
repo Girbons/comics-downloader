@@ -1,4 +1,4 @@
-package sites
+package mangarock
 
 import (
 	"github.com/Girbons/comics-downloader/pkg/core"
@@ -15,7 +15,7 @@ func findChapterName(chapterID string, chapters []*mangarock.Chapter) (string, b
 	return "", false
 }
 
-func SetupMangaRock(c *core.Comic) error {
+func Initialize(c *core.Comic) error {
 	series := c.SplitURL()[4]
 	chapterID := c.SplitURL()[6]
 

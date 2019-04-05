@@ -1,4 +1,4 @@
-package sites
+package comicextra
 
 import (
 	"testing"
@@ -11,7 +11,7 @@ func TestComicExtraSetup(t *testing.T) {
 	comic := new(core.Comic)
 	comic.URLSource = "https://www.comicextra.com/batman-2016/chapter-58/full"
 
-	err := SetupComicExtra(comic)
+	err := Initialize(comic)
 
 	assert.Nil(t, err)
 	assert.Equal(t, "batman-2016", comic.Name)

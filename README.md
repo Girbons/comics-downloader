@@ -12,6 +12,7 @@
 - http://www.comicextra.com/
 - https://mangarock.com/
 - https://www.mangareader.net/
+- http://www.mangatown.com/
 
 ## Getting Started
 

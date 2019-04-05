@@ -1,4 +1,4 @@
-package sites
+package mangareader
 
 import (
 	"testing"
@@ -19,7 +19,7 @@ func TestRetrieveMangaReaderImageLinks(t *testing.T) {
 	comic.SetIssueNumber("1")
 	comic.SetSource(SOURCE)
 
-	links, err := retrieveMangareaderImageLinks(comic)
+	links, err := retrieveImageLinks(comic)
 
 	assert.Equal(t, 53, len(links))
 	assert.Equal(t, nil, err)
@@ -30,7 +30,7 @@ func TestSetupMangaReader(t *testing.T) {
 	comic.SetURLSource(URL)
 	comic.SetSource(SOURCE)
 
-	err := SetupMangaReader(comic)
+	err := Initialize(comic)
 	comic.SetSource("www.mangareader.net")
 
 	assert.Nil(t, err)

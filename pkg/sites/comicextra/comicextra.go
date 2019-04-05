@@ -1,4 +1,4 @@
-package sites
+package comicextra
 
 import (
 	"regexp"
@@ -9,7 +9,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func retrieveComicExtraImageLinks(c *core.Comic) ([]string, error) {
+func retrieveImageLinks(c *core.Comic) ([]string, error) {
 	var links []string
 
 	response, err := soup.Get(c.URLSource)
@@ -31,14 +31,14 @@ func retrieveComicExtraImageLinks(c *core.Comic) ([]string, error) {
 
 }
 
-// SetupComicExtra will initialize the comic based
+// Initialize will initialize the comic based
 // on comicextra.com
-func SetupComicExtra(c *core.Comic) error {
+func Initialize(c *core.Comic) error {
 	name := c.SplitURL()[3]
 	issueNumber := c.SplitURL()[4]
 	c.SetInfo(name, issueNumber)
 
-	links, err := retrieveComicExtraImageLinks(c)
+	links, err := retrieveImageLinks(c)
 	c.SetImageLinks(links)
 
 	return err

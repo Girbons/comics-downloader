@@ -9,14 +9,18 @@ import (
 // DetectComic will look for the url source in order to properly
 // instantiate the Comic struct.
 func DetectComic(url string) (string, bool) {
-	var supportedSites = []string{"www.comicextra.com", "mangarock.com", "www.mangareader.net"}
+	var supportedSites = []string{
+		"www.comicextra.com",
+		"mangarock.com",
+		"www.mangareader.net",
+		"www.mangatown.com",
+		"www.mangahere.cc",
+	}
 
 	source, err := util.URLSource(url)
 
 	if err != nil {
-		log.WithFields(log.Fields{
-			"url": url,
-		}).Error(err)
+		log.WithFields(log.Fields{"url": url}).Error(err)
 	}
 
 	for _, site := range supportedSites {

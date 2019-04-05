@@ -11,7 +11,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func retrieveMangaHereImageLinks(c *core.Comic) ([]string, error) {
+func retrieveImageLinks(c *core.Comic) ([]string, error) {
 	var (
 		pageLinks []string
 		imgLinks  []string
@@ -75,7 +75,7 @@ func SetupMangaHere(c *core.Comic) error {
 	issueNumber := c.SplitURL()[5]
 	c.SetInfo(name, issueNumber)
 
-	links, err := retrieveMangaHereImageLinks(c)
+	links, err := retrieveImageLinks(c)
 	c.SetImageLinks(links)
 
 	return err

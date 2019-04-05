@@ -1,4 +1,4 @@
-package sites
+package mangareader
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func retrieveMangareaderImageLinks(c *core.Comic) ([]string, error) {
+func retrieveImageLinks(c *core.Comic) ([]string, error) {
 	var links []string
 
 	response, err := soup.Get(c.URLSource)
@@ -49,14 +49,14 @@ func retrieveMangareaderImageLinks(c *core.Comic) ([]string, error) {
 
 // SetupMangaReader will initialize the comic based
 // www.mangareader.net
-func SetupMangaReader(c *core.Comic) error {
+func Initialize(c *core.Comic) error {
 	name := c.SplitURL()[3]
 	IssueNumber := c.SplitURL()[4]
 
 	c.SetName(name)
 	c.SetIssueNumber(IssueNumber)
 
-	links, err := retrieveMangareaderImageLinks(c)
+	links, err := retrieveImageLinks(c)
 	c.SetImageLinks(links)
 
 	return err

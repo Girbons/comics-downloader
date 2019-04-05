@@ -1,4 +1,4 @@
-package sites
+package mangarock
 
 import (
 	"testing"
@@ -13,7 +13,7 @@ func TestMangarockSetup(t *testing.T) {
 	comic.SetOptions(options)
 	comic.URLSource = "https://mangarock.com/manga/mrs-serie-35593/chapter/mrs-chapter-100051049"
 
-	err := SetupMangaRock(comic)
+	err := Initialize(comic)
 
 	assert.Nil(t, err)
 	assert.Equal(t, "Boruto: Naruto Next Generations", comic.Name)
