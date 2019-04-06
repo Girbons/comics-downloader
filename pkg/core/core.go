@@ -18,6 +18,9 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// DEFAULT_MESSAGE for correctly saved file
+const DEFAULT_MESSAGE = "file correctly saved"
+
 // manga output format supported
 const (
 	CBR  = "cbr"
@@ -230,7 +233,7 @@ func (c *Comic) makeEPUB() {
 	if err = e.Write(c.generateFileName(dir)); err != nil {
 		log.Fatal(err)
 	} else {
-		log.Info("EPUB correctly saved")
+		log.Info(fmt.Sprintf("%s %s", strings.ToUpper(c.Format), DEFAULT_MESSAGE))
 	}
 }
 
@@ -281,7 +284,7 @@ func (c *Comic) makePDF() {
 	}
 
 	if pdf.Ok() {
-		log.Info("PDF file correctly saved")
+		log.Info(fmt.Sprintf("%s %s", strings.ToUpper(c.Format), DEFAULT_MESSAGE))
 	}
 }
 
@@ -360,7 +363,7 @@ func (c *Comic) makeCBRZ() {
 		if err := os.Rename(zipArchiveName, newName); err != nil {
 			log.Fatal(err)
 		}
-		log.Info("file correctly saved")
+		log.Info(fmt.Sprintf("%s %s", strings.ToUpper(c.Format), DEFAULT_MESSAGE))
 	}
 }
 

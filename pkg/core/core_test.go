@@ -137,13 +137,13 @@ func TestMakeComicCBZMangarock(t *testing.T) {
 	comic := new(Comic)
 
 	comic.SetName("Boruto")
-	comic.SetFormat("pdf")
+	comic.SetFormat("cbz")
 	comic.SetIssueNumber("chapter-13")
 	comic.Source = "mangarock.com"
 	comic.SetImageLinks(result.Data)
 	comic.MakeComic()
 
-	dir, _ := filepath.Abs(fmt.Sprintf("%s/%s/%s/%s/%s/", filepath.Dir(os.Args[0]), "comics", "mangarock.com", "Boruto", "chapter-13.pdf"))
+	dir, _ := filepath.Abs(fmt.Sprintf("%s/%s/%s/%s/%s/", filepath.Dir(os.Args[0]), "comics", "mangarock.com", "Boruto", "chapter-13.cbz"))
 
 	assert.True(t, exists(dir))
 }
