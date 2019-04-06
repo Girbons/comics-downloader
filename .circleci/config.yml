@@ -21,7 +21,11 @@ jobs:
             dep ensure
       - run:
           name: Run tests
-          command: go test -v ./...
+          command: go test -v -coverprofile=$HOME/coverage.out ./...
+
+      - run:
+          name: Coveralls
+          command: goveralls -coverprofile=$HOME/coverage.out -service=circle-ci -repotoken=$COVERALLS_TOKEN
 
       - run:
           name: Run golangci-lint
