@@ -1,7 +1,6 @@
 package detector
 
 import (
-	"github.com/Girbons/comics-downloader/pkg/core"
 	"github.com/Girbons/comics-downloader/pkg/util"
 	log "github.com/sirupsen/logrus"
 )
@@ -20,7 +19,7 @@ func DetectComic(url string) (string, bool) {
 	source, err := util.URLSource(url)
 
 	if err != nil {
-		log.WithFields(log.Fields{"url": url}).Error(err)
+		log.Error(err)
 	}
 
 	for _, site := range supportedSites {
@@ -30,11 +29,4 @@ func DetectComic(url string) (string, bool) {
 	}
 
 	return "", false
-}
-
-// DetectFormatOutput will check if the format is supported
-func DetectFormatOutput(format string) bool {
-	var supportedFormat = []string{core.PDF, core.EPUB, core.CBR, core.CBZ}
-	return util.IsValueInSlice(format, supportedFormat)
-
 }

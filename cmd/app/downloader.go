@@ -3,12 +3,23 @@ package app
 import (
 	"strings"
 
+	"github.com/Girbons/comics-downloader/pkg/config"
 	"github.com/Girbons/comics-downloader/pkg/detector"
 	"github.com/Girbons/comics-downloader/pkg/loader"
 	log "github.com/sirupsen/logrus"
 )
 
+func init() {
+	// use log INFO Level
+	log.SetLevel(log.InfoLevel)
+}
+
 func Run(link, format, country string) {
+	conf := new(config.ComicConfig)
+	if err := conf.LoadConfig(); err != nil {
+		log.Warning(err)
+	}
+
 	// link is required
 	if link == "" {
 		log.Fatal("url parameter is required")
@@ -16,13 +27,6 @@ func Run(link, format, country string) {
 
 	if !strings.HasSuffix(link, ",") {
 		link = link + ","
-	}
-
-	// check if the format is supported
-	if !detector.DetectFormatOutput(format) {
-		log.WithFields(log.Fields{
-			"format": format,
-		}).Error("Format not supported PDF will be used instead")
 	}
 
 	for _, u := range strings.Split(link, ",") {
@@ -34,12 +38,14 @@ func Run(link, format, country string) {
 				continue
 			}
 
-			log.WithFields(log.Fields{"link": u}).Info("Downloading...")
+			log.WithFields(log.Fields{
+				"url": u,
+			}).Info("Downloading...")
 			// in case the link is supported
 			// setup the right strategy to parse a comic
-			comic, err := loader.LoadComicFromSource(source, u, country)
+			comic, err := loader.LoadComicFromSource(conf, source, u, country)
 			if err != nil {
-				log.WithFields(log.Fields{"link": u}).Error(err)
+				log.Error(err)
 				continue
 			}
 			comic.SetFormat(format)

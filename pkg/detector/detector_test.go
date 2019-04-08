@@ -33,23 +33,3 @@ func TestUnsupportedSource(t *testing.T) {
 	assert.False(t, check)
 	assert.Equal(t, "", source)
 }
-
-func TestDetectFormatOutpuEPUB(t *testing.T) {
-	assert.True(t, DetectFormatOutput("epub"))
-}
-
-func TestDetectFormatOutpuPDF(t *testing.T) {
-	assert.True(t, DetectFormatOutput("pdf"))
-}
-
-func TestDetectFormatOutputCBZ(t *testing.T) {
-	assert.True(t, DetectFormatOutput("cbz"))
-}
-
-func TestDetectFormatOutputCBR(t *testing.T) {
-	assert.True(t, DetectFormatOutput("cbr"))
-}
-
-func TestDetectFormatOutpuUnknown(t *testing.T) {
-	assert.False(t, DetectFormatOutput("foo"))
-}

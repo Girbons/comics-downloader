@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/BakeRolls/mri"
+	"github.com/Girbons/comics-downloader/pkg/config"
 	"github.com/Girbons/comics-downloader/pkg/util"
 	epub "github.com/bmaupin/go-epub"
 	"github.com/jung-kurt/gofpdf"
@@ -39,81 +40,98 @@ type Comic struct {
 	Links       []string
 	Options     map[string]string
 	Format      string
+
+	Config *config.ComicConfig
 }
 
 // SetAuthor sets the comic author
-func (c *Comic) SetAuthor(author string) {
-	c.Author = author
+func (comic *Comic) SetAuthor(author string) {
+	comic.Author = author
 }
 
 // SetName sets the comic name
-func (c *Comic) SetName(name string) {
-	c.Name = name
+func (comic *Comic) SetName(name string) {
+	comic.Name = name
 }
 
 // SetIssueNumber sets the comic issue number
-func (c *Comic) SetIssueNumber(issueNumber string) {
-	c.IssueNumber = issueNumber
+func (comic *Comic) SetIssueNumber(issueNumber string) {
+	comic.IssueNumber = issueNumber
 }
 
 // SetURLSource sets the URL Source
-func (c *Comic) SetURLSource(URLSource string) {
-	c.URLSource = URLSource
+func (comic *Comic) SetURLSource(URLSource string) {
+	comic.URLSource = URLSource
 }
 
 // SetSource sets the source without the http prefix
-func (c *Comic) SetSource(source string) {
-	c.Source = source
+func (comic *Comic) SetSource(source string) {
+	comic.Source = source
 }
 
 // SetLinks sets the image links retrieved for a manga
-func (c *Comic) SetImageLinks(links []string) {
-	c.Links = links
+func (comic *Comic) SetImageLinks(links []string) {
+	comic.Links = links
+}
+
+// SetConfiguration
+func (comic *Comic) SetConfig(config *config.ComicConfig) {
+	comic.Config = config
+}
+
+// getConfigValues will try to get some
+func (comic *Comic) getConfigValues() {
+	// retrieve values from config file if exist
+	if comic.Format != "" {
+		if configFormat := comic.Config.DefaultOutputFormat; configFormat != "" {
+			comic.Format = configFormat
+		}
+	}
 }
 
 // SetFormat sets the comic output format
-func (c *Comic) SetFormat(format string) {
+func (comic *Comic) SetFormat(format string) {
 	switch strings.ToLower(format) {
 	case EPUB:
-		c.Format = EPUB
+		comic.Format = EPUB
 	case CBR:
-		c.Format = CBR
+		comic.Format = CBR
 	case CBZ:
-		c.Format = CBZ
+		comic.Format = CBZ
 	default:
-		c.Format = PDF
+		comic.Format = PDF
 	}
 }
 
 // SetInfo will sets the name, issueNumber
-func (c *Comic) SetInfo(name, issueNumber string) {
-	c.Name = name
-	c.IssueNumber = issueNumber
+func (comic *Comic) SetInfo(name, issueNumber string) {
+	comic.Name = name
+	comic.IssueNumber = issueNumber
 }
 
 // SplitURL return the url splitted by "/"
-func (c *Comic) SplitURL() []string {
-	return strings.Split(c.URLSource, "/")
+func (comic *Comic) SplitURL() []string {
+	return strings.Split(comic.URLSource, "/")
 }
 
 // SetOptions set options to the current comic
-func (c *Comic) SetOptions(options map[string]string) {
-	c.Options = options
+func (comic *Comic) SetOptions(options map[string]string) {
+	comic.Options = options
 }
 
-// generateFileName will return the path where the file is should be saved
-func (c *Comic) generateFileName(dir string) string {
-	return fmt.Sprintf("%s/%s.%s", dir, c.IssueNumber, c.Format)
+// generateFileName will return the path where the file should be saved
+func (comic *Comic) generateFileName(dir string) string {
+	return fmt.Sprintf("%s/%s.%s", dir, comic.IssueNumber, comic.Format)
 }
 
 // RetrieveImageFromResponse will return the image byte and its type
-func (c *Comic) retrieveImageFromResponse(response *http.Response) (io.Reader, string) {
+func (comic *Comic) retrieveImageFromResponse(response *http.Response) (io.Reader, string) {
 	var (
 		content io.Reader
 		tp      string
 	)
 
-	switch c.Source {
+	switch comic.Source {
 	case "mangarock.com":
 		// mangarock image needs to be decoded first
 		img, decErr := mri.Decode(response.Body)
@@ -138,25 +156,25 @@ func (c *Comic) retrieveImageFromResponse(response *http.Response) (io.Reader, s
 }
 
 // makeEPUB create the epub file
-func (c *Comic) makeEPUB() {
+func (comic *Comic) makeEPUB() {
 	var err error
 	// used to check if the epub cover already exists
 	isCoverSet := false
 	// used to add the image in the epub section
 	imgTag := `<img src="%s" alt="Cover Image" />`
 	// setup a new Epub instance
-	e := epub.NewEpub(c.IssueNumber)
+	e := epub.NewEpub(comic.IssueNumber)
 	// set Epub title
-	e.SetTitle(fmt.Sprintf("%s-%s", c.Name, c.IssueNumber))
+	e.SetTitle(fmt.Sprintf("%s-%s", comic.Name, comic.IssueNumber))
 	// check if the author exists for this comic
-	if c.Author != "" {
-		e.SetAuthor(c.Author)
+	if comic.Author != "" {
+		e.SetAuthor(comic.Author)
 	}
 	// in order to create an epub we'll need to download all the images so we create a tempdir for that
 	tempDir, err := ioutil.TempDir("", "comics-images")
 	if err != nil {
 		log.WithFields(log.Fields{
-			"source": c.Source,
+			"source": comic.Source,
 		}).Fatal(err)
 	}
 	defer os.RemoveAll(tempDir) // clean up
@@ -165,22 +183,19 @@ func (c *Comic) makeEPUB() {
 		log.Fatal(err)
 	}
 	// setup the progress bar
-	bar := progressbar.NewOptions(len(c.Links), progressbar.OptionSetRenderBlankState(true))
+	bar := progressbar.NewOptions(len(comic.Links), progressbar.OptionSetRenderBlankState(true))
 
-	for _, link := range c.Links {
+	for _, link := range comic.Links {
 		if link != "" {
 			rsp, err := http.Get(link)
 
 			if err != nil {
-				log.WithFields(log.Fields{
-					"url":    link,
-					"source": c.Source,
-				}).Error(err)
+				log.Error(err)
 			}
 
 			defer rsp.Body.Close()
 			// retrieve the image from the response
-			content, tp := c.retrieveImageFromResponse(rsp)
+			content, tp := comic.retrieveImageFromResponse(rsp)
 			// create a tempfile to store the image
 			tmpfile, err := ioutil.TempFile(tempDir, fmt.Sprintf("image.*.%s", tp))
 			defer os.Remove(tmpfile.Name()) // clean up
@@ -190,17 +205,12 @@ func (c *Comic) makeEPUB() {
 			}
 
 			if _, err = io.Copy(tmpfile, content); err != nil {
-				log.WithFields(log.Fields{
-					"url":    link,
-					"source": c.Source,
-				}).Error(err)
+				log.Error(err)
 			}
 			// add the image to the epub will return a path
 			imgpath, err := e.AddImage(tmpfile.Name(), "")
 			if err != nil {
-				log.WithFields(log.Fields{
-					"source": c.Source,
-				}).Error(err)
+				log.Error(err)
 			}
 			// if the cover is not set we'll use the first image
 			// otherwise the image will be added as a section
@@ -210,9 +220,7 @@ func (c *Comic) makeEPUB() {
 			} else {
 				_, err = e.AddSection(fmt.Sprintf(imgTag, imgpath), "", "", "")
 				if err != nil {
-					log.WithFields(log.Fields{
-						"source": c.Source,
-					}).Error(err)
+					log.Error(err)
 				}
 			}
 		}
@@ -225,34 +233,34 @@ func (c *Comic) makeEPUB() {
 	}
 	// get the PathSetup where the file should be saved
 	// e.g. /www.mangarock.com/comic-name/
-	dir, err := util.PathSetup(c.Source, c.Name)
+	dir, err := util.PathSetup(comic.Source, comic.Name)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if err = e.Write(c.generateFileName(dir)); err != nil {
+	if err = e.Write(comic.generateFileName(dir)); err != nil {
 		log.Fatal(err)
 	} else {
-		log.Info(fmt.Sprintf("%s %s", strings.ToUpper(c.Format), DEFAULT_MESSAGE))
+		log.Info(fmt.Sprintf("%s %s", strings.ToUpper(comic.Format), DEFAULT_MESSAGE))
 	}
 }
 
 // makePDF create the pdf file
-func (c *Comic) makePDF() {
+func (comic *Comic) makePDF() {
 	var err error
 	// setup the pdf
 	pdf := gofpdf.New("P", "mm", "A4", "")
 	// setup the progress bar
-	bar := progressbar.NewOptions(len(c.Links), progressbar.OptionSetRenderBlankState(true))
+	bar := progressbar.NewOptions(len(comic.Links), progressbar.OptionSetRenderBlankState(true))
 	// for each link get the image to add to the pdf file
-	for _, link := range c.Links {
+	for _, link := range comic.Links {
 		if link != "" {
 			rsp, err := http.Get(link)
 			if err == nil {
 				defer rsp.Body.Close()
 				// add a new PDF page
 				pdf.AddPage()
-				content, tp := c.retrieveImageFromResponse(rsp)
+				content, tp := comic.retrieveImageFromResponse(rsp)
 				// The image is directly added to the pdf without being saved to the disk
 				imageOptions := gofpdf.ImageOptions{ImageType: tp, ReadDpi: false, AllowNegativePosition: true}
 				pdf.RegisterImageOptionsReader(link, imageOptions, content)
@@ -260,10 +268,7 @@ func (c *Comic) makePDF() {
 				pdf.Image(link, 0, 0, 210, 0, false, tp, 0, "")
 				// increase the progressbar
 			} else {
-				log.WithFields(log.Fields{
-					"source": c.URLSource,
-					"url":    link,
-				}).Error(err)
+				log.Error(err)
 				pdf.SetError(err)
 			}
 		}
@@ -273,23 +278,23 @@ func (c *Comic) makePDF() {
 	}
 	// get the PathSetup where the file should be saved
 	// e.g. /www.mangarock.com/comic-name/
-	dir, err := util.PathSetup(c.Source, c.Name)
+	dir, err := util.PathSetup(comic.Source, comic.Name)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// Save the pdf file
-	if err = pdf.OutputFileAndClose(c.generateFileName(dir)); err != nil {
+	if err = pdf.OutputFileAndClose(comic.generateFileName(dir)); err != nil {
 		log.Fatal(err)
 	}
 
 	if pdf.Ok() {
-		log.Info(fmt.Sprintf("%s %s", strings.ToUpper(c.Format), DEFAULT_MESSAGE))
+		log.Info(fmt.Sprintf("%s %s", strings.ToUpper(comic.Format), DEFAULT_MESSAGE))
 	}
 }
 
 // makeCBRZ will create the CBR/CBZ
-func (c *Comic) makeCBRZ() {
+func (comic *Comic) makeCBRZ() {
 	var filesToAdd []string
 	var err error
 	// setup a new Epub instance
@@ -305,15 +310,15 @@ func (c *Comic) makeCBRZ() {
 		log.Fatal(err)
 	}
 	// setup the progress bar
-	bar := progressbar.NewOptions(len(c.Links), progressbar.OptionSetRenderBlankState(true))
+	bar := progressbar.NewOptions(len(comic.Links), progressbar.OptionSetRenderBlankState(true))
 
-	for i, link := range c.Links {
+	for i, link := range comic.Links {
 		if link != "" {
 			rsp, err := http.Get(link)
 			if err == nil {
 				defer rsp.Body.Close()
 				// retrieve the image from the response
-				content, tp := c.retrieveImageFromResponse(rsp)
+				content, tp := comic.retrieveImageFromResponse(rsp)
 				// create a tempfile to store the image
 				tmpfile, err := ioutil.TempFile(tempDir, fmt.Sprintf("%d-image.*.%s", i, tp))
 				defer os.Remove(tmpfile.Name()) // clean up
@@ -323,19 +328,13 @@ func (c *Comic) makeCBRZ() {
 				}
 
 				if _, err = io.Copy(tmpfile, content); err != nil {
-					log.WithFields(log.Fields{
-						"url":    link,
-						"source": c.Source,
-					}).Error(err)
+					log.Error(err)
 				}
 
 				filesToAdd = append(filesToAdd, tmpfile.Name())
 
 			} else {
-				log.WithFields(log.Fields{
-					"url":    link,
-					"source": c.Source,
-				}).Error(err)
+				log.Error(err)
 			}
 		}
 		if barErr := bar.Add(1); barErr != nil {
@@ -347,34 +346,36 @@ func (c *Comic) makeCBRZ() {
 		log.Fatal(err)
 	}
 	// e.g. /www.mangarock.com/comic-name/
-	dir, err := util.PathSetup(c.Source, c.Name)
+	dir, err := util.PathSetup(comic.Source, comic.Name)
 	if err != nil {
-		log.WithFields(log.Fields{
-			"source": c.Source,
-		}).Fatal(err)
+		log.Fatal(err)
 	}
 	// the archive must be created as .zip
 	// then we can change the extension to .cbr or .cbz
-	zipArchiveName := fmt.Sprintf("%s/%s.zip", dir, c.IssueNumber)
-	newName := fmt.Sprintf("%s/%s.%s", dir, c.IssueNumber, c.Format)
+	zipArchiveName := fmt.Sprintf("%s/%s.zip", dir, comic.IssueNumber)
+	newName := fmt.Sprintf("%s/%s.%s", dir, comic.IssueNumber, comic.Format)
 	if err = archive.Archive(filesToAdd, zipArchiveName); err != nil {
 		log.Fatal(err)
 	} else {
 		if err := os.Rename(zipArchiveName, newName); err != nil {
 			log.Fatal(err)
 		}
-		log.Info(fmt.Sprintf("%s %s", strings.ToUpper(c.Format), DEFAULT_MESSAGE))
+		log.Info(fmt.Sprintf("%s %s", strings.ToUpper(comic.Format), DEFAULT_MESSAGE))
 	}
 }
 
 // MakeComic will create the file based on the output format selected.
-func (c *Comic) MakeComic() {
-	switch c.Format {
+func (comic *Comic) MakeComic() {
+	if comic.Config != nil {
+		comic.getConfigValues()
+	}
+
+	switch comic.Format {
 	case EPUB:
-		c.makeEPUB()
+		comic.makeEPUB()
 	case CBR, CBZ:
-		c.makeCBRZ()
+		comic.makeCBRZ()
 	default:
-		c.makePDF()
+		comic.makePDF()
 	}
 }

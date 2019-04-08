@@ -30,7 +30,26 @@ Put the script under a folder.
 
 <img src="img/usage.gif?raw=true" />
 
+You can invoke the `--help`:
+
+```
+  -country string
+        Set the country to retrieve a manga, Used by MangaRock
+  -format string
+        Comic format output, supported formats are pdf,epub,cbr,cbz (default "pdf")
+  -url string
+        Comic URL or Comic URLS by separating each site with a comma without the use of spaces
+```
+
 ### Multiple URLs
+
+Without `url` parameter:
+
+```bash
+./comics-downloader url1 url2 url3
+```
+
+With `url` parameter:
 
 ```bash
 ./comics-downloader -url=url,url2,url3
@@ -53,6 +72,18 @@ example:
 ./comics-downloader -url=[your url] -format=epub
 ```
 
+## Config file
+
+To avoid to specify everytime the output format you can create a `config.yaml` file in the same path of the executable.
+
+Add the string below and substitute `"cbr"` with your preferred format.
+
+**NOTE**: if `--format` or `-format` is specified, the value in `config.yaml` will be ignored.
+
+```
+default_output_format: "cbr"
+```
+
 ## Built With
 
 - [go](https://github.com/golang/go)
@@ -63,6 +94,7 @@ example:
 - [logrus](https://github.com/sirupsen/logrus)
 - [mri](https://github.com/BakeRolls/mri/blob/master/mri.go)
 - [archiver](https://github.com/mholt/archiver)
+- [viper](https://github.com/spf13/viper)
 
 ## Contribuiting
 

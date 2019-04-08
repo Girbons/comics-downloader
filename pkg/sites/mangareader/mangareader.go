@@ -5,7 +5,6 @@ import (
 
 	"github.com/Girbons/comics-downloader/pkg/core"
 	"github.com/anaskhan96/soup"
-	log "github.com/sirupsen/logrus"
 )
 
 func retrieveImageLinks(c *core.Comic) ([]string, error) {
@@ -14,10 +13,7 @@ func retrieveImageLinks(c *core.Comic) ([]string, error) {
 	response, err := soup.Get(c.URLSource)
 
 	if err != nil {
-		log.WithFields(log.Fields{
-			"url":    c.URLSource,
-			"source": c.Source,
-		}).Error(err)
+		return nil, err
 	}
 
 	doc := soup.HTMLParse(response)
@@ -28,10 +24,7 @@ func retrieveImageLinks(c *core.Comic) ([]string, error) {
 		pageLink := fmt.Sprintf("https://%s/%s/%s/%d", c.Source, c.Name, c.IssueNumber, i)
 		rsp, soupErr := soup.Get(pageLink)
 		if soupErr != nil {
-			log.WithFields(log.Fields{
-				"url":    pageLink,
-				"source": c.Source,
-			}).Error(soupErr)
+			return nil, soupErr
 		}
 
 		doc = soup.HTMLParse(rsp)

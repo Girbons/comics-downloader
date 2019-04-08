@@ -26,19 +26,14 @@ func Initialize(c *core.Comic) error {
 	// get info about the manga
 	info, infoErr := client.Info(series)
 	if infoErr != nil {
-		log.WithFields(log.Fields{
-			"series": series,
-			"source": c.Source,
-		}).Error(infoErr)
+		log.Error(infoErr)
 	}
 	// retrieve pages
 	pages, pagesErr := client.Pages(chapterID)
 
 	chapter, found := findChapterName(chapterID, info.Data.Chapters)
 	if !found {
-		log.WithFields(log.Fields{
-			"source": c.Source,
-		}).Warning("Chapter not found")
+		log.Warning("Chapter not found")
 		chapter = chapterID
 	}
 

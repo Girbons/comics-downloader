@@ -6,7 +6,6 @@ import (
 
 	"github.com/Girbons/comics-downloader/pkg/core"
 	"github.com/anaskhan96/soup"
-	log "github.com/sirupsen/logrus"
 )
 
 func findPages(document *soup.Root) []string {
@@ -30,7 +29,7 @@ func retrieveImageLinks(c *core.Comic) ([]string, error) {
 	response, err := soup.Get(c.URLSource)
 
 	if err != nil {
-		log.WithFields(log.Fields{"source": c.Source}).Error(err)
+		return nil, err
 	}
 
 	document := soup.HTMLParse(response)
@@ -41,7 +40,7 @@ func retrieveImageLinks(c *core.Comic) ([]string, error) {
 		response, err := soup.Get(link)
 
 		if err != nil {
-			log.WithFields(log.Fields{"source": c.Source}).Error(err)
+			return nil, err
 		}
 
 		document = soup.HTMLParse(response)

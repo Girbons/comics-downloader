@@ -6,7 +6,6 @@ import (
 	"github.com/Girbons/comics-downloader/pkg/core"
 	"github.com/Girbons/comics-downloader/pkg/util"
 	"github.com/anaskhan96/soup"
-	log "github.com/sirupsen/logrus"
 )
 
 func retrieveImageLinks(c *core.Comic) ([]string, error) {
@@ -14,7 +13,7 @@ func retrieveImageLinks(c *core.Comic) ([]string, error) {
 
 	response, err := soup.Get(c.URLSource)
 	if err != nil {
-		log.WithFields(log.Fields{"source": c.Source}).Error(err)
+		return nil, err
 	}
 
 	re := regexp.MustCompile(util.IMAGEREGEX)

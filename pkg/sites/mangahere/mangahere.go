@@ -8,7 +8,6 @@ import (
 	"github.com/Girbons/comics-downloader/pkg/core"
 	"github.com/Girbons/comics-downloader/pkg/util"
 	"github.com/anaskhan96/soup"
-	log "github.com/sirupsen/logrus"
 )
 
 func retrieveImageLinks(c *core.Comic) ([]string, error) {
@@ -22,10 +21,7 @@ func retrieveImageLinks(c *core.Comic) ([]string, error) {
 	response, err := soup.Get(c.URLSource)
 
 	if err != nil {
-		log.WithFields(log.Fields{
-			"source": c.Source,
-			"url":    c.URLSource,
-		}).Error(err)
+		return nil, err
 	}
 
 	document := soup.HTMLParse(response)
@@ -51,10 +47,7 @@ func retrieveImageLinks(c *core.Comic) ([]string, error) {
 			imgResponse, imgResponseError := soup.Get(link)
 
 			if imgResponseError != nil {
-				log.WithFields(log.Fields{
-					"source": c.Source,
-					"link":   link,
-				}).Error(imgResponseError)
+				return nil, imgResponseError
 			}
 
 			match := re.FindAllStringSubmatch(imgResponse, -1)
