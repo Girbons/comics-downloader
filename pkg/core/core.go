@@ -82,7 +82,7 @@ func (comic *Comic) SetConfig(config *config.ComicConfig) {
 // getConfigValues will try to get some
 func (comic *Comic) getConfigValues() {
 	// retrieve values from config file if exist
-	if comic.Format != "" {
+	if comic.Format == "" {
 		if configFormat := comic.Config.DefaultOutputFormat; configFormat != "" {
 			comic.Format = configFormat
 		}

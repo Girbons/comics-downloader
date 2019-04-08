@@ -1,3 +1,17 @@
+<a name="v0.9"></a>
+# [0.9 (v0.9)](https://github.com/Girbons/comics-downloader/releases/tag/v0.9) - 08 Apr 2019
+
+# What's New
+
+* It's now possible to create a `config.yaml` to specify the default output format
+
+# Improvments
+
+* It's now possible to omit the `url` parameter
+
+[Changes][v0.9]
+
+
 <a name="v0.8"></a>
 # [0.8 (v0.8)](https://github.com/Girbons/comics-downloader/releases/tag/v0.8) - 06 Apr 2019
 
@@ -148,6 +162,7 @@ Well,  this is the first release :)
 [Changes][v0.1.0]
 
 
+[v0.9]: https://github.com/Girbons/comics-downloader/compare/v0.8...v0.9
 [v0.8]: https://github.com/Girbons/comics-downloader/compare/v0.7.1...v0.8
 [v0.7.1]: https://github.com/Girbons/comics-downloader/compare/v0.7...v0.7.1
 [v0.7]: https://github.com/Girbons/comics-downloader/compare/v0.6.1...v0.7
