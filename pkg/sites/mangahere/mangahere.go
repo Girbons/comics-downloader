@@ -10,7 +10,7 @@ import (
 	"github.com/anaskhan96/soup"
 )
 
-func retrieveImageLinks(c *core.Comic) ([]string, error) {
+func retrieveImageLinks(comic *core.Comic) ([]string, error) {
 	var (
 		pageLinks []string
 		imgLinks  []string
@@ -18,7 +18,7 @@ func retrieveImageLinks(c *core.Comic) ([]string, error) {
 	// compile the image regex
 	re := regexp.MustCompile(util.IMAGEREGEX)
 
-	response, err := soup.Get(c.URLSource)
+	response, err := soup.Get(comic.URLSource)
 
 	if err != nil {
 		return nil, err
@@ -36,7 +36,7 @@ func retrieveImageLinks(c *core.Comic) ([]string, error) {
 	lastPageIndex := util.FindMaxValueInSlice(pages)
 
 	for i := 1; i <= lastPageIndex; i++ {
-		newLink := fmt.Sprintf("http://www.mangahere.cc/manga/%s/%s/%s/%d.html", c.Name, c.SplitURL()[6], c.IssueNumber, i)
+		newLink := fmt.Sprintf("http://www.mangahere.cc/manga/%s/%s/%s/%d.html", comic.Name, comic.SplitURL()[6], comic.IssueNumber, i)
 		if !util.IsValueInSlice(newLink, pageLinks) {
 			pageLinks = append(pageLinks, newLink)
 		}
@@ -63,13 +63,11 @@ func retrieveImageLinks(c *core.Comic) ([]string, error) {
 
 // SetupMangaHere will initialize the comic based
 // on mangahere.cc
-func SetupMangaHere(c *core.Comic) error {
-	name := c.SplitURL()[4]
-	issueNumber := c.SplitURL()[5]
-	c.SetInfo(name, issueNumber)
-
-	links, err := retrieveImageLinks(c)
-	c.SetImageLinks(links)
+func Initialize(comic *core.Comic) error {
+	comic.Name = comic.SplitURL()[4]
+	comic.IssueNumber = comic.SplitURL()[5]
+	links, err := retrieveImageLinks(comic)
+	comic.Links = links
 
 	return err
 }

@@ -8,10 +8,10 @@ import (
 	"github.com/anaskhan96/soup"
 )
 
-func retrieveImageLinks(c *core.Comic) ([]string, error) {
+func retrieveImageLinks(comic *core.Comic) ([]string, error) {
 	var links []string
 
-	response, err := soup.Get(c.URLSource)
+	response, err := soup.Get(comic.URLSource)
 	if err != nil {
 		return nil, err
 	}
@@ -32,13 +32,12 @@ func retrieveImageLinks(c *core.Comic) ([]string, error) {
 
 // Initialize will initialize the comic based
 // on comicextra.com
-func Initialize(c *core.Comic) error {
-	name := c.SplitURL()[3]
-	issueNumber := c.SplitURL()[4]
-	c.SetInfo(name, issueNumber)
+func Initialize(comic *core.Comic) error {
+	comic.Name = comic.SplitURL()[3]
+	comic.IssueNumber = comic.SplitURL()[4]
 
-	links, err := retrieveImageLinks(c)
-	c.SetImageLinks(links)
+	links, err := retrieveImageLinks(comic)
+	comic.Links = links
 
 	return err
 }

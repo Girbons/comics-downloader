@@ -7,10 +7,10 @@ import (
 	"github.com/anaskhan96/soup"
 )
 
-func retrieveImageLinks(c *core.Comic) ([]string, error) {
+func retrieveImageLinks(comic *core.Comic) ([]string, error) {
 	var links []string
 
-	response, err := soup.Get(c.URLSource)
+	response, err := soup.Get(comic.URLSource)
 
 	if err != nil {
 		return nil, err
@@ -21,7 +21,7 @@ func retrieveImageLinks(c *core.Comic) ([]string, error) {
 	options := doc.FindAll("option")
 
 	for i := 1; i <= len(options); i++ {
-		pageLink := fmt.Sprintf("https://%s/%s/%s/%d", c.Source, c.Name, c.IssueNumber, i)
+		pageLink := fmt.Sprintf("https://%s/%s/%s/%d", comic.Source, comic.Name, comic.IssueNumber, i)
 		rsp, soupErr := soup.Get(pageLink)
 		if soupErr != nil {
 			return nil, soupErr
@@ -40,17 +40,14 @@ func retrieveImageLinks(c *core.Comic) ([]string, error) {
 	return links, err
 }
 
-// SetupMangaReader will initialize the comic based
+// Initialize the comic based
 // www.mangareader.net
-func Initialize(c *core.Comic) error {
-	name := c.SplitURL()[3]
-	IssueNumber := c.SplitURL()[4]
+func Initialize(comic *core.Comic) error {
+	comic.Name = comic.SplitURL()[3]
+	comic.IssueNumber = comic.SplitURL()[4]
 
-	c.SetName(name)
-	c.SetIssueNumber(IssueNumber)
-
-	links, err := retrieveImageLinks(c)
-	c.SetImageLinks(links)
+	links, err := retrieveImageLinks(comic)
+	comic.Links = links
 
 	return err
 }

@@ -3,6 +3,7 @@ package sites
 import (
 	"fmt"
 
+	"github.com/Girbons/comics-downloader/pkg/config"
 	"github.com/Girbons/comics-downloader/pkg/core"
 	"github.com/Girbons/comics-downloader/pkg/sites/comicextra"
 	"github.com/Girbons/comics-downloader/pkg/sites/mangareader"
@@ -10,16 +11,24 @@ import (
 	"github.com/Girbons/comics-downloader/pkg/sites/mangatown"
 )
 
-func LoadComic(comic *core.Comic, country string) error {
+// LoadComicFromSource will return a `comic` instance initialized based on the source
+func LoadComicFromSource(conf *config.ComicConfig, source, url, country, format string) (*core.Comic, error) {
 	var err error
 
-	switch comic.Source {
+	comic := &core.Comic{
+		Config:    conf,
+		URLSource: url,
+		Source:    source,
+		Format:    format,
+	}
+
+	switch source {
 	case "www.comicextra.com":
 		err = comicextra.Initialize(comic)
 	case "mangarock.com":
 		if country != "" {
 			options := map[string]string{"country": country}
-			comic.SetOptions(options)
+			comic.Options = options
 		}
 		err = mangarock.Initialize(comic)
 	case "www.mangareader.net":
@@ -33,5 +42,5 @@ func LoadComic(comic *core.Comic, country string) error {
 		err = fmt.Errorf("It was not possible to determine the source")
 	}
 
-	return err
+	return comic, err
 }

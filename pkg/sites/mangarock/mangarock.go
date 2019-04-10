@@ -15,13 +15,13 @@ func findChapterName(chapterID string, chapters []*mangarock.Chapter) (string, b
 	return "", false
 }
 
-func Initialize(c *core.Comic) error {
-	series := c.SplitURL()[4]
-	chapterID := c.SplitURL()[6]
+func Initialize(comic *core.Comic) error {
+	series := comic.SplitURL()[4]
+	chapterID := comic.SplitURL()[6]
 
 	client := mangarock.NewClient()
-	if _, ok := c.Options["country"]; ok {
-		client.SetOptions(c.Options)
+	if _, ok := comic.Options["country"]; ok {
+		client.SetOptions(comic.Options)
 	}
 	// get info about the manga
 	info, infoErr := client.Info(series)
@@ -37,9 +37,10 @@ func Initialize(c *core.Comic) error {
 		chapter = chapterID
 	}
 
-	c.SetInfo(info.Data.Name, chapter)
-	c.SetAuthor(info.Data.Author)
-	c.SetImageLinks(pages.Data)
+	comic.Name = info.Data.Name
+	comic.IssueNumber = chapter
+	comic.Author = info.Data.Author
+	comic.Links = pages.Data
 
 	return pagesErr
 }

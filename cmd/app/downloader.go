@@ -5,7 +5,7 @@ import (
 
 	"github.com/Girbons/comics-downloader/pkg/config"
 	"github.com/Girbons/comics-downloader/pkg/detector"
-	"github.com/Girbons/comics-downloader/pkg/loader"
+	"github.com/Girbons/comics-downloader/pkg/sites"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -43,13 +43,16 @@ func Run(link, format, country string) {
 			}).Info("Downloading...")
 			// in case the link is supported
 			// setup the right strategy to parse a comic
-			comic, err := loader.LoadComicFromSource(conf, source, u, country)
+			comic, err := sites.LoadComicFromSource(conf, source, u, country, format)
 			if err != nil {
 				log.Error(err)
 				continue
 			}
-			comic.SetFormat(format)
-			comic.MakeComic()
+
+			err = comic.MakeComic()
+			if err != nil {
+				log.Error(err)
+			}
 		}
 	}
 }
