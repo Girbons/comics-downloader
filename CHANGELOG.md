@@ -1,3 +1,14 @@
+<a name="v0.9.1"></a>
+# [0.9.1 (v0.9.1)](https://github.com/Girbons/comics-downloader/releases/tag/v0.9.1) - 10 Apr 2019
+
+# Improvments
+
+* improved error handling by removing `log.Fatal` in the middle of the code
+
+
+[Changes][v0.9.1]
+
+
 <a name="v0.9"></a>
 # [0.9 (v0.9)](https://github.com/Girbons/comics-downloader/releases/tag/v0.9) - 08 Apr 2019
 
@@ -162,6 +173,7 @@ Well,  this is the first release :)
 [Changes][v0.1.0]
 
 
+[v0.9.1]: https://github.com/Girbons/comics-downloader/compare/v0.9...v0.9.1
 [v0.9]: https://github.com/Girbons/comics-downloader/compare/v0.8...v0.9
 [v0.8]: https://github.com/Girbons/comics-downloader/compare/v0.7.1...v0.8
 [v0.7.1]: https://github.com/Girbons/comics-downloader/compare/v0.7...v0.7.1
