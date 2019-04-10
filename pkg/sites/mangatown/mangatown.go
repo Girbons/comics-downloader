@@ -52,8 +52,7 @@ func retrieveImageLinks(comic *core.Comic) ([]string, error) {
 
 }
 
-// SetupMangaTown will initialize the comic based
-// on mangatown.com
+// Initialize loads links and metadata from mangatown
 func Initialize(comic *core.Comic) error {
 	comic.Name = comic.SplitURL()[4]
 	comic.IssueNumber = comic.SplitURL()[6]

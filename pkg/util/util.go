@@ -14,7 +14,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// Regex to extract the image html tag
+// IMAGEREGEX to extract the image html tag
 const IMAGEREGEX = `<img[^>]+src="([^">]+)"`
 
 // URLSource will retrieve the url hostname.
@@ -28,7 +28,7 @@ func URLSource(u string) (string, error) {
 	return parsedUrl.Hostname(), nil
 }
 
-// IsUrlValid will exclude those url containing `.gif` and `logo`.
+// IsURLValid will exclude those url containing `.gif` and `logo`.
 func IsURLValid(value string) bool {
 	check := value != "" && !strings.Contains(value, ".gif") && !strings.Contains(value, "logo") && !strings.Contains(value, "mobilebanner")
 
@@ -39,7 +39,7 @@ func IsURLValid(value string) bool {
 	return check
 }
 
-// ValueInSlice will check if a value is already in a slice.
+// IsValueInSlice will check if a value is already in a slice.
 func IsValueInSlice(valueToCheck string, values []string) bool {
 	for _, v := range values {
 		if v == valueToCheck {
@@ -49,7 +49,7 @@ func IsValueInSlice(valueToCheck string, values []string) bool {
 	return false
 }
 
-// Converts an image of any type to a PNG with 8-bit color depth
+// ConvertTo8BitPNG converts an image of any type to a PNG with 8-bit color depth
 func ConvertTo8BitPNG(img image.Image, imgData *bytes.Buffer) error {
 	b := img.Bounds()
 	imgSet := image.NewRGBA(b)
@@ -102,7 +102,7 @@ func PathSetup(source, name string) (string, error) {
 	return dir, err
 }
 
-// FindMaxValueInSlice
+// FindMaxValueInSlice return the max value
 func FindMaxValueInSlice(values []int) int {
 	max := 0
 	for _, currentValue := range values {

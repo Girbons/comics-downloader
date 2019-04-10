@@ -15,7 +15,7 @@ type ComicConfig struct {
 	DefaultOutputFormat string `mapstructure:"default_output_format"`
 }
 
-// LoadConfig, read the `config` file and unmarshal to struct
+// LoadConfig read the `config` file and unmarshal to struct
 func (c *ComicConfig) LoadConfig() error {
 	if err := viper.ReadInConfig(); err != nil {
 		return err

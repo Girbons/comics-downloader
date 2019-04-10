@@ -181,9 +181,9 @@ func (comic *Comic) makeEPUB() error {
 
 	if err = e.Write(comic.generateFileName(dir)); err != nil {
 		return err
-	} else {
-		log.Info(fmt.Sprintf("%s %s", strings.ToUpper(comic.Format), DEFAULT_MESSAGE))
 	}
+
+	log.Info(fmt.Sprintf("%s %s", strings.ToUpper(comic.Format), DEFAULT_MESSAGE))
 
 	return err
 }
@@ -300,14 +300,16 @@ func (comic *Comic) makeCBRZ() error {
 	// then we can change the extension to .cbr or .cbz
 	zipArchiveName := fmt.Sprintf("%s/%s.zip", dir, comic.IssueNumber)
 	newName := fmt.Sprintf("%s/%s.%s", dir, comic.IssueNumber, comic.Format)
+
 	if err = archive.Archive(filesToAdd, zipArchiveName); err != nil {
 		return err
-	} else {
-		if err := os.Rename(zipArchiveName, newName); err != nil {
-			return err
-		}
-		log.Info(fmt.Sprintf("%s %s", strings.ToUpper(comic.Format), DEFAULT_MESSAGE))
 	}
+
+	if err := os.Rename(zipArchiveName, newName); err != nil {
+		return err
+	}
+
+	log.Info(fmt.Sprintf("%s %s", strings.ToUpper(comic.Format), DEFAULT_MESSAGE))
 
 	return err
 }

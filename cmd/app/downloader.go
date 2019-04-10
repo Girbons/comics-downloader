@@ -14,6 +14,7 @@ func init() {
 	log.SetLevel(log.InfoLevel)
 }
 
+// Run will run the downloader app
 func Run(link, format, country string) {
 	conf := new(config.ComicConfig)
 	if err := conf.LoadConfig(); err != nil {

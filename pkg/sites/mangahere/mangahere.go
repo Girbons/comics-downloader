@@ -61,8 +61,7 @@ func retrieveImageLinks(comic *core.Comic) ([]string, error) {
 	return imgLinks, err
 }
 
-// SetupMangaHere will initialize the comic based
-// on mangahere.cc
+// Initialize loads links and metadata from mangahere
 func Initialize(comic *core.Comic) error {
 	comic.Name = comic.SplitURL()[4]
 	comic.IssueNumber = comic.SplitURL()[5]

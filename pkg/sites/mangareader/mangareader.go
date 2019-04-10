@@ -40,8 +40,7 @@ func retrieveImageLinks(comic *core.Comic) ([]string, error) {
 	return links, err
 }
 
-// Initialize the comic based
-// www.mangareader.net
+// Initialize loads links and metadata from mangareader
 func Initialize(comic *core.Comic) error {
 	comic.Name = comic.SplitURL()[3]
 	comic.IssueNumber = comic.SplitURL()[4]

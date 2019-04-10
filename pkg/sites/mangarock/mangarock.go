@@ -15,6 +15,7 @@ func findChapterName(chapterID string, chapters []*mangarock.Chapter) (string, b
 	return "", false
 }
 
+// Initialize loads links and metadata from mangarock
 func Initialize(comic *core.Comic) error {
 	series := comic.SplitURL()[4]
 	chapterID := comic.SplitURL()[6]
