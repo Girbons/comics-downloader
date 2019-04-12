@@ -23,7 +23,7 @@ func Run(link, format, country string) {
 
 	// link is required
 	if link == "" {
-		log.Fatal("url parameter is required")
+		log.Error("url parameter is required")
 	}
 
 	if !strings.HasSuffix(link, ",") {
