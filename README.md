@@ -20,9 +20,9 @@
 
 Download the latest release:
 
-- [Linux](https://github.com/Girbons/comics-downloader/releases/download/v0.9.1/comics-downloader)
-- [OSX](https://github.com/Girbons/comics-downloader/releases/download/v0.9.1/comics-downloader-osx)
-- [Windows](https://github.com/Girbons/comics-downloader/releases/download/v0.9.1/comics-downloader.exe)
+- [Linux](https://github.com/Girbons/comics-downloader/releases/download/v0.9.2/comics-downloader)
+- [OSX](https://github.com/Girbons/comics-downloader/releases/download/v0.9.2/comics-downloader-osx)
+- [Windows](https://github.com/Girbons/comics-downloader/releases/download/v0.9.2/comics-downloader.exe)
 
 Put the script under a folder.
 
