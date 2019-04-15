@@ -1,3 +1,13 @@
+<a name="v0.9.3"></a>
+# [0.9.3 (v0.9.3)](https://github.com/Girbons/comics-downloader/releases/tag/v0.9.3) - 15 Apr 2019
+
+# Fixes
+
+* Fix issue where file where saved in the temporary directory
+
+[Changes][v0.9.3]
+
+
 <a name="v0.9.2"></a>
 # [0.9.2 (v0.9.2)](https://github.com/Girbons/comics-downloader/releases/tag/v0.9.2) - 12 Apr 2019
 
@@ -183,6 +193,7 @@ Well,  this is the first release :)
 [Changes][v0.1.0]
 
 
+[v0.9.3]: https://github.com/Girbons/comics-downloader/compare/v0.9.2...v0.9.3
 [v0.9.2]: https://github.com/Girbons/comics-downloader/compare/v0.9.1...v0.9.2
 [v0.9.1]: https://github.com/Girbons/comics-downloader/compare/v0.9...v0.9.1
 [v0.9]: https://github.com/Girbons/comics-downloader/compare/v0.8...v0.9
