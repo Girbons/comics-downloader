@@ -99,6 +99,11 @@ func (comic *Comic) retrieveImageFromResponse(response *http.Response) (io.Reade
 // makeEPUB create the epub file
 func (comic *Comic) makeEPUB() error {
 	var err error
+
+	currentDir, err := util.CurrentDir()
+	if err != nil {
+		return err
+	}
 	// used to check if the epub cover already exists
 	isCoverSet := false
 	// used to add the image in the epub section
@@ -169,9 +174,11 @@ func (comic *Comic) makeEPUB() error {
 			log.Error(barErr)
 		}
 	}
-	if err = os.Chdir(tempDir); err != nil {
+
+	if err = os.Chdir(currentDir); err != nil {
 		return err
 	}
+
 	// get the PathSetup where the file should be saved
 	// e.g. /www.mangarock.com/comic-name/
 	dir, err := util.PathSetup(comic.Source, comic.Name)
@@ -241,6 +248,12 @@ func (comic *Comic) makePDF() error {
 func (comic *Comic) makeCBRZ() error {
 	var filesToAdd []string
 	var err error
+
+	currentDir, err := util.CurrentDir()
+	if err != nil {
+		return err
+	}
+
 	// setup a new Epub instance
 	archive := archiver.NewZip()
 	// in order to create the archive we'll need to download all the images
@@ -288,7 +301,7 @@ func (comic *Comic) makeCBRZ() error {
 		}
 	}
 
-	if err = os.Chdir(tempDir); err != nil {
+	if err = os.Chdir(currentDir); err != nil {
 		return err
 	}
 	// e.g. /www.mangarock.com/comic-name/
@@ -305,12 +318,11 @@ func (comic *Comic) makeCBRZ() error {
 		return err
 	}
 
-	if err := os.Rename(zipArchiveName, newName); err != nil {
+	if err = os.Rename(zipArchiveName, newName); err != nil {
 		return err
 	}
 
 	log.Info(fmt.Sprintf("%s %s", strings.ToUpper(comic.Format), DEFAULT_MESSAGE))
-
 	return err
 }
 

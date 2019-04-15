@@ -93,6 +93,7 @@ func PathSetup(source, name string) (string, error) {
 	if err != nil {
 		log.Error(err)
 	}
+
 	// create folders
 	err = os.MkdirAll(dir, os.ModePerm)
 	if err != nil {
@@ -112,4 +113,9 @@ func FindMaxValueInSlice(values []int) int {
 	}
 
 	return max
+}
+
+// CurrentDir
+func CurrentDir() (string, error) {
+	return filepath.Abs(filepath.Dir(os.Args[0]))
 }
