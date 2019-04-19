@@ -6,7 +6,6 @@ Thanks for contribuiting!
 
 Follow the [guide](/docs/dev.md)
 
-
 ## Pull Requests
 
 * PR should have a proper title and a commit messagge.

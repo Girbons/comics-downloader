@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/Girbons/comics-downloader/pkg/config"
@@ -9,13 +10,21 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+var Messages = make(chan string)
+
 func init() {
 	// use log INFO Level
 	log.SetLevel(log.InfoLevel)
 }
 
+func sendToChannel(enabled bool, message string) {
+	if enabled {
+		Messages <- message
+	}
+}
+
 // Run will run the downloader app
-func Run(link string, format string, country string, all bool) {
+func Run(link, format, country string, all, bindLogsToChannel bool) {
 	conf := new(config.ComicConfig)
 	if err := conf.LoadConfig(); err != nil {
 		log.Warning(err)
@@ -23,7 +32,9 @@ func Run(link string, format string, country string, all bool) {
 
 	// link is required
 	if link == "" {
-		log.Error("url parameter is required")
+		msg := "url parameter required"
+		log.Error(msg)
+		sendToChannel(bindLogsToChannel, msg)
 	}
 
 	// TODO: This doesn't seem necessary
@@ -36,18 +47,21 @@ func Run(link string, format string, country string, all bool) {
 			// check if the link is supported
 			source, check := detector.DetectComic(u)
 			if !check {
-				log.WithFields(log.Fields{"site": u}).Error("This site is not supported :(")
+				msg := "This site is not supported :("
+				log.WithFields(log.Fields{"site": u}).Error(msg)
+				sendToChannel(bindLogsToChannel, msg)
 				continue
 			}
 
-			log.WithFields(log.Fields{
-				"url": u,
-			}).Info("Downloading...")
+			msg := "Downloading..."
+			log.WithFields(log.Fields{"url": u}).Info(msg)
+			sendToChannel(bindLogsToChannel, msg)
 			// in case the link is supported
 			// setup the right strategy to parse a comic
 			collection, err := sites.LoadComicFromSource(conf, source, u, country, format, all)
 			if err != nil {
 				log.Error(err)
+				sendToChannel(bindLogsToChannel, fmt.Sprintf("ERROR: %s", err))
 				continue
 			}
 
@@ -55,6 +69,9 @@ func Run(link string, format string, country string, all bool) {
 				err = comic.MakeComic()
 				if err != nil {
 					log.Error(err)
+					sendToChannel(bindLogsToChannel, fmt.Sprintf("ERROR: %s", err))
+				} else {
+					sendToChannel(bindLogsToChannel, fmt.Sprintf("%s, Succesfully Downloaded", comic.Name))
 				}
 			}
 		}

@@ -10,18 +10,22 @@ help:                              # this command
 	@egrep '^[A-Za-z0-9_-]+:' Makefile
 
 osx-build: # Create the executable for OSX
-	@GOOS=darwin GOARCH=amd64 go build ${LDFLAGS} -o comics-downloader-osx ./cmd/
+	@GOOS=darwin GOARCH=amd64 go build ${LDFLAGS} -o build/comics-downloader-osx ./cmd/downloader
 
 windows-build: # Create the executable for WINDOWS
-	@GOOS=windows GOARCH=amd64 go build ${LDFLAGS}  -o comics-downloader.exe ./cmd/
+	@GOOS=windows GOARCH=amd64 go build ${LDFLAGS}  -o build/comics-downloader.exe ./cmd/downloader
 
 linux-build: # Create the executable for LINUX
-	@GOOS=linux GOARCH=amd64 go build ${LDFLAGS} -o comics-downloader ./cmd/
+	@GOOS=linux GOARCH=amd64 go build ${LDFLAGS} -o build/comics-downloader ./cmd/downloader
+
+gui-builds: # Creates GUI executables for LINUX OSX WINDOWS
+	fyne-cross --output comics-downloader-gui --targets=linux/amd64,windows/amd64,darwin/amd64 ./cmd/gui
 
 builds: # Create the executables for OSX/Windows/Linux
 	@make osx-build
 	@make windows-build
 	@make linux-build
+	@make gui-builds
 
 remove-builds: # Remove executables
-	@rm comics-downloader comics-downloader.exe comics-downloader-osx
+	@rm -rf build/

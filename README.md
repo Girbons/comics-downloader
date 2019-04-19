@@ -90,7 +90,7 @@ example:
 
 To avoid to specify everytime the output format you can create a `config.yaml` file in the same path of the executable.
 
-Add the string below and substitute `"cbr"` with your preferred format.
+Add the string below and substitute `"cbr"` with your favourite format.
 
 **NOTE**: if `--format` or `-format` is specified, the value in `config.yaml` will be ignored.
 

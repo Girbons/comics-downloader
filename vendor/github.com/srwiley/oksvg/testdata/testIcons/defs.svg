@@ -1,0 +1,28 @@
+<svg viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink">
+  <!-- Some graphical objects to use -->
+  <defs>
+    <circle id="myCircle" r="50"/>
+    <rect id="myRect" width="50" height="50" stroke="black"/>
+    <g id="myGroup" fill="black">
+      <circle r="10" cx="0"/>
+      <circle r="10" cx="30"/>
+      <rect x="-2" width="35" y="20" height="10"/>
+    </g>
+    <path id="myPath" d="M0 0 C 0 20, 20 20, 20 0"/>
+  </defs>
+ 
+  <!-- using my graphical objects -->
+  <use x="50" y="50" href="#myCircle" fill="red" />
+  <use x="25" y="25" href="#myRect" fill="orange" />
+  <use x="35" y="35" href="#myGroup" />
+  <use x="40" y="60" href="#myPath" fill="pink" />
+  <use x="150" y="50" href="#myCircle" fill="green" />
+  <use x="125" y="25" href="#myRect" fill="yellow" />
+  <use x="135" y="35" href="#myGroup" />
+  <use x="140" y="60" href="#myPath" fill="lime" />
+  <use x="250" y="50" href="#myCircle" fill="blue" />
+  <use x="225" y="25" href="#myRect" fill="purple" />
+  <use x="235" y="35" href="#myGroup" />
+  <use x="240" y="60" href="#myPath" fill="turquoise" />
+</svg>

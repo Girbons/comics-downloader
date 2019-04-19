@@ -385,11 +385,18 @@ func (f *Fpdf) SetPageBox(t string, x, y, wd, ht float64) {
 }
 
 // SetPage sets the current page to that of a valid page in the PDF document.
-// The SetPage() example demonstrates this method.
+// pageNum is one-based. The SetPage() example demonstrates this method.
 func (f *Fpdf) SetPage(pageNum int) {
 	if (pageNum > 0) && (pageNum < len(f.pages)) {
 		f.page = pageNum
 	}
+}
+
+// PageCount returns the number of pages currently in the document. Since page
+// numbers in gofpdf are one-based, the page count is the same as the page
+// number of the current last page.
+func (f *Fpdf) PageCount() int {
+	return len(f.pages) - 1
 }
 
 // SetFontLocation sets the location in the file system of the font and font
@@ -422,6 +429,11 @@ func (f *Fpdf) SetHeaderFuncMode(fnc func(), homeMode bool) {
 // is empty, so you have to provide an appropriate function if you want page
 // headers. fnc will typically be a closure that has access to the Fpdf
 // instance and other document generation variables.
+//
+// A header is a convenient place to put background content that repeats on
+// each page such as a watermark. When this is done, remember to reset the X
+// and Y values so the normal content begins where expected. Including a
+// watermark on each page is demonstrated in the example for TransformRotate.
 //
 // This method is demonstrated in the example for AddPage().
 func (f *Fpdf) SetHeaderFunc(fnc func()) {
@@ -1787,6 +1799,11 @@ func (f *Fpdf) SetFont(familyStr, styleStr string, size float64) {
 	return
 }
 
+// SetFontStyle sets the style of the current font. See also SetFont()
+func (f *Fpdf) SetFontStyle(styleStr string) {
+	f.SetFont(f.fontFamily, styleStr, f.fontSizePt)
+}
+
 // SetFontSize defines the size of the current font. Size is specified in
 // points (1/ 72 inch). See also SetFontUnitSize().
 func (f *Fpdf) SetFontSize(size float64) {
@@ -2429,7 +2446,7 @@ func (f *Fpdf) WriteAligned(width, lineHeight float64, textStr, alignStr string)
 			f.Write(lineHeight, lineStr)
 			f.SetLeftMargin(lMargin)
 		case "R":
-			f.SetLeftMargin(lMargin + (width - lineWidth) - rMargin)
+			f.SetLeftMargin(lMargin + (width - lineWidth) - 2.01*f.cMargin)
 			f.Write(lineHeight, lineStr)
 			f.SetLeftMargin(lMargin)
 		default:
