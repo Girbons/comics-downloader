@@ -35,3 +35,10 @@ func TestSetupMangaReader(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, 53, len(comic.Links))
 }
+
+func TestRetrieveIssueLinks(t *testing.T) {
+	issues, err := RetrieveIssueLinks("https://www.mangareader.net/naruto")
+
+	assert.Nil(t, err)
+	assert.Equal(t, 700, len(issues))
+}

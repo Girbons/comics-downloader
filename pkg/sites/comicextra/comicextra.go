@@ -27,7 +27,41 @@ func retrieveImageLinks(comic *core.Comic) ([]string, error) {
 	}
 
 	return links, err
+}
 
+func RetrieveIssueLinks(url string) ([]string, error) {
+	if isSingleIssue(url) {
+		return []string{url}, nil
+	}
+
+	var links []string
+	name := util.SplitURL(url)[4]
+	set := make(map[string]struct{})
+
+	response, err := soup.Get(url)
+	if err != nil {
+		return nil, err
+	}
+
+	re := regexp.MustCompile("<a[^>]+href=\"([^\">]+" + "/" + name + "/.+)\"")
+	match := re.FindAllStringSubmatch(response, -1)
+
+	for i := range match {
+		url := match[i][1] + "/full"
+		if util.IsURLValid(url) {
+			set[url] = struct{}{}
+		}
+	}
+
+	for url := range set {
+		links = append(links, url)
+	}
+
+	return links, err
+}
+
+func isSingleIssue(url string) bool {
+	return util.SplitURL(url)[3] != "comic"
 }
 
 // Initialize will initialize the comic based

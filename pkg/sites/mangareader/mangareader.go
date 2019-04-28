@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/Girbons/comics-downloader/pkg/core"
+	"github.com/Girbons/comics-downloader/pkg/util"
 	"github.com/anaskhan96/soup"
 )
 
@@ -38,6 +39,40 @@ func retrieveImageLinks(comic *core.Comic) ([]string, error) {
 	}
 
 	return links, err
+}
+
+func RetrieveIssueLinks(url string) ([]string, error) {
+	if isSingleIssue(url) {
+		return []string{url}, nil
+	}
+
+	var links []string
+	set := make(map[string]struct{})
+
+	response, err := soup.Get(url)
+	if err != nil {
+		return nil, err
+	}
+
+	doc := soup.HTMLParse(response)
+	chapters := doc.Find("div", "id", "chapterlist").FindAll("a")
+
+	for _, chapter := range chapters {
+		url := "https://www.mangareader.net" + chapter.Attrs()["href"]
+		if util.IsURLValid(url) {
+			set[url] = struct{}{}
+		}
+	}
+
+	for url := range set {
+		links = append(links, url)
+	}
+
+	return links, err
+}
+
+func isSingleIssue(url string) bool {
+	return len(util.SplitURL(url)) >= 5
 }
 
 // Initialize loads links and metadata from mangareader

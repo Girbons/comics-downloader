@@ -9,6 +9,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestSplitURL(t *testing.T) {
+	result := SplitURL("http://example.com/path/")
+	assert.Equal(t, []string{"http:", "", "example.com", "path"}, result)
+}
+
 func TestUrlSource(t *testing.T) {
 	result, _ := URLSource("http://example.com")
 	assert.Equal(t, "example.com", result)

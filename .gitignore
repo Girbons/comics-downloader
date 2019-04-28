@@ -13,3 +13,6 @@
 
 # path where comics are downloaded
 comics/
+
+# binary
+comics-downloader

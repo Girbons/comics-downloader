@@ -2,6 +2,7 @@ package mangarock
 
 import (
 	"github.com/Girbons/comics-downloader/pkg/core"
+	"github.com/Girbons/comics-downloader/pkg/util"
 	"github.com/Girbons/mangarock"
 	log "github.com/sirupsen/logrus"
 )
@@ -13,6 +14,39 @@ func findChapterName(chapterID string, chapters []*mangarock.Chapter) (string, b
 		}
 	}
 	return "", false
+}
+
+func RetrieveIssueLinks(url string, options map[string]string) ([]string, error) {
+	if isSingleIssue(url) {
+		return []string{url}, nil
+	}
+
+	var links []string
+
+	series := util.SplitURL(url)[4]
+
+	client := mangarock.NewClient()
+	if _, ok := options["country"]; ok {
+		client.SetOptions(options)
+	}
+	// get info about the manga
+	info, infoErr := client.Info(series)
+	if infoErr != nil {
+		log.Error(infoErr)
+	}
+
+	for _, chapter := range info.Data.Chapters {
+		chapterUrl := url + "/chapter/" + chapter.OID
+		if util.IsURLValid(chapterUrl) {
+			links = append(links, chapterUrl)
+		}
+	}
+
+	return links, nil
+}
+
+func isSingleIssue(url string) bool {
+	return len(util.SplitURL(url)) >= 6
 }
 
 // Initialize loads links and metadata from mangarock

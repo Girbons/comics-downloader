@@ -18,3 +18,10 @@ func TestComicExtraSetup(t *testing.T) {
 	assert.Equal(t, "c684", comic.IssueNumber)
 	assert.Equal(t, 22, len(comic.Links))
 }
+
+func TestRetrieveIssueLinks(t *testing.T) {
+	issues, err := RetrieveIssueLinks("https://www.mangatown.com/manga/naruto/")
+
+	assert.Nil(t, err)
+	assert.Equal(t, 748, len(issues))
+}

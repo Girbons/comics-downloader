@@ -17,6 +17,11 @@ import (
 // IMAGEREGEX to extract the image html tag
 const IMAGEREGEX = `<img[^>]+src="([^">]+)"`
 
+func SplitURL(u string) []string {
+	u = strings.TrimSuffix(u, "/")
+	return strings.Split(u, "/")
+}
+
 // URLSource will retrieve the url hostname.
 func URLSource(u string) (string, error) {
 	parsedUrl, err := url.Parse(u)
