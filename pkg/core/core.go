@@ -44,11 +44,6 @@ type Comic struct {
 	Config *config.ComicConfig
 }
 
-// SplitURL return the url splitted by "/"
-func (comic *Comic) SplitURL() []string {
-	return util.SplitURL(comic.URLSource)
-}
-
 // getConfigValues will try to get some
 func (comic *Comic) readConfigValues() {
 	// retrieve values from config file

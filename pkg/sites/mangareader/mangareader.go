@@ -41,13 +41,17 @@ func retrieveImageLinks(comic *core.Comic) ([]string, error) {
 	return links, err
 }
 
+func isSingleIssue(url string) bool {
+	return len(util.TrimAndSplitURL(url)) >= 5
+}
+
+// RetrieveIssueLinks gets a slice of urls for all issues in a comic
 func RetrieveIssueLinks(url string) ([]string, error) {
 	if isSingleIssue(url) {
 		return []string{url}, nil
 	}
 
 	var links []string
-	set := make(map[string]struct{})
 
 	response, err := soup.Get(url)
 	if err != nil {
@@ -60,25 +64,18 @@ func RetrieveIssueLinks(url string) ([]string, error) {
 	for _, chapter := range chapters {
 		url := "https://www.mangareader.net" + chapter.Attrs()["href"]
 		if util.IsURLValid(url) {
-			set[url] = struct{}{}
+			links = append(links, url)
 		}
-	}
-
-	for url := range set {
-		links = append(links, url)
 	}
 
 	return links, err
 }
 
-func isSingleIssue(url string) bool {
-	return len(util.SplitURL(url)) >= 5
-}
-
 // Initialize loads links and metadata from mangareader
 func Initialize(comic *core.Comic) error {
-	comic.Name = comic.SplitURL()[3]
-	comic.IssueNumber = comic.SplitURL()[4]
+	parts := util.TrimAndSplitURL(comic.URLSource)
+	comic.Name = parts[3]
+	comic.IssueNumber = parts[4]
 
 	links, err := retrieveImageLinks(comic)
 	comic.Links = links

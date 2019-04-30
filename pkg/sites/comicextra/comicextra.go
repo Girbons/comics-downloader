@@ -29,13 +29,18 @@ func retrieveImageLinks(comic *core.Comic) ([]string, error) {
 	return links, err
 }
 
+func isSingleIssue(url string) bool {
+	return util.TrimAndSplitURL(url)[3] != "comic"
+}
+
+// RetrieveIssueLinks gets a slice of urls for all issues in a comic
 func RetrieveIssueLinks(url string) ([]string, error) {
 	if isSingleIssue(url) {
 		return []string{url}, nil
 	}
 
 	var links []string
-	name := util.SplitURL(url)[4]
+	name := util.TrimAndSplitURL(url)[4]
 	set := make(map[string]struct{})
 
 	response, err := soup.Get(url)
@@ -60,15 +65,12 @@ func RetrieveIssueLinks(url string) ([]string, error) {
 	return links, err
 }
 
-func isSingleIssue(url string) bool {
-	return util.SplitURL(url)[3] != "comic"
-}
-
 // Initialize will initialize the comic based
 // on comicextra.com
 func Initialize(comic *core.Comic) error {
-	comic.Name = comic.SplitURL()[3]
-	comic.IssueNumber = comic.SplitURL()[4]
+	parts := util.TrimAndSplitURL(comic.URLSource)
+	comic.Name = parts[3]
+	comic.IssueNumber = parts[4]
 
 	links, err := retrieveImageLinks(comic)
 	comic.Links = links

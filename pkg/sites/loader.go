@@ -12,10 +12,35 @@ import (
 	"github.com/Girbons/comics-downloader/pkg/sites/mangatown"
 )
 
-// LoadComicFromSource will return a `comic` instance initialized based on the source
-func LoadComicFromSource(conf *config.ComicConfig, source, url, country, format string) ([]core.Comic, error) {
+func initializeCollection(initializer func(*core.Comic) error, url string, issues []string, conf *config.ComicConfig, format string, source string, options map[string]string) ([]*core.Comic, error) {
+	var collection []*core.Comic
 	var err error
-	var collection []core.Comic
+
+	if len(issues) == 0 {
+		return collection, errors.New("No issues found.")
+	}
+
+	for _, url := range issues {
+		comic := &core.Comic{
+			URLSource: url,
+			Config:    conf,
+			Source:    source,
+			Format:    format,
+			Options:   options,
+		}
+		if err = initializer(comic); err != nil {
+			return collection, err
+		}
+		collection = append(collection, comic)
+	}
+
+	return collection, nil
+}
+
+// LoadComicFromSource will return a `comic` instance initialized based on the source
+func LoadComicFromSource(conf *config.ComicConfig, source, url, country, format string) ([]*core.Comic, error) {
+	var err error
+	var collection []*core.Comic
 	var initializer func(*core.Comic) error
 	var issues []string
 
@@ -42,32 +67,7 @@ func LoadComicFromSource(conf *config.ComicConfig, source, url, country, format 
 		return collection, err
 	}
 
-	collection, err = InitializeCollection(initializer, url, issues, conf, format, source, options)
+	collection, err = initializeCollection(initializer, url, issues, conf, format, source, options)
 
 	return collection, err
-}
-
-func InitializeCollection(initializer func(*core.Comic) error, url string, issues []string, conf *config.ComicConfig, format string, source string, options map[string]string) ([]core.Comic, error) {
-	var collection []core.Comic
-	var err error
-
-	if len(issues) == 0 {
-		return collection, errors.New("No issues found.")
-	}
-
-	for _, url := range issues {
-		comic := &core.Comic{
-			URLSource: url,
-			Config:    conf,
-			Source:    source,
-			Format:    format,
-			Options:   options,
-		}
-		if err = initializer(comic); err != nil {
-			return collection, err
-		}
-		collection = append(collection, *comic)
-	}
-
-	return collection, nil
 }

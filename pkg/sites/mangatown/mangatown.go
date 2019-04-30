@@ -52,13 +52,18 @@ func retrieveImageLinks(comic *core.Comic) ([]string, error) {
 	return links, err
 }
 
+func isSingleIssue(url string) bool {
+	parts := util.TrimAndSplitURL(url)
+	return len(parts) >= 6 && parts[5] != ""
+}
+
+// RetrieveIssueLinks gets a slice of urls for all issues in a comic
 func RetrieveIssueLinks(url string) ([]string, error) {
 	if isSingleIssue(url) {
 		return []string{url}, nil
 	}
 
 	var links []string
-	set := make(map[string]struct{})
 
 	response, err := soup.Get(url)
 	if err != nil {
@@ -71,25 +76,16 @@ func RetrieveIssueLinks(url string) ([]string, error) {
 	for _, chapter := range chapters {
 		url := "https:" + chapter.Attrs()["href"]
 		if util.IsURLValid(url) {
-			set[url] = struct{}{}
+			links = append(links, url)
 		}
-	}
-
-	for url := range set {
-		links = append(links, url)
 	}
 
 	return links, err
 }
 
-func isSingleIssue(url string) bool {
-	parts := util.SplitURL(url)
-	return len(parts) >= 6 && parts[5] != ""
-}
-
 // Initialize loads links and metadata from mangatown
 func Initialize(comic *core.Comic) error {
-	parts := comic.SplitURL()
+	parts := util.TrimAndSplitURL(comic.URLSource)
 	comic.Name = parts[4]
 	comic.IssueNumber = parts[len(parts)-1]
 

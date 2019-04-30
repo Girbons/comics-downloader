@@ -16,6 +16,11 @@ func findChapterName(chapterID string, chapters []*mangarock.Chapter) (string, b
 	return "", false
 }
 
+func isSingleIssue(url string) bool {
+	return len(util.TrimAndSplitURL(url)) >= 6
+}
+
+// RetrieveIssueLinks gets a slice of urls for all issues in a comic
 func RetrieveIssueLinks(url string, options map[string]string) ([]string, error) {
 	if isSingleIssue(url) {
 		return []string{url}, nil
@@ -23,7 +28,7 @@ func RetrieveIssueLinks(url string, options map[string]string) ([]string, error)
 
 	var links []string
 
-	series := util.SplitURL(url)[4]
+	series := util.TrimAndSplitURL(url)[4]
 
 	client := mangarock.NewClient()
 	if _, ok := options["country"]; ok {
@@ -45,14 +50,11 @@ func RetrieveIssueLinks(url string, options map[string]string) ([]string, error)
 	return links, nil
 }
 
-func isSingleIssue(url string) bool {
-	return len(util.SplitURL(url)) >= 6
-}
-
 // Initialize loads links and metadata from mangarock
 func Initialize(comic *core.Comic) error {
-	series := comic.SplitURL()[4]
-	chapterID := comic.SplitURL()[6]
+	parts := util.TrimAndSplitURL(comic.URLSource)
+	series := parts[4]
+	chapterID := parts[6]
 
 	client := mangarock.NewClient()
 	if _, ok := comic.Options["country"]; ok {
