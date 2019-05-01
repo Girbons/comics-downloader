@@ -38,7 +38,7 @@ func initializeCollection(initializer func(*core.Comic) error, url string, issue
 }
 
 // LoadComicFromSource will return a `comic` instance initialized based on the source
-func LoadComicFromSource(conf *config.ComicConfig, source, url, country, format string) ([]*core.Comic, error) {
+func LoadComicFromSource(conf *config.ComicConfig, source, url, country, format string, all bool) ([]*core.Comic, error) {
 	var err error
 	var collection []*core.Comic
 	var initializer func(*core.Comic) error
@@ -48,16 +48,16 @@ func LoadComicFromSource(conf *config.ComicConfig, source, url, country, format 
 
 	switch source {
 	case "www.comicextra.com":
-		issues, err = comicextra.RetrieveIssueLinks(url)
+		issues, err = comicextra.RetrieveIssueLinks(url, all)
 		initializer = comicextra.Initialize
 	case "mangarock.com":
-		issues, err = mangarock.RetrieveIssueLinks(url, options)
+		issues, err = mangarock.RetrieveIssueLinks(url, all, options)
 		initializer = mangarock.Initialize
 	case "www.mangareader.net":
-		issues, err = mangareader.RetrieveIssueLinks(url)
+		issues, err = mangareader.RetrieveIssueLinks(url, all)
 		initializer = mangareader.Initialize
 	case "www.mangatown.com":
-		issues, err = mangatown.RetrieveIssueLinks(url)
+		issues, err = mangatown.RetrieveIssueLinks(url, all)
 		initializer = mangatown.Initialize
 	default:
 		err = fmt.Errorf("It was not possible to determine the source")

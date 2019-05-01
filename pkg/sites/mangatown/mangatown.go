@@ -58,8 +58,10 @@ func isSingleIssue(url string) bool {
 }
 
 // RetrieveIssueLinks gets a slice of urls for all issues in a comic
-func RetrieveIssueLinks(url string) ([]string, error) {
-	if isSingleIssue(url) {
+func RetrieveIssueLinks(url string, all bool) ([]string, error) {
+	if all && isSingleIssue(url) {
+		url = strings.Join(util.TrimAndSplitURL(url)[:5], "/")
+	} else if isSingleIssue(url) {
 		return []string{url}, nil
 	}
 

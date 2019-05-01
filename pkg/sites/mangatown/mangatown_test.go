@@ -20,7 +20,7 @@ func TestComicExtraSetup(t *testing.T) {
 }
 
 func TestRetrieveIssueLinks(t *testing.T) {
-	issues, err := RetrieveIssueLinks("https://www.mangatown.com/manga/naruto/")
+	issues, err := RetrieveIssueLinks("https://www.mangatown.com/manga/naruto/", false)
 
 	assert.Nil(t, err)
 	assert.Equal(t, 748, len(issues))

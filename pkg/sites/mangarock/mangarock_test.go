@@ -23,7 +23,7 @@ func TestMangarockSetup(t *testing.T) {
 
 func TestRetrieveIssueLinks(t *testing.T) {
 	options := map[string]string{"country": "italy"}
-	issues, err := RetrieveIssueLinks("https://mangarock.com/manga/mrs-serie-173467", options)
+	issues, err := RetrieveIssueLinks("https://mangarock.com/manga/mrs-serie-173467", false, options)
 
 	assert.Nil(t, err)
 	assert.Equal(t, 700, len(issues))

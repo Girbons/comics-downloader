@@ -2,6 +2,7 @@ package mangareader
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/Girbons/comics-downloader/pkg/core"
 	"github.com/Girbons/comics-downloader/pkg/util"
@@ -46,8 +47,10 @@ func isSingleIssue(url string) bool {
 }
 
 // RetrieveIssueLinks gets a slice of urls for all issues in a comic
-func RetrieveIssueLinks(url string) ([]string, error) {
-	if isSingleIssue(url) {
+func RetrieveIssueLinks(url string, all bool) ([]string, error) {
+	if all && isSingleIssue(url) {
+		url = strings.Join(util.TrimAndSplitURL(url)[:4], "/")
+	} else if isSingleIssue(url) {
 		return []string{url}, nil
 	}
 
