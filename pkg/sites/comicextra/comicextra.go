@@ -43,7 +43,6 @@ func RetrieveIssueLinks(url string, all bool) ([]string, error) {
 
 	name := util.TrimAndSplitURL(url)[4]
 	var links []string
-	set := make(map[string]struct{})
 
 	response, err := soup.Get(url)
 	if err != nil {
@@ -55,13 +54,9 @@ func RetrieveIssueLinks(url string, all bool) ([]string, error) {
 
 	for i := range match {
 		url := match[i][1] + "/full"
-		if util.IsURLValid(url) {
-			set[url] = struct{}{}
+		if util.IsURLValid(url) && !util.IsValueInSlice(url, links) {
+			links = append(links, url)
 		}
-	}
-
-	for url := range set {
-		links = append(links, url)
 	}
 
 	return links, err
