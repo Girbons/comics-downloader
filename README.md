@@ -33,6 +33,8 @@ Put the script under a folder.
 You can invoke the `--help`:
 
 ```
+  -all
+        Download all issues of the Comic or Comics
   -country string
         Set the country to retrieve a manga, Used by MangaRock
   -format string
@@ -70,6 +72,16 @@ example:
 
 ```bash
 ./comics-downloader -url=[your url] -format=epub
+```
+
+### Download the whole comic
+
+Provide the comic url and use the `-all` flag. The url provided can be any issue of the comic, or the main comic page url.
+
+example:
+
+```bash
+./comics-downloader -url=[your url] -all
 ```
 
 ## Config file

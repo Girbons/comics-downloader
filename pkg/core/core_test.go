@@ -35,14 +35,6 @@ func TestNewComic(t *testing.T) {
 	assert.Equal(t, 1, len(comic.Links))
 }
 
-func TestSplitURL(t *testing.T) {
-	comic := new(Comic)
-	comic.URLSource = "https://www.mangareader.net/naruto/1/"
-
-	assert.Equal(t, comic.SplitURL()[3], "naruto")
-	assert.Equal(t, comic.SplitURL()[4], "1")
-}
-
 func TestMakeComicPDF(t *testing.T) {
 	comic := new(Comic)
 

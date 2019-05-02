@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/Girbons/comics-downloader/pkg/core"
+	"github.com/Girbons/comics-downloader/pkg/util"
 	"github.com/anaskhan96/soup"
 )
 
@@ -49,13 +50,46 @@ func retrieveImageLinks(comic *core.Comic) ([]string, error) {
 	}
 
 	return links, err
+}
 
+func isSingleIssue(url string) bool {
+	parts := util.TrimAndSplitURL(url)
+	return len(parts) >= 6 && parts[5] != ""
+}
+
+// RetrieveIssueLinks gets a slice of urls for all issues in a comic
+func RetrieveIssueLinks(url string, all bool) ([]string, error) {
+	if all && isSingleIssue(url) {
+		url = strings.Join(util.TrimAndSplitURL(url)[:5], "/")
+	} else if isSingleIssue(url) {
+		return []string{url}, nil
+	}
+
+	var links []string
+
+	response, err := soup.Get(url)
+	if err != nil {
+		return nil, err
+	}
+
+	doc := soup.HTMLParse(response)
+	chapters := doc.Find("ul", "class", "chapter_list").FindAll("a")
+
+	for _, chapter := range chapters {
+		url := "https:" + chapter.Attrs()["href"]
+		if util.IsURLValid(url) {
+			links = append(links, url)
+		}
+	}
+
+	return links, err
 }
 
 // Initialize loads links and metadata from mangatown
 func Initialize(comic *core.Comic) error {
-	comic.Name = comic.SplitURL()[4]
-	comic.IssueNumber = comic.SplitURL()[6]
+	parts := util.TrimAndSplitURL(comic.URLSource)
+	comic.Name = parts[4]
+	comic.IssueNumber = parts[len(parts)-1]
 
 	links, err := retrieveImageLinks(comic)
 	comic.Links = links

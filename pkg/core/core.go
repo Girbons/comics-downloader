@@ -44,11 +44,6 @@ type Comic struct {
 	Config *config.ComicConfig
 }
 
-// SplitURL return the url splitted by "/"
-func (comic *Comic) SplitURL() []string {
-	return strings.Split(comic.URLSource, "/")
-}
-
 // getConfigValues will try to get some
 func (comic *Comic) readConfigValues() {
 	// retrieve values from config file
@@ -93,7 +88,6 @@ func (comic *Comic) retrieveImageFromResponse(response *http.Response) (io.Reade
 	}
 
 	return content, tp, err
-
 }
 
 // makeEPUB create the epub file

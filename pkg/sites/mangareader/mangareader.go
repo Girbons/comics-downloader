@@ -2,8 +2,10 @@ package mangareader
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/Girbons/comics-downloader/pkg/core"
+	"github.com/Girbons/comics-downloader/pkg/util"
 	"github.com/anaskhan96/soup"
 )
 
@@ -40,10 +42,43 @@ func retrieveImageLinks(comic *core.Comic) ([]string, error) {
 	return links, err
 }
 
+func isSingleIssue(url string) bool {
+	return len(util.TrimAndSplitURL(url)) >= 5
+}
+
+// RetrieveIssueLinks gets a slice of urls for all issues in a comic
+func RetrieveIssueLinks(url string, all bool) ([]string, error) {
+	if all && isSingleIssue(url) {
+		url = strings.Join(util.TrimAndSplitURL(url)[:4], "/")
+	} else if isSingleIssue(url) {
+		return []string{url}, nil
+	}
+
+	var links []string
+
+	response, err := soup.Get(url)
+	if err != nil {
+		return nil, err
+	}
+
+	doc := soup.HTMLParse(response)
+	chapters := doc.Find("div", "id", "chapterlist").FindAll("a")
+
+	for _, chapter := range chapters {
+		url := "https://www.mangareader.net" + chapter.Attrs()["href"]
+		if util.IsURLValid(url) {
+			links = append(links, url)
+		}
+	}
+
+	return links, err
+}
+
 // Initialize loads links and metadata from mangareader
 func Initialize(comic *core.Comic) error {
-	comic.Name = comic.SplitURL()[3]
-	comic.IssueNumber = comic.SplitURL()[4]
+	parts := util.TrimAndSplitURL(comic.URLSource)
+	comic.Name = parts[3]
+	comic.IssueNumber = parts[4]
 
 	links, err := retrieveImageLinks(comic)
 	comic.Links = links

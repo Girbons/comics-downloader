@@ -20,3 +20,11 @@ func TestMangarockSetup(t *testing.T) {
 	assert.Equal(t, "Vol.4 Chapter 14: Teamwork...!!", comic.IssueNumber)
 	assert.Equal(t, 49, len(comic.Links))
 }
+
+func TestRetrieveIssueLinks(t *testing.T) {
+	options := map[string]string{"country": "italy"}
+	issues, err := RetrieveIssueLinks("https://mangarock.com/manga/mrs-serie-173467", false, options)
+
+	assert.Nil(t, err)
+	assert.Equal(t, 700, len(issues))
+}

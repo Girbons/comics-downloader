@@ -1,6 +1,7 @@
 package sites
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/Girbons/comics-downloader/pkg/config"
@@ -11,36 +12,62 @@ import (
 	"github.com/Girbons/comics-downloader/pkg/sites/mangatown"
 )
 
-// LoadComicFromSource will return a `comic` instance initialized based on the source
-func LoadComicFromSource(conf *config.ComicConfig, source, url, country, format string) (*core.Comic, error) {
+func initializeCollection(initializer func(*core.Comic) error, url string, issues []string, conf *config.ComicConfig, format string, source string, options map[string]string) ([]*core.Comic, error) {
+	var collection []*core.Comic
 	var err error
 
-	comic := &core.Comic{
-		Config:    conf,
-		URLSource: url,
-		Source:    source,
-		Format:    format,
+	if len(issues) == 0 {
+		return collection, errors.New("No issues found.")
 	}
+
+	for _, url := range issues {
+		comic := &core.Comic{
+			URLSource: url,
+			Config:    conf,
+			Source:    source,
+			Format:    format,
+			Options:   options,
+		}
+		if err = initializer(comic); err != nil {
+			return collection, err
+		}
+		collection = append(collection, comic)
+	}
+
+	return collection, nil
+}
+
+// LoadComicFromSource will return a `comic` instance initialized based on the source
+func LoadComicFromSource(conf *config.ComicConfig, source, url, country, format string, all bool) ([]*core.Comic, error) {
+	var err error
+	var collection []*core.Comic
+	var initializer func(*core.Comic) error
+	var issues []string
+
+	options := map[string]string{"country": country}
 
 	switch source {
 	case "www.comicextra.com":
-		err = comicextra.Initialize(comic)
+		issues, err = comicextra.RetrieveIssueLinks(url, all)
+		initializer = comicextra.Initialize
 	case "mangarock.com":
-		if country != "" {
-			options := map[string]string{"country": country}
-			comic.Options = options
-		}
-		err = mangarock.Initialize(comic)
+		issues, err = mangarock.RetrieveIssueLinks(url, all, options)
+		initializer = mangarock.Initialize
 	case "www.mangareader.net":
-		err = mangareader.Initialize(comic)
+		issues, err = mangareader.RetrieveIssueLinks(url, all)
+		initializer = mangareader.Initialize
 	case "www.mangatown.com":
-		err = mangatown.Initialize(comic)
-	case "www.mangahere.cc":
-		err = fmt.Errorf("mangahere is currently disabled")
-	//sites.SetupMangaHere(comic)
+		issues, err = mangatown.RetrieveIssueLinks(url, all)
+		initializer = mangatown.Initialize
 	default:
 		err = fmt.Errorf("It was not possible to determine the source")
 	}
 
-	return comic, err
+	if err != nil {
+		return collection, err
+	}
+
+	collection, err = initializeCollection(initializer, url, issues, conf, format, source, options)
+
+	return collection, err
 }

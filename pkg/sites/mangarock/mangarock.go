@@ -1,7 +1,10 @@
 package mangarock
 
 import (
+	"strings"
+
 	"github.com/Girbons/comics-downloader/pkg/core"
+	"github.com/Girbons/comics-downloader/pkg/util"
 	"github.com/Girbons/mangarock"
 	log "github.com/sirupsen/logrus"
 )
@@ -15,10 +18,47 @@ func findChapterName(chapterID string, chapters []*mangarock.Chapter) (string, b
 	return "", false
 }
 
+func isSingleIssue(url string) bool {
+	return len(util.TrimAndSplitURL(url)) >= 6
+}
+
+// RetrieveIssueLinks gets a slice of urls for all issues in a comic
+func RetrieveIssueLinks(url string, all bool, options map[string]string) ([]string, error) {
+	if all && isSingleIssue(url) {
+		url = strings.Join(util.TrimAndSplitURL(url)[:5], "/")
+	} else if isSingleIssue(url) {
+		return []string{url}, nil
+	}
+
+	var links []string
+
+	series := util.TrimAndSplitURL(url)[4]
+
+	client := mangarock.NewClient()
+	if _, ok := options["country"]; ok {
+		client.SetOptions(options)
+	}
+	// get info about the manga
+	info, infoErr := client.Info(series)
+	if infoErr != nil {
+		log.Error(infoErr)
+	}
+
+	for _, chapter := range info.Data.Chapters {
+		chapterUrl := url + "/chapter/" + chapter.OID
+		if util.IsURLValid(chapterUrl) {
+			links = append(links, chapterUrl)
+		}
+	}
+
+	return links, nil
+}
+
 // Initialize loads links and metadata from mangarock
 func Initialize(comic *core.Comic) error {
-	series := comic.SplitURL()[4]
-	chapterID := comic.SplitURL()[6]
+	parts := util.TrimAndSplitURL(comic.URLSource)
+	series := parts[4]
+	chapterID := parts[6]
 
 	client := mangarock.NewClient()
 	if _, ok := comic.Options["country"]; ok {
