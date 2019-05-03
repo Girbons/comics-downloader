@@ -1,5 +1,5 @@
 #get latest git tag
-TAG = $$(git describe --tags)
+TAG = $$(git describe --abbrev=0 --tags)
 #get current date and time
 NOW = $$(date +'%Y-%m-%d_%T')
 #use the linker to inject the informations
