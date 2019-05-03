@@ -41,6 +41,8 @@ You can invoke the `--help`:
         Comic format output, supported formats are pdf,epub,cbr,cbz (default "pdf")
   -url string
         Comic URL or Comic URLS by separating each site with a comma without the use of spaces
+  -version
+        Display build date and release informations
 ```
 
 ### Multiple URLs
