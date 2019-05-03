@@ -277,7 +277,7 @@ func (comic *Comic) makeCBRZ() error {
 				return err
 			}
 			// create a tempfile to store the image
-			tmpfile, err := ioutil.TempFile(tempDir, fmt.Sprintf("%d-image.*.%s", i, tp))
+			tmpfile, err := ioutil.TempFile(tempDir, fmt.Sprintf("%04d-image.*.%s", i, tp))
 			defer os.Remove(tmpfile.Name()) // clean up
 
 			if err != nil {
