@@ -22,7 +22,3 @@ jobs:
       - run:
           name: Coveralls
           command: goveralls -coverprofile=$HOME/coverage.out -service=circle-ci -repotoken=$COVERALLS_TOKEN
-
-      - run:
-          name: Run golangci-lint
-          command: golangci-lint run
