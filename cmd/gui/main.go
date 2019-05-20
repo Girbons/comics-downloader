@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"fyne.io/fyne"
 	"fyne.io/fyne/app"
 	"fyne.io/fyne/layout"
@@ -15,11 +17,13 @@ func watchLogs(logSection *widget.ScrollContainer, box *widget.Box) {
 	}
 }
 
+var release string // sha1 revision used to build the program
+
 func main() {
 	options := []string{"pdf", "epub", "cbr", "cbz"}
 
 	app := app.New()
-	w := app.NewWindow("Comics Downloader")
+	w := app.NewWindow(fmt.Sprintf("Comics Downloader %s", release))
 
 	urlEntry := widget.NewEntry()
 	urlEntry.SetPlaceHolder("Comic URL or URLs separated by a comma")

@@ -15,7 +15,6 @@ var (
 )
 
 func main() {
-
 	url := flag.String("url", "", "Comic URL or Comic URLS by separating each site with a comma without the use of spaces")
 	format := flag.String("format", "pdf", "Comic format output, supported formats are pdf,epub,cbr,cbz")
 	country := flag.String("country", "", "Set the country to retrieve a manga, Used by MangaRock")
