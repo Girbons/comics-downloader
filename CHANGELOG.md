@@ -1,3 +1,43 @@
+<a name="v0.12"></a>
+# [0.12 (v0.12)](https://github.com/Girbons/comics-downloader/releases/tag/v0.12) - 23 May 2019
+
+# What's new
+
+* Added GUI
+
+[Changes][v0.12]
+
+
+<a name="v0.11"></a>
+# [0.11 (v0.11)](https://github.com/Girbons/comics-downloader/releases/tag/v0.11) - 03 May 2019
+
+# What's new
+
+* Added `--version` - (thanks @ilmanzo )
+
+[Changes][v0.11]
+
+
+<a name="v0.10.1"></a>
+# [0.10.1 (v0.10.1)](https://github.com/Girbons/comics-downloader/releases/tag/v0.10.1) - 03 May 2019
+
+# Fixes
+
+* Fixed issue where In some CBR/CBZ readers the order of files is alphabetical - (thanks @jphager2 )
+
+[Changes][v0.10.1]
+
+
+<a name="v0.10"></a>
+# [0.10 (v0.10)](https://github.com/Girbons/comics-downloader/releases/tag/v0.10) - 02 May 2019
+
+# What's new
+
+* Its now possible to download the full comic/manga -  (thanks @jphager2)
+
+[Changes][v0.10]
+
+
 <a name="v0.9.3"></a>
 # [0.9.3 (v0.9.3)](https://github.com/Girbons/comics-downloader/releases/tag/v0.9.3) - 15 Apr 2019
 
@@ -193,6 +233,10 @@ Well,  this is the first release :)
 [Changes][v0.1.0]
 
 
+[v0.12]: https://github.com/Girbons/comics-downloader/compare/v0.11...v0.12
+[v0.11]: https://github.com/Girbons/comics-downloader/compare/v0.10.1...v0.11
+[v0.10.1]: https://github.com/Girbons/comics-downloader/compare/v0.10...v0.10.1
+[v0.10]: https://github.com/Girbons/comics-downloader/compare/v0.9.3...v0.10
 [v0.9.3]: https://github.com/Girbons/comics-downloader/compare/v0.9.2...v0.9.3
 [v0.9.2]: https://github.com/Girbons/comics-downloader/compare/v0.9.1...v0.9.2
 [v0.9.1]: https://github.com/Girbons/comics-downloader/compare/v0.9...v0.9.1
