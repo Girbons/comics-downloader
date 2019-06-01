@@ -41,6 +41,8 @@ builds: # Creates executables for OSX/Windows/Linux
 	@make windows-gui-build
 	@make osx-gui-build
 	@make linux-gui-build
+	@make raspbian-build-arm
+	@make raspbian-build-arm64
 
 remove-builds: # Remove executables
 	@rm -rf build/
