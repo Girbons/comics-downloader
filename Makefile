@@ -19,6 +19,12 @@ windows-build: # Creates Windows executable
 linux-build: # Creates Linux executable
 	@GOOS=linux GOARCH=amd64 go build -ldflags=${LDFLAGS} -o build/comics-downloader ./cmd/downloader
 
+raspbian-build-arm: # Creates Raspbian executable
+	@GOOS=linux GOARCH=arm go build -ldflags=${LDFLAGS} -o build/comics-downloader-raspbian-arm ./cmd/downloader
+
+raspbian-build-arm64: # Creates Raspbian executable
+	@GOOS=linux GOARCH=arm64 go build -ldflags=${LDFLAGS} -o build/comics-downloader-raspbian-arm64 ./cmd/downloader
+
 osx-gui-build: # Creates OSX Gui executable
 	@GOOS=darwin GOARCH=amd64 go build -ldflags=${LDFLAGS} -o build/comics-downloader-gui-osx ./cmd/gui
 

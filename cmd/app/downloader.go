@@ -37,11 +37,6 @@ func Run(link, format, country string, all, bindLogsToChannel bool) {
 		sendToChannel(bindLogsToChannel, msg)
 	}
 
-	// TODO: This doesn't seem necessary
-	if !strings.HasSuffix(link, ",") {
-		link = link + ","
-	}
-
 	for _, u := range strings.Split(link, ",") {
 		if u != "" {
 			// check if the link is supported

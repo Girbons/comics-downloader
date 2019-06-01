@@ -53,7 +53,7 @@ func TestConvertImage(t *testing.T) {
 
 	img, _ := png.Decode(resp.Body)
 	imgData := new(bytes.Buffer)
-	err = ConvertTo8BitPNG(img, imgData)
+	err = ConvertToJPG(img, imgData)
 
 	assert.Nil(t, err)
 }

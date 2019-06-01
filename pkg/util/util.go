@@ -4,8 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"image"
-	"image/color"
-	"image/png"
+	"image/jpeg"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -55,19 +54,9 @@ func IsValueInSlice(valueToCheck string, values []string) bool {
 	return false
 }
 
-// ConvertTo8BitPNG converts an image of any type to a PNG with 8-bit color depth
-func ConvertTo8BitPNG(img image.Image, imgData *bytes.Buffer) error {
-	b := img.Bounds()
-	imgSet := image.NewRGBA(b)
-	// Converts each pixel to a 32-bit RGBA pixel
-	for y := 0; y < b.Max.Y; y++ {
-		for x := 0; x < b.Max.X; x++ {
-			newPixel := color.RGBAModel.Convert(img.At(x, y))
-			imgSet.Set(x, y, newPixel)
-		}
-	}
-
-	err := png.Encode(imgData, imgSet)
+// ConvertToJPG converts an image to jpeg
+func ConvertToJPG(img image.Image, imgData *bytes.Buffer) error {
+	err := jpeg.Encode(imgData, img, nil)
 	if err != nil {
 		return err
 	}

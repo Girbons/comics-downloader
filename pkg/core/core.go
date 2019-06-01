@@ -76,12 +76,12 @@ func (comic *Comic) retrieveImageFromResponse(response *http.Response) (io.Reade
 		}
 
 		imgData := new(bytes.Buffer)
-		if err := util.ConvertTo8BitPNG(img, imgData); err != nil {
+		if err := util.ConvertToJPG(img, imgData); err != nil {
 			return content, tp, err
 		}
 
 		content = imgData
-		tp = "png"
+		tp = "jpg"
 	default:
 		content = response.Body
 		tp = util.ImageType(response.Header["Content-Type"][0])
@@ -200,23 +200,22 @@ func (comic *Comic) makePDF() error {
 	for _, link := range comic.Links {
 		if link != "" {
 			rsp, err := http.Get(link)
-			if err == nil {
-				defer rsp.Body.Close()
-				// add a new PDF page
-				pdf.AddPage()
-				content, tp, err := comic.retrieveImageFromResponse(rsp)
-				if err != nil {
-					return err
-				}
-				// The image is directly added to the pdf without being saved to the disk
-				imageOptions := gofpdf.ImageOptions{ImageType: tp, ReadDpi: false, AllowNegativePosition: true}
-				pdf.RegisterImageOptionsReader(link, imageOptions, content)
-				// set the image position on the pdf page
-				pdf.Image(link, 0, 0, 210, 0, false, tp, 0, "")
-				// increase the progressbar
-			} else {
+			if err != nil {
 				return err
 			}
+
+			defer rsp.Body.Close()
+			// add a new PDF page
+			pdf.AddPage()
+			content, tp, err := comic.retrieveImageFromResponse(rsp)
+			if err != nil {
+				return err
+			}
+			imageOptions := gofpdf.ImageOptions{ImageType: tp, ReadDpi: true, AllowNegativePosition: false}
+			pdf.RegisterImageOptionsReader(link, imageOptions, content)
+			// set the image position on the pdf page
+			pdf.Image(link, 0, 0, 210, 297, false, tp, 0, "")
+			// increase the progressbar
 		}
 		if barErr := bar.Add(1); barErr != nil {
 			log.Error(barErr)
