@@ -56,7 +56,9 @@ func (comic *Comic) readConfigValues() {
 
 // generateFileName will return the path where the file should be saved
 func (comic *Comic) generateFileName(dir string) string {
-	return fmt.Sprintf("%s/%s.%s", dir, comic.IssueNumber, comic.Format)
+	issueNumber := strings.Replace(comic.IssueNumber, "/", "_", -1)
+
+	return fmt.Sprintf("%s/%s.%s", dir, issueNumber, comic.Format)
 }
 
 // RetrieveImageFromResponse will return the image byte and its type

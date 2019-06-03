@@ -147,3 +147,14 @@ func TestMakeComicPDFMangarock(t *testing.T) {
 	dir, _ := filepath.Abs(fmt.Sprintf("%s/%s/%s/%s/%s/", filepath.Dir(os.Args[0]), "comics", "mangarock.com", "Boruto", "chapter-13.pdf"))
 	assert.True(t, exists(dir))
 }
+
+func TestComicNameWithInvalidCharacter(t *testing.T) {
+	comic := new(Comic)
+	comic.Name = "Test"
+	comic.Format = "pdf"
+	comic.IssueNumber = "invalid/character"
+
+	result := comic.generateFileName("path/to/something")
+
+	assert.Equal(t, "path/to/something/invalid_character.pdf", result)
+}
