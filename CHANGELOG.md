@@ -1,3 +1,13 @@
+<a name="v0.12.2"></a>
+# [0.12.2 (v0.12.2)](https://github.com/Girbons/comics-downloader/releases/tag/v0.12.2) - 03 Jun 2019
+
+# Fixes
+
+* cannot save file with invalid character in filename
+
+[Changes][v0.12.2]
+
+
 <a name="v0.12.1"></a>
 # [0.12.1 (v0.12.1)](https://github.com/Girbons/comics-downloader/releases/tag/v0.12.1) - 01 Jun 2019
 
@@ -243,6 +253,7 @@ Well,  this is the first release :)
 [Changes][v0.1.0]
 
 
+[v0.12.2]: https://github.com/Girbons/comics-downloader/compare/v0.12.1...v0.12.2
 [v0.12.1]: https://github.com/Girbons/comics-downloader/compare/v0.12...v0.12.1
 [v0.12]: https://github.com/Girbons/comics-downloader/compare/v0.11...v0.12
 [v0.11]: https://github.com/Girbons/comics-downloader/compare/v0.10.1...v0.11
