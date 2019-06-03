@@ -53,6 +53,10 @@ You can invoke the `--help`:
         Display build date and release informations
 ```
 
+### Checking for mangas using a Raspberry Pi
+
+If you'd like to track your favourite mangas you can use this bash [script](https://gist.github.com/nestukh/5397b836c8e5f34f6feb4ec4efe6b86a).
+
 ### Multiple URLs
 
 Without `url` parameter:
