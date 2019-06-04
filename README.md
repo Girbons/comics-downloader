@@ -21,15 +21,15 @@
 Download the latest release:
 
 - [Linux](https://github.com/Girbons/comics-downloader/releases/download/v0.12.2/comics-downloader)
-- [OSX](https://github.com/Girbons/comics-downloader/releases/download/v0.12.2/comics-downloader-osx)
+- [Mac OSX](https://github.com/Girbons/comics-downloader/releases/download/v0.12.2/comics-downloader-osx)
 - [Windows](https://github.com/Girbons/comics-downloader/releases/download/v0.12.2/comics-downloader.exe)
-- [Raspbian arm](https://github.com/Girbons/comics-downloader/releases/download/v0.12.2/comics-downloader-raspbian-arm)
-- [Raspbian arm64](https://github.com/Girbons/comics-downloader/releases/download/v0.12.2/comics-downloader-raspbian-arm64)
+- [Linux ARM](https://github.com/Girbons/comics-downloader/releases/download/v0.12.2/comics-downloader-raspbian-arm)
+- [Linux ARM64](https://github.com/Girbons/comics-downloader/releases/download/v0.12.2/comics-downloader-raspbian-arm64)
 
 Download the latest GUI release:
 
 - [Linux](https://github.com/Girbons/comics-downloader/releases/download/v0.12.2/comics-downloader-gui-linux)
-- [OSX](https://github.com/Girbons/comics-downloader/releases/download/v0.12.2/comics-downloader-gui-osx)
+- [Mac OSX](https://github.com/Girbons/comics-downloader/releases/download/v0.12.2/comics-downloader-gui-osx)
 - [Windows](https://github.com/Girbons/comics-downloader/releases/download/v0.12.2/comics-downloader-gui-windows.exe)
 
 Put the script under a folder.
