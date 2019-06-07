@@ -114,3 +114,19 @@ func FindMaxValueInSlice(values []int) int {
 func CurrentDir() (string, error) {
 	return filepath.Abs(filepath.Dir(os.Args[0]))
 }
+
+// FileDoesNotExist
+func FileDoesNotExist(filePath string) bool {
+	_, err := os.Stat(filePath)
+
+	return os.IsNotExist(err)
+}
+
+// generateFileName will return the path where the file should be saved
+func GenerateFileName(dir, issueNumber, format string) string {
+	return fmt.Sprintf("%s/%s.%s", dir, issueNumber, format)
+}
+
+func Parse(s string) string {
+	return strings.Replace(s, "/", "_", -1)
+}

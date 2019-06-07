@@ -54,13 +54,6 @@ func (comic *Comic) readConfigValues() {
 	}
 }
 
-// generateFileName will return the path where the file should be saved
-func (comic *Comic) generateFileName(dir string) string {
-	issueNumber := strings.Replace(comic.IssueNumber, "/", "_", -1)
-
-	return fmt.Sprintf("%s/%s.%s", dir, issueNumber, comic.Format)
-}
-
 // RetrieveImageFromResponse will return the image byte and its type
 func (comic *Comic) retrieveImageFromResponse(response *http.Response) (io.Reader, string, error) {
 	var (
@@ -182,7 +175,7 @@ func (comic *Comic) makeEPUB() error {
 		return err
 	}
 
-	if err = e.Write(comic.generateFileName(dir)); err != nil {
+	if err = e.Write(util.GenerateFileName(dir, comic.IssueNumber, comic.Format)); err != nil {
 		return err
 	}
 
@@ -231,7 +224,7 @@ func (comic *Comic) makePDF() error {
 	}
 
 	// Save the pdf file
-	if err = pdf.OutputFileAndClose(comic.generateFileName(dir)); err != nil {
+	if err = pdf.OutputFileAndClose(util.GenerateFileName(dir, comic.IssueNumber, comic.Format)); err != nil {
 		return err
 	}
 

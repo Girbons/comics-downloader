@@ -8,7 +8,9 @@ import (
 	"github.com/anaskhan96/soup"
 )
 
-func retrieveImageLinks(comic *core.Comic) ([]string, error) {
+type Comicextra struct{}
+
+func (c *Comicextra) retrieveImageLinks(comic *core.Comic) ([]string, error) {
 	var links []string
 
 	response, err := soup.Get(comic.URLSource)
@@ -29,15 +31,15 @@ func retrieveImageLinks(comic *core.Comic) ([]string, error) {
 	return links, err
 }
 
-func isSingleIssue(url string) bool {
+func (c *Comicextra) isSingleIssue(url string) bool {
 	return util.TrimAndSplitURL(url)[3] != "comic"
 }
 
 // RetrieveIssueLinks gets a slice of urls for all issues in a comic
-func RetrieveIssueLinks(url string, all bool) ([]string, error) {
-	if all && isSingleIssue(url) {
+func (c *Comicextra) RetrieveIssueLinks(url string, all bool, options map[string]string) ([]string, error) {
+	if all && c.isSingleIssue(url) {
 		url = "https://www.comicextra.com/comic/" + util.TrimAndSplitURL(url)[3]
-	} else if isSingleIssue(url) {
+	} else if c.isSingleIssue(url) {
 		return []string{url}, nil
 	}
 
@@ -62,14 +64,18 @@ func RetrieveIssueLinks(url string, all bool) ([]string, error) {
 	return links, err
 }
 
+func (c *Comicextra) GetInfo(url string, options map[string]string) (string, string) {
+	parts := util.TrimAndSplitURL(url)
+	name := parts[3]
+	issueNumber := parts[4]
+
+	return name, issueNumber
+}
+
 // Initialize will initialize the comic based
 // on comicextra.com
-func Initialize(comic *core.Comic) error {
-	parts := util.TrimAndSplitURL(comic.URLSource)
-	comic.Name = parts[3]
-	comic.IssueNumber = parts[4]
-
-	links, err := retrieveImageLinks(comic)
+func (c *Comicextra) Initialize(comic *core.Comic) error {
+	links, err := c.retrieveImageLinks(comic)
 	comic.Links = links
 
 	return err

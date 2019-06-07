@@ -9,7 +9,9 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func findChapterName(chapterID string, chapters []*mangarock.Chapter) (string, bool) {
+type Mangarock struct{}
+
+func (m *Mangarock) findChapterName(chapterID string, chapters []*mangarock.Chapter) (string, bool) {
 	for _, chapter := range chapters {
 		if chapter.OID == chapterID {
 			return chapter.Name, true
@@ -18,15 +20,15 @@ func findChapterName(chapterID string, chapters []*mangarock.Chapter) (string, b
 	return "", false
 }
 
-func isSingleIssue(url string) bool {
+func (m *Mangarock) isSingleIssue(url string) bool {
 	return len(util.TrimAndSplitURL(url)) >= 6
 }
 
 // RetrieveIssueLinks gets a slice of urls for all issues in a comic
-func RetrieveIssueLinks(url string, all bool, options map[string]string) ([]string, error) {
-	if all && isSingleIssue(url) {
+func (m *Mangarock) RetrieveIssueLinks(url string, all bool, options map[string]string) ([]string, error) {
+	if all && m.isSingleIssue(url) {
 		url = strings.Join(util.TrimAndSplitURL(url)[:5], "/")
-	} else if isSingleIssue(url) {
+	} else if m.isSingleIssue(url) {
 		return []string{url}, nil
 	}
 
@@ -54,32 +56,50 @@ func RetrieveIssueLinks(url string, all bool, options map[string]string) ([]stri
 	return links, nil
 }
 
-// Initialize loads links and metadata from mangarock
-func Initialize(comic *core.Comic) error {
-	parts := util.TrimAndSplitURL(comic.URLSource)
+func (m *Mangarock) GetInfo(url string, options map[string]string) (string, string) {
+	parts := util.TrimAndSplitURL(url)
 	series := parts[4]
 	chapterID := parts[6]
 
 	client := mangarock.NewClient()
-	if _, ok := comic.Options["country"]; ok {
-		client.SetOptions(comic.Options)
-	}
-	// get info about the manga
-	info, infoErr := client.Info(series)
-	if infoErr != nil {
-		log.Error(infoErr)
-	}
-	// retrieve pages
-	pages, pagesErr := client.Pages(chapterID)
 
-	chapter, found := findChapterName(chapterID, info.Data.Chapters)
+	if _, ok := options["country"]; ok {
+		client.SetOptions(options)
+	}
+
+	info, err := client.Info(series)
+
+	if err != nil {
+		return "", ""
+	}
+
+	chapter, found := m.findChapterName(chapterID, info.Data.Chapters)
 	if !found {
 		log.Warning("Chapter not found")
 		chapter = chapterID
 	}
 
-	comic.Name = info.Data.Name
-	comic.IssueNumber = chapter
+	return info.Data.Name, chapter
+}
+
+// Initialize loads links and metadata from mangarock
+func (m *Mangarock) Initialize(comic *core.Comic) error {
+	client := mangarock.NewClient()
+	if _, ok := comic.Options["country"]; ok {
+		client.SetOptions(comic.Options)
+	}
+	// get info about the manga
+	parts := util.TrimAndSplitURL(comic.URLSource)
+	series := parts[4]
+	chapterID := parts[6]
+	// retrieve pages
+	info, err := client.Info(series)
+	if err != nil {
+		return err
+	}
+
+	pages, pagesErr := client.Pages(chapterID)
+
 	comic.Author = info.Data.Author
 	comic.Links = pages.Data
 

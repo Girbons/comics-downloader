@@ -65,3 +65,15 @@ func TestPathSetup(t *testing.T) {
 	assert.Contains(t, result, "example-source")
 	assert.Contains(t, result, "comic-name")
 }
+
+func TestParse(t *testing.T) {
+	result := Parse("aaa/bbb/ccc")
+
+	assert.Equal(t, "aaa_bbb_ccc", result)
+}
+
+func TestGenerateFileName(t *testing.T) {
+	result := GenerateFileName("path/to/something", "invalid_character", "pdf")
+
+	assert.Equal(t, "path/to/something/invalid_character.pdf", result)
+}

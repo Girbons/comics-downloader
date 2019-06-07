@@ -9,7 +9,9 @@ import (
 	"github.com/anaskhan96/soup"
 )
 
-func retrieveImageLinks(comic *core.Comic) ([]string, error) {
+type Mangareader struct{}
+
+func (m *Mangareader) retrieveImageLinks(comic *core.Comic) ([]string, error) {
 	var links []string
 
 	response, err := soup.Get(comic.URLSource)
@@ -19,7 +21,7 @@ func retrieveImageLinks(comic *core.Comic) ([]string, error) {
 	}
 
 	doc := soup.HTMLParse(response)
-	// retrieve the <option> tag
+	// retrieve the <option>
 	options := doc.FindAll("option")
 
 	for i := 1; i <= len(options); i++ {
@@ -42,15 +44,15 @@ func retrieveImageLinks(comic *core.Comic) ([]string, error) {
 	return links, err
 }
 
-func isSingleIssue(url string) bool {
+func (m *Mangareader) isSingleIssue(url string) bool {
 	return len(util.TrimAndSplitURL(url)) >= 5
 }
 
 // RetrieveIssueLinks gets a slice of urls for all issues in a comic
-func RetrieveIssueLinks(url string, all bool) ([]string, error) {
-	if all && isSingleIssue(url) {
+func (m *Mangareader) RetrieveIssueLinks(url string, all bool, options map[string]string) ([]string, error) {
+	if all && m.isSingleIssue(url) {
 		url = strings.Join(util.TrimAndSplitURL(url)[:4], "/")
-	} else if isSingleIssue(url) {
+	} else if m.isSingleIssue(url) {
 		return []string{url}, nil
 	}
 
@@ -74,13 +76,22 @@ func RetrieveIssueLinks(url string, all bool) ([]string, error) {
 	return links, err
 }
 
-// Initialize loads links and metadata from mangareader
-func Initialize(comic *core.Comic) error {
-	parts := util.TrimAndSplitURL(comic.URLSource)
-	comic.Name = parts[3]
-	comic.IssueNumber = parts[4]
+func (m *Mangareader) GetInfo(url string, options map[string]string) (string, string) {
+	parts := util.TrimAndSplitURL(url)
+	name := parts[3]
+	issueNumber := parts[4]
 
-	links, err := retrieveImageLinks(comic)
+	return name, issueNumber
+}
+
+// Initialize loads links and metadata from mangareader
+func (m *Mangareader) Initialize(comic *core.Comic) error {
+	options := make(map[string]string)
+	name, issueNumber := m.GetInfo(comic.URLSource, options)
+	comic.Name = name
+	comic.IssueNumber = issueNumber
+
+	links, err := m.retrieveImageLinks(comic)
 	comic.Links = links
 
 	return err

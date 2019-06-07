@@ -12,6 +12,13 @@ const (
 	SOURCE = "www.mangareader.net"
 )
 
+func TestMangaReadGetInfo(t *testing.T) {
+	name, issueNumber := GetInfo(URL)
+
+	assert.Equal(t, "naruto", name)
+	assert.Equal(t, "1", issueNumber)
+}
+
 func TestRetrieveMangaReaderImageLinks(t *testing.T) {
 	comic := new(core.Comic)
 	comic.URLSource = URL
@@ -22,11 +29,13 @@ func TestRetrieveMangaReaderImageLinks(t *testing.T) {
 	links, err := retrieveImageLinks(comic)
 
 	assert.Equal(t, 53, len(links))
-	assert.Equal(t, nil, err)
+	assert.Nil(t, err)
 }
 
 func TestSetupMangaReader(t *testing.T) {
 	comic := new(core.Comic)
+	comic.Name = "naruto"
+	comic.IssueNumber = "1"
 	comic.URLSource = URL
 	comic.Source = SOURCE
 

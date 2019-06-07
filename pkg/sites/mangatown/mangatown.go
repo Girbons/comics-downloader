@@ -9,7 +9,9 @@ import (
 	"github.com/anaskhan96/soup"
 )
 
-func findPages(document *soup.Root) []string {
+type Mangatown struct{}
+
+func (m *Mangatown) findPages(document *soup.Root) []string {
 	var pages []string
 
 	options := document.Find("div", "class", "page_select").Find("select").FindAll("option")
@@ -23,7 +25,7 @@ func findPages(document *soup.Root) []string {
 	return pages
 }
 
-func retrieveImageLinks(comic *core.Comic) ([]string, error) {
+func (m *Mangatown) retrieveImageLinks(comic *core.Comic) ([]string, error) {
 	var links []string
 	var link string
 
@@ -34,7 +36,7 @@ func retrieveImageLinks(comic *core.Comic) ([]string, error) {
 	}
 
 	document := soup.HTMLParse(response)
-	pages := findPages(&document)
+	pages := m.findPages(&document)
 
 	for _, page := range pages {
 		link = fmt.Sprintf("%s%s.html", comic.URLSource, page)
@@ -52,16 +54,16 @@ func retrieveImageLinks(comic *core.Comic) ([]string, error) {
 	return links, err
 }
 
-func isSingleIssue(url string) bool {
+func (m *Mangatown) isSingleIssue(url string) bool {
 	parts := util.TrimAndSplitURL(url)
 	return len(parts) >= 6 && parts[5] != ""
 }
 
 // RetrieveIssueLinks gets a slice of urls for all issues in a comic
-func RetrieveIssueLinks(url string, all bool) ([]string, error) {
-	if all && isSingleIssue(url) {
+func (m *Mangatown) RetrieveIssueLinks(url string, all bool, options map[string]string) ([]string, error) {
+	if all && m.isSingleIssue(url) {
 		url = strings.Join(util.TrimAndSplitURL(url)[:5], "/")
-	} else if isSingleIssue(url) {
+	} else if m.isSingleIssue(url) {
 		return []string{url}, nil
 	}
 
@@ -85,13 +87,17 @@ func RetrieveIssueLinks(url string, all bool) ([]string, error) {
 	return links, err
 }
 
-// Initialize loads links and metadata from mangatown
-func Initialize(comic *core.Comic) error {
-	parts := util.TrimAndSplitURL(comic.URLSource)
-	comic.Name = parts[4]
-	comic.IssueNumber = parts[len(parts)-1]
+func (m *Mangatown) GetInfo(url string, options map[string]string) (string, string) {
+	parts := util.TrimAndSplitURL(url)
+	name := parts[4]
+	issueNumber := parts[len(parts)-1]
 
-	links, err := retrieveImageLinks(comic)
+	return name, issueNumber
+}
+
+// Initialize loads links and metadata from mangatown
+func (m *Mangatown) Initialize(comic *core.Comic) error {
+	links, err := m.retrieveImageLinks(comic)
 	comic.Links = links
 
 	return err

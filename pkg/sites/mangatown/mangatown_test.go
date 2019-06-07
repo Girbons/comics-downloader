@@ -7,15 +7,20 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestComicExtraSetup(t *testing.T) {
+func TestMangatownGetInfo(t *testing.T) {
+	name, issueNumber := GetInfo("http://www.mangatown.com/manga/naruto/v63/c684/")
+
+	assert.Equal(t, "naruto", name)
+	assert.Equal(t, "c684", issueNumber)
+}
+
+func TestMangatownSetup(t *testing.T) {
 	comic := new(core.Comic)
 	comic.URLSource = "http://www.mangatown.com/manga/naruto/v63/c684/"
 
 	err := Initialize(comic)
 
 	assert.Nil(t, err)
-	assert.Equal(t, "naruto", comic.Name)
-	assert.Equal(t, "c684", comic.IssueNumber)
 	assert.Equal(t, 22, len(comic.Links))
 }
 
