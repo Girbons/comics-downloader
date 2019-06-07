@@ -14,7 +14,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func initializeCollection(issues []string, conf *config.ComicConfig, url, format, source string, siteLoader *SiteLoader) ([]*core.Comic, error) {
+func initializeCollection(issues []string, conf *config.ComicConfig, url, format, source string, siteSource BaseSite) ([]*core.Comic, error) {
 	var collection []*core.Comic
 	var err error
 
@@ -23,7 +23,7 @@ func initializeCollection(issues []string, conf *config.ComicConfig, url, format
 	}
 
 	for _, url := range issues {
-		name, issueNumber := GetInfo(siteLoader.Source, url)
+		name, issueNumber := GetInfo(siteSource, url)
 		name = util.Parse(name)
 		issueNumber = util.Parse(issueNumber)
 
@@ -39,7 +39,7 @@ func initializeCollection(issues []string, conf *config.ComicConfig, url, format
 				Source:      source,
 				Format:      format,
 			}
-			if err = Initialize(siteLoader.Source, comic); err != nil {
+			if err = Initialize(siteSource, comic); err != nil {
 				return collection, err
 			}
 			collection = append(collection, comic)
@@ -53,30 +53,30 @@ func initializeCollection(issues []string, conf *config.ComicConfig, url, format
 
 // LoadComicFromSource will return a `comic` instance initialized based on the source
 func LoadComicFromSource(conf *config.ComicConfig, source, url, country, format string, all bool) ([]*core.Comic, error) {
+	var siteSource BaseSite
 	var collection []*core.Comic
 	var issues []string
 	var err error
-	options := map[string]string{"country": country}
 
-	siteLoader := &SiteLoader{}
+	options := map[string]string{"country": country}
 
 	switch source {
 	case "www.comicextra.com":
-		siteLoader.Source = &comicextra.Comicextra{}
+		siteSource = &comicextra.Comicextra{}
 	case "mangarock.com":
-		siteLoader.Source = mangarock.NewMangaRock(options)
+		siteSource = mangarock.NewMangaRock(options)
 	case "www.mangareader.net":
-		siteLoader.Source = &mangareader.Mangareader{}
+		siteSource = &mangareader.Mangareader{}
 	case "www.mangatown.com":
-		siteLoader.Source = &mangatown.Mangatown{}
+		siteSource = &mangatown.Mangatown{}
 	default:
 		err = fmt.Errorf("It was not possible to determine the source")
 	}
 
-	issues, err = RetrieveIssueLinks(siteLoader.Source, url, all)
+	issues, err = RetrieveIssueLinks(siteSource, url, all)
 	if err != nil {
 		return collection, err
 	}
 
-	return initializeCollection(issues, conf, url, format, source, siteLoader)
+	return initializeCollection(issues, conf, url, format, source, siteSource)
 }

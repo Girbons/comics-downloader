@@ -21,7 +21,3 @@ func GetInfo(b BaseSite, url string) (string, string) {
 func RetrieveIssueLinks(b BaseSite, url string, all bool) ([]string, error) {
 	return b.RetrieveIssueLinks(url, all)
 }
-
-type SiteLoader struct {
-	Source BaseSite
-}
