@@ -14,7 +14,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func initializeCollection(issues []string, conf *config.ComicConfig, url, format, source string, options map[string]string, siteLoader *SiteLoader) ([]*core.Comic, error) {
+func initializeCollection(issues []string, conf *config.ComicConfig, url, format, source string, siteLoader *SiteLoader) ([]*core.Comic, error) {
 	var collection []*core.Comic
 	var err error
 
@@ -23,7 +23,7 @@ func initializeCollection(issues []string, conf *config.ComicConfig, url, format
 	}
 
 	for _, url := range issues {
-		name, issueNumber := GetInfo(siteLoader.Source, url, options)
+		name, issueNumber := GetInfo(siteLoader.Source, url)
 		name = util.Parse(name)
 		issueNumber = util.Parse(issueNumber)
 
@@ -38,7 +38,6 @@ func initializeCollection(issues []string, conf *config.ComicConfig, url, format
 				Config:      conf,
 				Source:      source,
 				Format:      format,
-				Options:     options,
 			}
 			if err = Initialize(siteLoader.Source, comic); err != nil {
 				return collection, err
@@ -65,7 +64,7 @@ func LoadComicFromSource(conf *config.ComicConfig, source, url, country, format 
 	case "www.comicextra.com":
 		siteLoader.Source = &comicextra.Comicextra{}
 	case "mangarock.com":
-		siteLoader.Source = &mangarock.Mangarock{}
+		siteLoader.Source = mangarock.NewMangaRock(options)
 	case "www.mangareader.net":
 		siteLoader.Source = &mangareader.Mangareader{}
 	case "www.mangatown.com":
@@ -74,10 +73,10 @@ func LoadComicFromSource(conf *config.ComicConfig, source, url, country, format 
 		err = fmt.Errorf("It was not possible to determine the source")
 	}
 
-	issues, err = RetrieveIssueLinks(siteLoader.Source, url, all, options)
+	issues, err = RetrieveIssueLinks(siteLoader.Source, url, all)
 	if err != nil {
 		return collection, err
 	}
 
-	return initializeCollection(issues, conf, url, format, source, options, siteLoader)
+	return initializeCollection(issues, conf, url, format, source, siteLoader)
 }

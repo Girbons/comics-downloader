@@ -8,7 +8,7 @@
 
 [[constraint]]
   name = "github.com/Girbons/mangarock"
-  version = "1.2.1"
+  version = "1.2.2"
 
 [[constraint]]
   name = "github.com/anaskhan96/soup"

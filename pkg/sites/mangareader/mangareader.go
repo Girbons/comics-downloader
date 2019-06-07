@@ -49,7 +49,7 @@ func (m *Mangareader) isSingleIssue(url string) bool {
 }
 
 // RetrieveIssueLinks gets a slice of urls for all issues in a comic
-func (m *Mangareader) RetrieveIssueLinks(url string, all bool, options map[string]string) ([]string, error) {
+func (m *Mangareader) RetrieveIssueLinks(url string, all bool) ([]string, error) {
 	if all && m.isSingleIssue(url) {
 		url = strings.Join(util.TrimAndSplitURL(url)[:4], "/")
 	} else if m.isSingleIssue(url) {
@@ -76,7 +76,7 @@ func (m *Mangareader) RetrieveIssueLinks(url string, all bool, options map[strin
 	return links, err
 }
 
-func (m *Mangareader) GetInfo(url string, options map[string]string) (string, string) {
+func (m *Mangareader) GetInfo(url string) (string, string) {
 	parts := util.TrimAndSplitURL(url)
 	name := parts[3]
 	issueNumber := parts[4]
@@ -86,8 +86,7 @@ func (m *Mangareader) GetInfo(url string, options map[string]string) (string, st
 
 // Initialize loads links and metadata from mangareader
 func (m *Mangareader) Initialize(comic *core.Comic) error {
-	options := make(map[string]string)
-	name, issueNumber := m.GetInfo(comic.URLSource, options)
+	name, issueNumber := m.GetInfo(comic.URLSource)
 	comic.Name = name
 	comic.IssueNumber = issueNumber
 

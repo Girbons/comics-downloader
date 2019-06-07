@@ -60,7 +60,7 @@ func (m *Mangatown) isSingleIssue(url string) bool {
 }
 
 // RetrieveIssueLinks gets a slice of urls for all issues in a comic
-func (m *Mangatown) RetrieveIssueLinks(url string, all bool, options map[string]string) ([]string, error) {
+func (m *Mangatown) RetrieveIssueLinks(url string, all bool) ([]string, error) {
 	if all && m.isSingleIssue(url) {
 		url = strings.Join(util.TrimAndSplitURL(url)[:5], "/")
 	} else if m.isSingleIssue(url) {
@@ -87,7 +87,7 @@ func (m *Mangatown) RetrieveIssueLinks(url string, all bool, options map[string]
 	return links, err
 }
 
-func (m *Mangatown) GetInfo(url string, options map[string]string) (string, string) {
+func (m *Mangatown) GetInfo(url string) (string, string) {
 	parts := util.TrimAndSplitURL(url)
 	name := parts[4]
 	issueNumber := parts[len(parts)-1]

@@ -31,10 +31,10 @@ type Client struct {
 }
 
 // NewClient returns a Client instance
-func NewClient() *Client {
+func NewClient(options map[string]string) *Client {
 	return &Client{
 		Client:  &http.Client{},
-		Options: make(map[string]string),
+		Options: options,
 	}
 }
 
@@ -44,16 +44,16 @@ func getJSON(response *http.Response, target interface{}) error {
 }
 
 // Set Additional options to the client instance
-func (m *Client) SetOptions(options map[string]string) {
-	m.Options = options
+func (c *Client) SetOptions(options map[string]string) {
+	c.Options = options
 }
 
 // prepareRequest will setup a request by using method and endpoint
 // it can be used to set a future API key
-func (m *Client) prepareRequest(method, endpoint string) (*http.Request, error) {
+func (c *Client) prepareRequest(method, endpoint string) (*http.Request, error) {
 	req, err := http.NewRequest(method, fmt.Sprintf("%s%s", APIEndpoint, endpoint), nil)
 	// add country if in options
-	if country, ok := m.Options["country"]; ok {
+	if country, ok := c.Options["country"]; ok {
 		q := req.URL.Query()
 		q.Add("country", country)
 		req.URL.RawQuery = q.Encode()
@@ -62,23 +62,23 @@ func (m *Client) prepareRequest(method, endpoint string) (*http.Request, error) 
 }
 
 // Get is Client Get method
-func (m *Client) Get(endpoint string) (*http.Response, error) {
-	request, reqErr := m.prepareRequest("GET", endpoint)
+func (c *Client) Get(endpoint string) (*http.Response, error) {
+	request, reqErr := c.prepareRequest("GET", endpoint)
 
 	if reqErr != nil {
 		return nil, reqErr
 	}
 
-	response, err := m.Client.Do(request)
+	response, err := c.Client.Do(request)
 	return response, err
 }
 
 // Info returns the info related to a manga
-func (m *Client) Info(comicName string) (*MangaRockInfo, error) {
+func (c *Client) Info(comicName string) (*MangaRockInfo, error) {
 	endpoint := fmt.Sprintf("info?oid=%s", comicName)
 
 	mangaInfo := new(MangaRockInfo)
-	response, err := m.Get(endpoint)
+	response, err := c.Get(endpoint)
 
 	if err != nil {
 		return nil, err
@@ -91,11 +91,11 @@ func (m *Client) Info(comicName string) (*MangaRockInfo, error) {
 }
 
 // Pages returns the pages related to a manga
-func (m *Client) Pages(comicName string) (*MangaRockPages, error) {
+func (c *Client) Pages(comicName string) (*MangaRockPages, error) {
 	endpoint := fmt.Sprintf("pages?oid=%s", comicName)
 
 	mangaPages := new(MangaRockPages)
-	response, err := m.Get(endpoint)
+	response, err := c.Get(endpoint)
 
 	if err != nil {
 		return mangaPages, err

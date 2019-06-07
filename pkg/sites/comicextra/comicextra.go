@@ -36,7 +36,7 @@ func (c *Comicextra) isSingleIssue(url string) bool {
 }
 
 // RetrieveIssueLinks gets a slice of urls for all issues in a comic
-func (c *Comicextra) RetrieveIssueLinks(url string, all bool, options map[string]string) ([]string, error) {
+func (c *Comicextra) RetrieveIssueLinks(url string, all bool) ([]string, error) {
 	if all && c.isSingleIssue(url) {
 		url = "https://www.comicextra.com/comic/" + util.TrimAndSplitURL(url)[3]
 	} else if c.isSingleIssue(url) {
@@ -64,7 +64,7 @@ func (c *Comicextra) RetrieveIssueLinks(url string, all bool, options map[string
 	return links, err
 }
 
-func (c *Comicextra) GetInfo(url string, options map[string]string) (string, string) {
+func (c *Comicextra) GetInfo(url string) (string, string) {
 	parts := util.TrimAndSplitURL(url)
 	name := parts[3]
 	issueNumber := parts[4]
