@@ -10,22 +10,22 @@ help:                              # this command
 	# [generating help from tasks header]
 	@egrep '^[A-Za-z0-9_-]+:' Makefile
 
-osx-build: # Creates OSX executable
+osx-build: # Creates Mac OSX
 	@GOOS=darwin GOARCH=amd64 go build -ldflags=${LDFLAGS} -o build/comics-downloader-osx ./cmd/downloader
 
-windows-build: # Creates Windows executable
+windows-build: # Creates Windows
 	@GOOS=windows GOARCH=amd64 go build -ldflags=${LDFLAGS}  -o build/comics-downloader.exe ./cmd/downloader
 
-linux-build: # Creates Linux executable
+linux-build: # Creates Linux
 	@GOOS=linux GOARCH=amd64 go build -ldflags=${LDFLAGS} -o build/comics-downloader ./cmd/downloader
 
-raspbian-build-arm: # Creates Raspbian executable
-	@GOOS=linux GOARCH=arm go build -ldflags=${LDFLAGS} -o build/comics-downloader-raspbian-arm ./cmd/downloader
+linux-arm-build: # Creates Linux ARM
+	@GOOS=linux GOARCH=arm go build -ldflags=${LDFLAGS} -o build/comics-downloader-linux-arm ./cmd/downloader
 
-raspbian-build-arm64: # Creates Raspbian executable
-	@GOOS=linux GOARCH=arm64 go build -ldflags=${LDFLAGS} -o build/comics-downloader-raspbian-arm64 ./cmd/downloader
+linux-arm64-build: # Creates Linux ARM64
+	@GOOS=linux GOARCH=arm64 go build -ldflags=${LDFLAGS} -o build/comics-downloader-linux-arm64 ./cmd/downloader
 
-osx-gui-build: # Creates OSX Gui executable
+osx-gui-build: # Creates OSX Gui
 	@GOOS=darwin GOARCH=amd64 go build -ldflags=${LDFLAGS} -o build/comics-downloader-gui-osx ./cmd/gui
 
 windows-gui-build: # Creates Window GUI executable
@@ -41,8 +41,8 @@ builds: # Creates executables for OSX/Windows/Linux
 	@make windows-gui-build
 	@make osx-gui-build
 	@make linux-gui-build
-	@make raspbian-build-arm
-	@make raspbian-build-arm64
+	@make linux-arm-build
+	@make linux-arm64-build
 
 remove-builds: # Remove executables
 	@rm -rf build/
