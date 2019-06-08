@@ -6,10 +6,6 @@ import (
 
 	"github.com/Girbons/comics-downloader/pkg/config"
 	"github.com/Girbons/comics-downloader/pkg/core"
-	"github.com/Girbons/comics-downloader/pkg/sites/comicextra"
-	"github.com/Girbons/comics-downloader/pkg/sites/mangareader"
-	"github.com/Girbons/comics-downloader/pkg/sites/mangarock"
-	"github.com/Girbons/comics-downloader/pkg/sites/mangatown"
 	"github.com/Girbons/comics-downloader/pkg/util"
 	log "github.com/sirupsen/logrus"
 )
@@ -62,15 +58,16 @@ func LoadComicFromSource(conf *config.ComicConfig, source, url, country, format 
 
 	switch source {
 	case "www.comicextra.com":
-		siteSource = &comicextra.Comicextra{}
+		siteSource = &Comicextra{}
 	case "mangarock.com":
-		siteSource = mangarock.NewMangaRock(options)
+		siteSource = NewMangarock(options)
 	case "www.mangareader.net":
-		siteSource = &mangareader.Mangareader{}
+		siteSource = &Mangareader{}
 	case "www.mangatown.com":
-		siteSource = &mangatown.Mangatown{}
+		siteSource = &Mangatown{}
 	default:
 		err = fmt.Errorf("It was not possible to determine the source")
+		return collection, err
 	}
 
 	issues, err = RetrieveIssueLinks(siteSource, url, all)

@@ -1,4 +1,4 @@
-package mangareader
+package sites
 
 import (
 	"fmt"

@@ -1,4 +1,4 @@
-package mangarock
+package sites
 
 import (
 	"strings"
@@ -13,7 +13,7 @@ type Mangarock struct {
 	Client *mangarock.Client
 }
 
-func NewMangaRock(options map[string]string) *Mangarock {
+func NewMangarock(options map[string]string) *Mangarock {
 	return &Mangarock{
 		Client: mangarock.NewClient(options),
 	}

@@ -38,7 +38,6 @@ type Comic struct {
 	Source      string
 	URLSource   string
 	Links       []string
-	Options     map[string]string
 	Format      string
 
 	Config *config.ComicConfig

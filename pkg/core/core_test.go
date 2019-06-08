@@ -67,9 +67,8 @@ func TestMakeComicEPUB(t *testing.T) {
 }
 
 func TestMakeComicEPUBMangarock(t *testing.T) {
-	client := mangarock.NewClient()
 	options := map[string]string{"country": "italy"}
-	client.SetOptions(options)
+	client := mangarock.NewClient(options)
 	result, _ := client.Pages("mrs-chapter-100051049")
 
 	comic := new(Comic)
@@ -88,9 +87,8 @@ func TestMakeComicEPUBMangarock(t *testing.T) {
 }
 
 func TestMakeComicCBZMangarock(t *testing.T) {
-	client := mangarock.NewClient()
 	options := map[string]string{"country": "italy"}
-	client.SetOptions(options)
+	client := mangarock.NewClient(options)
 	result, _ := client.Pages("mrs-chapter-100051049")
 
 	comic := new(Comic)
@@ -108,9 +106,8 @@ func TestMakeComicCBZMangarock(t *testing.T) {
 }
 
 func TestMakeComicCBRMangarock(t *testing.T) {
-	client := mangarock.NewClient()
 	options := map[string]string{"country": "italy"}
-	client.SetOptions(options)
+	client := mangarock.NewClient(options)
 	result, _ := client.Pages("mrs-chapter-100051049")
 
 	comic := new(Comic)
@@ -128,9 +125,8 @@ func TestMakeComicCBRMangarock(t *testing.T) {
 }
 
 func TestMakeComicPDFMangarock(t *testing.T) {
-	client := mangarock.NewClient()
 	options := map[string]string{"country": "italy"}
-	client.SetOptions(options)
+	client := mangarock.NewClient(options)
 	result, _ := client.Pages("mrs-chapter-100051049")
 
 	comic := new(Comic)

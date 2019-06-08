@@ -1,4 +1,4 @@
-package comicextra
+package sites
 
 import (
 	"regexp"

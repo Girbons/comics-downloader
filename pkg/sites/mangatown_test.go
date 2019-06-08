@@ -1,4 +1,4 @@
-package mangatown
+package sites
 
 import (
 	"testing"
@@ -8,24 +8,27 @@ import (
 )
 
 func TestMangatownGetInfo(t *testing.T) {
-	name, issueNumber := GetInfo("http://www.mangatown.com/manga/naruto/v63/c684/")
+	mt := new(Mangatown)
+	name, issueNumber := mt.GetInfo("http://www.mangatown.com/manga/naruto/v63/c684/")
 
 	assert.Equal(t, "naruto", name)
 	assert.Equal(t, "c684", issueNumber)
 }
 
 func TestMangatownSetup(t *testing.T) {
+	mt := new(Mangatown)
 	comic := new(core.Comic)
 	comic.URLSource = "http://www.mangatown.com/manga/naruto/v63/c684/"
 
-	err := Initialize(comic)
+	err := mt.Initialize(comic)
 
 	assert.Nil(t, err)
 	assert.Equal(t, 22, len(comic.Links))
 }
 
-func TestRetrieveIssueLinks(t *testing.T) {
-	issues, err := RetrieveIssueLinks("https://www.mangatown.com/manga/naruto/", false)
+func TestMangatownRetrieveIssueLinks(t *testing.T) {
+	mt := new(Mangatown)
+	issues, err := mt.RetrieveIssueLinks("https://www.mangatown.com/manga/naruto/", false)
 
 	assert.Nil(t, err)
 	assert.Equal(t, 748, len(issues))

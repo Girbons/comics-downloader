@@ -1,4 +1,4 @@
-package mangatown
+package sites
 
 import (
 	"fmt"
