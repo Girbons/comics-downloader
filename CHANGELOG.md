@@ -1,3 +1,13 @@
+<a name="v0.12.4"></a>
+# [0.12.4 (v0.12.4)](https://github.com/Girbons/comics-downloader/releases/tag/v0.12.4) - 24 Jun 2019
+
+# Improvements
+
+* Modified filename output #30 
+
+[Changes][v0.12.4]
+
+
 <a name="v0.12.3"></a>
 # [0.12.3 (v0.12.3)](https://github.com/Girbons/comics-downloader/releases/tag/v0.12.3) - 08 Jun 2019
 
@@ -263,6 +273,7 @@ Well,  this is the first release :)
 [Changes][v0.1.0]
 
 
+[v0.12.4]: https://github.com/Girbons/comics-downloader/compare/v0.12.3...v0.12.4
 [v0.12.3]: https://github.com/Girbons/comics-downloader/compare/v0.12.2...v0.12.3
 [v0.12.2]: https://github.com/Girbons/comics-downloader/compare/v0.12.1...v0.12.2
 [v0.12.1]: https://github.com/Girbons/comics-downloader/compare/v0.12...v0.12.1
