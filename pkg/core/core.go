@@ -174,7 +174,7 @@ func (comic *Comic) makeEPUB() error {
 		return err
 	}
 
-	if err = e.Write(util.GenerateFileName(dir, comic.IssueNumber, comic.Format)); err != nil {
+	if err = e.Write(util.GenerateFileName(dir, comic.Name, comic.IssueNumber, comic.Format)); err != nil {
 		return err
 	}
 
@@ -223,7 +223,7 @@ func (comic *Comic) makePDF() error {
 	}
 
 	// Save the pdf file
-	if err = pdf.OutputFileAndClose(util.GenerateFileName(dir, comic.IssueNumber, comic.Format)); err != nil {
+	if err = pdf.OutputFileAndClose(util.GenerateFileName(dir, comic.Name, comic.IssueNumber, comic.Format)); err != nil {
 		return err
 	}
 
@@ -299,7 +299,7 @@ func (comic *Comic) makeCBRZ() error {
 	// the archive must be created as .zip
 	// then we can change the extension to .cbr or .cbz
 	zipArchiveName := fmt.Sprintf("%s/%s.zip", dir, comic.IssueNumber)
-	newName := fmt.Sprintf("%s/%s.%s", dir, comic.IssueNumber, comic.Format)
+	newName := util.GenerateFileName(dir, comic.Name, comic.IssueNumber, comic.Format)
 
 	if err = archive.Archive(filesToAdd, zipArchiveName); err != nil {
 		return err

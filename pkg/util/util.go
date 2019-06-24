@@ -98,18 +98,6 @@ func PathSetup(source, name string) (string, error) {
 	return dir, err
 }
 
-// FindMaxValueInSlice return the max value
-func FindMaxValueInSlice(values []int) int {
-	max := 0
-	for _, currentValue := range values {
-		if currentValue > max {
-			max = currentValue
-		}
-	}
-
-	return max
-}
-
 // CurrentDir
 func CurrentDir() (string, error) {
 	return filepath.Abs(filepath.Dir(os.Args[0]))
@@ -123,8 +111,8 @@ func FileDoesNotExist(filePath string) bool {
 }
 
 // generateFileName will return the path where the file should be saved
-func GenerateFileName(dir, issueNumber, format string) string {
-	return fmt.Sprintf("%s/%s.%s", dir, issueNumber, format)
+func GenerateFileName(dir, name, issueNumber, format string) string {
+	return fmt.Sprintf("%s/%s-%s.%s", dir, name, issueNumber, format)
 }
 
 func Parse(s string) string {

@@ -24,7 +24,7 @@ func initializeCollection(issues []string, conf *config.ComicConfig, url, format
 		issueNumber = util.Parse(issueNumber)
 
 		dir, _ := util.PathSetup(source, name)
-		fileName := util.GenerateFileName(dir, issueNumber, format)
+		fileName := util.GenerateFileName(dir, name, issueNumber, format)
 
 		if util.FileDoesNotExist(fileName) {
 			comic := &core.Comic{

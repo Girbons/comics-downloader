@@ -23,7 +23,7 @@ func main() {
 	flag.Parse()
 
 	if *versionFlag {
-		fmt.Printf("Build on %s from release %s\n", buildTime, release)
+		fmt.Printf("Built on %s from release %s\n", buildTime, release)
 		os.Exit(0)
 	}
 

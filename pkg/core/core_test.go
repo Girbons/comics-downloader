@@ -38,7 +38,7 @@ func TestNewComic(t *testing.T) {
 func TestMakeComicPDF(t *testing.T) {
 	comic := new(Comic)
 
-	comic.Name = "example.com"
+	comic.Name = "foo"
 	comic.Format = "pdf"
 	comic.IssueNumber = "example-chapter-1"
 	comic.Links = []string{"http://via.placeholder.com/150", "http://via.placeholder.com/150", "http://via.placeholder.com/150"}
@@ -46,14 +46,14 @@ func TestMakeComicPDF(t *testing.T) {
 	err := comic.MakeComic()
 	assert.Nil(t, err)
 
-	dir, _ := filepath.Abs(fmt.Sprintf("%s/%s/%s/%s/", filepath.Dir(os.Args[0]), "comics", "example.com", "example-chapter-1.pdf"))
+	dir, _ := filepath.Abs(fmt.Sprintf("%s/%s/%s/%s/", filepath.Dir(os.Args[0]), "comics", "foo", "foo-example-chapter-1.pdf"))
 	assert.True(t, exists(dir))
 }
 
 func TestMakeComicEPUB(t *testing.T) {
 	comic := new(Comic)
 
-	comic.Name = "example.com"
+	comic.Name = "foo"
 	comic.Format = "epub"
 	comic.IssueNumber = "example-chapter-1"
 	comic.Author = "author"
@@ -62,7 +62,7 @@ func TestMakeComicEPUB(t *testing.T) {
 	err := comic.MakeComic()
 	assert.Nil(t, err)
 
-	dir, _ := filepath.Abs(fmt.Sprintf("%s/%s/%s/%s/", filepath.Dir(os.Args[0]), "comics", "example.com", "example-chapter-1.epub"))
+	dir, _ := filepath.Abs(fmt.Sprintf("%s/%s/%s/%s/", filepath.Dir(os.Args[0]), "comics", "foo", "foo-example-chapter-1.epub"))
 	assert.True(t, exists(dir))
 }
 
@@ -82,7 +82,7 @@ func TestMakeComicEPUBMangarock(t *testing.T) {
 	err := comic.MakeComic()
 	assert.Nil(t, err)
 
-	dir, _ := filepath.Abs(fmt.Sprintf("%s/%s/%s/%s/%s/", filepath.Dir(os.Args[0]), "comics", "mangarock.com", "Boruto", "chapter-13.epub"))
+	dir, _ := filepath.Abs(fmt.Sprintf("%s/%s/%s/%s/%s/", filepath.Dir(os.Args[0]), "comics", "mangarock.com", "Boruto", "Boruto-chapter-13.epub"))
 	assert.True(t, exists(dir))
 }
 
@@ -101,7 +101,7 @@ func TestMakeComicCBZMangarock(t *testing.T) {
 	err := comic.MakeComic()
 	assert.Nil(t, err)
 
-	dir, _ := filepath.Abs(fmt.Sprintf("%s/%s/%s/%s/%s/", filepath.Dir(os.Args[0]), "comics", "mangarock.com", "Boruto", "chapter-13.cbz"))
+	dir, _ := filepath.Abs(fmt.Sprintf("%s/%s/%s/%s/%s/", filepath.Dir(os.Args[0]), "comics", "mangarock.com", "Boruto", "Boruto-chapter-13.cbz"))
 	assert.True(t, exists(dir))
 }
 
@@ -120,7 +120,7 @@ func TestMakeComicCBRMangarock(t *testing.T) {
 	err := comic.MakeComic()
 	assert.Nil(t, err)
 
-	dir, _ := filepath.Abs(fmt.Sprintf("%s/%s/%s/%s/%s/", filepath.Dir(os.Args[0]), "comics", "mangarock.com", "Boruto", "chapter-13.cbr"))
+	dir, _ := filepath.Abs(fmt.Sprintf("%s/%s/%s/%s/%s/", filepath.Dir(os.Args[0]), "comics", "mangarock.com", "Boruto", "Boruto-chapter-13.cbr"))
 	assert.True(t, exists(dir))
 }
 
@@ -140,6 +140,6 @@ func TestMakeComicPDFMangarock(t *testing.T) {
 	err := comic.MakeComic()
 	assert.Nil(t, err)
 
-	dir, _ := filepath.Abs(fmt.Sprintf("%s/%s/%s/%s/%s/", filepath.Dir(os.Args[0]), "comics", "mangarock.com", "Boruto", "chapter-13.pdf"))
+	dir, _ := filepath.Abs(fmt.Sprintf("%s/%s/%s/%s/%s/", filepath.Dir(os.Args[0]), "comics", "mangarock.com", "Boruto", "Boruto-chapter-13.pdf"))
 	assert.True(t, exists(dir))
 }

@@ -73,7 +73,7 @@ func TestParse(t *testing.T) {
 }
 
 func TestGenerateFileName(t *testing.T) {
-	result := GenerateFileName("path/to/something", "invalid_character", "pdf")
+	result := GenerateFileName("path/to/something", "comic-name", "invalid_character", "pdf")
 
-	assert.Equal(t, "path/to/something/invalid_character.pdf", result)
+	assert.Equal(t, "path/to/something/comic-name-invalid_character.pdf", result)
 }
