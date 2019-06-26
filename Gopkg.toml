@@ -1,6 +1,6 @@
 [[constraint]]
+  branch = "master"
   name = "fyne.io/fyne"
-  version = "1.0.1"
 
 [[constraint]]
   branch = "master"

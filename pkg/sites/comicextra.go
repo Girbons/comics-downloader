@@ -35,8 +35,28 @@ func (c *Comicextra) isSingleIssue(url string) bool {
 	return util.TrimAndSplitURL(url)[3] != "comic"
 }
 
+func (c *Comicextra) retrieveLastIssue(url string) (string, error) {
+	response, err := soup.Get(url)
+
+	if err != nil {
+		return "", err
+	}
+
+	doc := soup.HTMLParse(response)
+
+	issues := doc.FindAll("option")
+	lastIssue := issues[len(issues)-1].Attrs()["value"]
+
+	return lastIssue, nil
+}
+
 // RetrieveIssueLinks gets a slice of urls for all issues in a comic
-func (c *Comicextra) RetrieveIssueLinks(url string, all bool) ([]string, error) {
+func (c *Comicextra) RetrieveIssueLinks(url string, all, last bool) ([]string, error) {
+	if last {
+		url, err := c.retrieveLastIssue(url)
+		return []string{url}, err
+	}
+
 	if all && c.isSingleIssue(url) {
 		url = "https://www.comicextra.com/comic/" + util.TrimAndSplitURL(url)[3]
 	} else if c.isSingleIssue(url) {

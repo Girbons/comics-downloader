@@ -24,10 +24,15 @@ func sendToChannel(enabled bool, message string) {
 }
 
 // Run will run the downloader app
-func Run(link, format, country string, all, bindLogsToChannel bool) {
+func Run(link, format, country string, all, last, bindLogsToChannel bool) {
 	conf := new(config.ComicConfig)
 	if err := conf.LoadConfig(); err != nil {
 		log.Warning(err)
+	}
+
+	if all && last {
+		last = false
+		log.Warning("all and last are selected, all parameter will be used")
 	}
 
 	// link is required
@@ -53,7 +58,7 @@ func Run(link, format, country string, all, bindLogsToChannel bool) {
 			sendToChannel(bindLogsToChannel, msg)
 			// in case the link is supported
 			// setup the right strategy to parse a comic
-			collection, err := sites.LoadComicFromSource(conf, source, u, country, format, all)
+			collection, err := sites.LoadComicFromSource(conf, source, u, country, format, all, last)
 			if err != nil {
 				log.Error(err)
 				sendToChannel(bindLogsToChannel, fmt.Sprintf("ERROR: %s", err))

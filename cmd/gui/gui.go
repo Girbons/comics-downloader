@@ -10,6 +10,7 @@ type Downloader struct {
 	Country     *widget.Entry
 	Format      *widget.Radio
 	AllChapters *widget.Check
+	LastChapter *widget.Check
 }
 
 func (d *Downloader) ClearURLField() {
@@ -21,5 +22,5 @@ func (d *Downloader) ClearCountryField() {
 }
 
 func (d *Downloader) Submit() {
-	downloader.Run(d.URL.Text, d.Format.Selected, d.Country.Text, d.AllChapters.Checked, true)
+	downloader.Run(d.URL.Text, d.Format.Selected, d.Country.Text, d.AllChapters.Checked, d.LastChapter.Checked, true)
 }

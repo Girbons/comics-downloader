@@ -20,6 +20,7 @@ func main() {
 	country := flag.String("country", "", "Set the country to retrieve a manga, Used by MangaRock")
 	versionFlag := flag.Bool("version", false, "Display the release")
 	all := flag.Bool("all", false, "Download all issues of the Comic or Comics")
+	last := flag.Bool("last", false, "Download the last Comic issue")
 	flag.Parse()
 
 	if *versionFlag {
@@ -38,5 +39,5 @@ func main() {
 		}
 	}
 
-	app.Run(*url, *format, *country, *all, false)
+	app.Run(*url, *format, *country, *all, *last, false)
 }

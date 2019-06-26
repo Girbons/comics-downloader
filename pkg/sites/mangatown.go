@@ -59,8 +59,29 @@ func (m *Mangatown) isSingleIssue(url string) bool {
 	return len(parts) >= 6 && parts[5] != ""
 }
 
+func (m *Mangatown) retrieveLastIssue(url string) (string, error) {
+	url = strings.Join(util.TrimAndSplitURL(url)[:5], "/")
+	response, err := soup.Get(url)
+
+	if err != nil {
+		return "", err
+	}
+
+	doc := soup.HTMLParse(response)
+	chapters := doc.Find("ul", "class", "chapter_list").FindAll("a")
+
+	// the first element is the last chapter
+	lastIssue := "https:" + chapters[0].Attrs()["href"]
+	return lastIssue, nil
+}
+
 // RetrieveIssueLinks gets a slice of urls for all issues in a comic
-func (m *Mangatown) RetrieveIssueLinks(url string, all bool) ([]string, error) {
+func (m *Mangatown) RetrieveIssueLinks(url string, all, last bool) ([]string, error) {
+	if last {
+		lastIssue, err := m.retrieveLastIssue(url)
+		return []string{lastIssue}, err
+	}
+
 	if all && m.isSingleIssue(url) {
 		url = strings.Join(util.TrimAndSplitURL(url)[:5], "/")
 	} else if m.isSingleIssue(url) {

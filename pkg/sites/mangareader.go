@@ -48,8 +48,30 @@ func (m *Mangareader) isSingleIssue(url string) bool {
 	return len(util.TrimAndSplitURL(url)) >= 5
 }
 
+func (m *Mangareader) retrieveLastIssue(url string) (string, error) {
+	url = strings.Join(util.TrimAndSplitURL(url)[:4], "/")
+
+	response, err := soup.Get(url)
+	if err != nil {
+		return "", err
+	}
+
+	doc := soup.HTMLParse(response)
+	chapters := doc.Find("div", "id", "chapterlist").FindAll("a")
+
+	lastIssue := chapters[len(chapters)-1].Attrs()["href"]
+	lastIssueUrl := "https://www.mangareader.net" + lastIssue
+
+	return lastIssueUrl, nil
+}
+
 // RetrieveIssueLinks gets a slice of urls for all issues in a comic
-func (m *Mangareader) RetrieveIssueLinks(url string, all bool) ([]string, error) {
+func (m *Mangareader) RetrieveIssueLinks(url string, all, last bool) ([]string, error) {
+	if last {
+		lastIssue, err := m.retrieveLastIssue(url)
+		return []string{lastIssue}, err
+	}
+
 	if all && m.isSingleIssue(url) {
 		url = strings.Join(util.TrimAndSplitURL(url)[:4], "/")
 	} else if m.isSingleIssue(url) {

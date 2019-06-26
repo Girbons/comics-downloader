@@ -2,22 +2,25 @@
 
 
 [[projects]]
-  digest = "1:a9ba4ffe5a65c9bb5316bf6a7e1bcb82a9d1d5cf347a9931af1d985674309272"
+  branch = "master"
+  digest = "1:e65c06cc6d83c5299625a4b4cbc2962c6e946dd1c86350cc87fe0dc5440c2a19"
   name = "fyne.io/fyne"
   packages = [
     ".",
     "app",
     "canvas",
     "driver/desktop",
-    "driver/gl",
+    "internal",
+    "internal/app",
+    "internal/driver",
+    "internal/driver/gl",
     "layout",
     "test",
     "theme",
     "widget",
   ]
   pruneopts = "T"
-  revision = "db27e735df780dae842f0513e7f48391b20d4692"
-  version = "v1.0.1"
+  revision = "574223791b58035de953baa11dcb1213e213b0b0"
 
 [[projects]]
   branch = "master"

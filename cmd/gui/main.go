@@ -36,12 +36,14 @@ func main() {
 	choices.SetSelected("pdf")
 
 	allChaptersCheck := widget.NewCheck("", nil)
+	lastChapterCheck := widget.NewCheck("", nil)
 
 	d := &Downloader{
 		URL:         urlEntry,
 		Country:     countryEntry,
 		Format:      choices,
 		AllChapters: allChaptersCheck,
+		LastChapter: lastChapterCheck,
 	}
 
 	clearCountryFieldButton := widget.NewButton("Clear Country", func() {
@@ -65,6 +67,7 @@ func main() {
 	form.Append("", showCountryOption)
 	form.Append("Output", d.Format)
 	form.Append("All chapters", d.AllChapters)
+	form.Append("Last chapter", d.LastChapter)
 
 	box := widget.NewVBox()
 

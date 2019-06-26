@@ -7,7 +7,7 @@ import (
 type BaseSite interface {
 	Initialize(comic *core.Comic) error
 	GetInfo(url string) (string, string)
-	RetrieveIssueLinks(url string, all bool) ([]string, error)
+	RetrieveIssueLinks(url string, all, last bool) ([]string, error)
 }
 
 func Initialize(b BaseSite, comic *core.Comic) error {
@@ -18,6 +18,6 @@ func GetInfo(b BaseSite, url string) (string, string) {
 	return b.GetInfo(url)
 }
 
-func RetrieveIssueLinks(b BaseSite, url string, all bool) ([]string, error) {
-	return b.RetrieveIssueLinks(url, all)
+func RetrieveIssueLinks(b BaseSite, url string, all, last bool) ([]string, error) {
+	return b.RetrieveIssueLinks(url, all, last)
 }

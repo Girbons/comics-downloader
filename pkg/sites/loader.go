@@ -48,7 +48,7 @@ func initializeCollection(issues []string, conf *config.ComicConfig, url, format
 }
 
 // LoadComicFromSource will return a `comic` instance initialized based on the source
-func LoadComicFromSource(conf *config.ComicConfig, source, url, country, format string, all bool) ([]*core.Comic, error) {
+func LoadComicFromSource(conf *config.ComicConfig, source, url, country, format string, all, last bool) ([]*core.Comic, error) {
 	var siteSource BaseSite
 	var collection []*core.Comic
 	var issues []string
@@ -70,7 +70,7 @@ func LoadComicFromSource(conf *config.ComicConfig, source, url, country, format 
 		return collection, err
 	}
 
-	issues, err = RetrieveIssueLinks(siteSource, url, all)
+	issues, err = RetrieveIssueLinks(siteSource, url, all, last)
 	if err != nil {
 		return collection, err
 	}

@@ -32,8 +32,29 @@ func (m *Mangarock) isSingleIssue(url string) bool {
 	return len(util.TrimAndSplitURL(url)) >= 6
 }
 
+func (m *Mangarock) retrieveLastIssue(url string) (string, error) {
+	url = strings.Join(util.TrimAndSplitURL(url)[:5], "/")
+	series := util.TrimAndSplitURL(url)[4]
+
+	info, infoErr := m.Client.Info(series)
+
+	if infoErr != nil {
+		return "", infoErr
+	}
+
+	lastChapter := info.Data.Chapters[len(info.Data.Chapters)-1]
+	chapterUrl := url + "/chapter/" + lastChapter.OID
+
+	return chapterUrl, nil
+}
+
 // RetrieveIssueLinks gets a slice of urls for all issues in a comic
-func (m *Mangarock) RetrieveIssueLinks(url string, all bool) ([]string, error) {
+func (m *Mangarock) RetrieveIssueLinks(url string, all, last bool) ([]string, error) {
+	if last {
+		url, err := m.retrieveLastIssue(url)
+		return []string{url}, err
+	}
+
 	if all && m.isSingleIssue(url) {
 		url = strings.Join(util.TrimAndSplitURL(url)[:5], "/")
 	} else if m.isSingleIssue(url) {
