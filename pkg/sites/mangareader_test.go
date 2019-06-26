@@ -57,3 +57,11 @@ func TestMangareaderRetrieveIssueLinks(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, 700, len(issues))
 }
+
+func TestMangaReaderRetrieveLastIssueLink(t *testing.T) {
+	mr := new(Mangareader)
+	issue, err := mr.retrieveLastIssue("https://www.mangareader.net/naruto")
+
+	assert.Nil(t, err)
+	assert.Equal(t, "https://www.mangareader.net/naruto/700", issue)
+}

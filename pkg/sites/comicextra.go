@@ -53,8 +53,8 @@ func (c *Comicextra) retrieveLastIssue(url string) (string, error) {
 // RetrieveIssueLinks gets a slice of urls for all issues in a comic
 func (c *Comicextra) RetrieveIssueLinks(url string, all, last bool) ([]string, error) {
 	if last {
-		url, err := c.retrieveLastIssue(url)
-		return []string{url}, err
+		issue, err := c.retrieveLastIssue(url)
+		return []string{issue}, err
 	}
 
 	if all && c.isSingleIssue(url) {

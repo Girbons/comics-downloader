@@ -33,3 +33,11 @@ func TestMangatownRetrieveIssueLinks(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, 748, len(issues))
 }
+
+func TestMangatownRetrieveLastIssueLink(t *testing.T) {
+	mt := new(Mangatown)
+	issue, err := mt.retrieveLastIssue("https://www.mangatown.com/manga/naruto/")
+
+	assert.Nil(t, err)
+	assert.Equal(t, "https://www.mangatown.com/manga/naruto/v72/c700.6/", issue)
+}
