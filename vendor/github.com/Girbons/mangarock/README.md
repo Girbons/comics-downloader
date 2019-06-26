@@ -25,8 +25,13 @@ import (
 )
 
 func main() {
-	options := make(map[string]string{"country":"your country"})
+    // there are 2 way to initialize a client
+    // the first one is using `NewClient`
 	client := mangarock.NewClient(options)
+
+    // the other one is using `NewClientWithOptions`
+	options := make(map[string]string{"country":"your country"})
+	client := mangarock.NewClientWithOptions(options)
 
 	info, err := client.Info("mrs-serie-35593")
 

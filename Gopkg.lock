@@ -31,12 +31,12 @@
   revision = "438a0b611ec00f1452fcc017a6ee4c07a07dd119"
 
 [[projects]]
-  digest = "1:d784bf45c7a122113702eb5367653a80093bb38d0c655de2b382263521bf11bd"
+  digest = "1:42a177f768efa29d779518b18f6d126f9f257350679d65b17517e383e9927d1e"
   name = "github.com/Girbons/mangarock"
   packages = ["."]
   pruneopts = "T"
-  revision = "09623635d64ad61f572351c3e865478dc89ed346"
-  version = "1.2.2"
+  revision = "6d9a691f45642a002102b9155a909b49d444433e"
+  version = "1.2.3"
 
 [[projects]]
   digest = "1:2ee9402b4b099660c3a57ae4b756e14fa28b679adec45ca9b29cc96cd91345c1"

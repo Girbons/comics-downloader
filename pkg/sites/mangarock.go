@@ -15,7 +15,7 @@ type Mangarock struct {
 
 func NewMangarock(options map[string]string) *Mangarock {
 	return &Mangarock{
-		Client: mangarock.NewClient(options),
+		Client: mangarock.NewClientWithOptions(options),
 	}
 }
 
