@@ -28,7 +28,7 @@ func TestMangatownSetup(t *testing.T) {
 
 func TestMangatownRetrieveIssueLinks(t *testing.T) {
 	mt := new(Mangatown)
-	issues, err := mt.RetrieveIssueLinks("https://www.mangatown.com/manga/naruto/", false)
+	issues, err := mt.RetrieveIssueLinks("https://www.mangatown.com/manga/naruto/", false, false)
 
 	assert.Nil(t, err)
 	assert.Equal(t, 748, len(issues))

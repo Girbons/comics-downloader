@@ -52,7 +52,7 @@ func TestSetupMangaReader(t *testing.T) {
 
 func TestMangareaderRetrieveIssueLinks(t *testing.T) {
 	mr := new(Mangareader)
-	issues, err := mr.RetrieveIssueLinks("https://www.mangareader.net/naruto", false)
+	issues, err := mr.RetrieveIssueLinks("https://www.mangareader.net/naruto", false, false)
 
 	assert.Nil(t, err)
 	assert.Equal(t, 700, len(issues))

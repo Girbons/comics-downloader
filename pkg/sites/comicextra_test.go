@@ -28,7 +28,7 @@ func TestComicExtraGetInfo(t *testing.T) {
 
 func TestComicextraRetrieveIssueLinks(t *testing.T) {
 	comicextra := new(Comicextra)
-	issues, err := comicextra.RetrieveIssueLinks("https://www.comicextra.com/comic/100-bullets", false)
+	issues, err := comicextra.RetrieveIssueLinks("https://www.comicextra.com/comic/100-bullets", false, false)
 
 	assert.Nil(t, err)
 	assert.Equal(t, 100, len(issues))

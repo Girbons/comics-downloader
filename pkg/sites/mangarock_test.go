@@ -33,7 +33,7 @@ func TestMangarockRetrieveIssueLinks(t *testing.T) {
 	options := map[string]string{"country": "italy"}
 	mr := NewMangarock(options)
 
-	issues, err := mr.RetrieveIssueLinks("https://mangarock.com/manga/mrs-serie-173467", false)
+	issues, err := mr.RetrieveIssueLinks("https://mangarock.com/manga/mrs-serie-173467", false, false)
 
 	assert.Nil(t, err)
 	assert.Equal(t, 700, len(issues))

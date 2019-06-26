@@ -11,7 +11,7 @@ import (
 func TestSiteLoaderMangatown(t *testing.T) {
 	url := "https://www.mangatown.com/manga/naruto/v63/c693/"
 	conf := new(config.ComicConfig)
-	collection, err := LoadComicFromSource(conf, "www.mangatown.com", url, "", "pdf", false)
+	collection, err := LoadComicFromSource(conf, "www.mangatown.com", url, "", "pdf", false, false)
 
 	assert.Nil(t, err)
 	assert.Equal(t, len(collection), 1)
@@ -28,7 +28,7 @@ func TestSiteLoaderMangatown(t *testing.T) {
 func TestSiteLoaderMangarock(t *testing.T) {
 	url := "https://mangarock.com/manga/mrs-serie-35593/chapter/mrs-chapter-100051049"
 	conf := new(config.ComicConfig)
-	collection, err := LoadComicFromSource(conf, "mangarock.com", url, "italy", "pdf", false)
+	collection, err := LoadComicFromSource(conf, "mangarock.com", url, "italy", "pdf", false, false)
 
 	assert.Nil(t, err)
 	assert.Equal(t, len(collection), 1)
@@ -45,7 +45,7 @@ func TestSiteLoaderMangarock(t *testing.T) {
 func TestSiteLoaderMangareader(t *testing.T) {
 	url := "https://www.mangareader.net/naruto/700"
 	conf := new(config.ComicConfig)
-	collection, err := LoadComicFromSource(conf, "www.mangareader.net", url, "", "pdf", false)
+	collection, err := LoadComicFromSource(conf, "www.mangareader.net", url, "", "pdf", false, false)
 
 	assert.Nil(t, err)
 	assert.Equal(t, len(collection), 1)
@@ -62,7 +62,7 @@ func TestSiteLoaderMangareader(t *testing.T) {
 func TestSiteLoaderComicExtra(t *testing.T) {
 	url := "https://www.comicextra.com/daredevil-2016/chapter-600/full"
 	conf := new(config.ComicConfig)
-	collection, err := LoadComicFromSource(conf, "www.comicextra.com", url, "", "pdf", false)
+	collection, err := LoadComicFromSource(conf, "www.comicextra.com", url, "", "pdf", false, false)
 
 	assert.Nil(t, err)
 	assert.Equal(t, len(collection), 1)
@@ -80,7 +80,7 @@ func TestLoaderUnknownSource(t *testing.T) {
 	url := "http://example.com"
 	conf := new(config.ComicConfig)
 
-	collection, err := LoadComicFromSource(conf, "example.com", url, "", "pdf", false)
+	collection, err := LoadComicFromSource(conf, "example.com", url, "", "pdf", false, false)
 
 	if assert.NotNil(t, err) {
 		assert.Equal(t, fmt.Errorf("It was not possible to determine the source"), err)
