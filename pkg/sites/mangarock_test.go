@@ -39,6 +39,16 @@ func TestMangarockRetrieveIssueLinks(t *testing.T) {
 	assert.Equal(t, 700, len(issues))
 }
 
+func TestMangarockRetrieveIssueLinksLastChapter(t *testing.T) {
+	options := map[string]string{"country": "italy"}
+	mr := NewMangarock(options)
+
+	issues, err := mr.RetrieveIssueLinks("https://mangarock.com/manga/mrs-serie-173467", false, true)
+
+	assert.Nil(t, err)
+	assert.Equal(t, 1, len(issues))
+}
+
 func TestMangarockRetrieveLastIssueLink(t *testing.T) {
 	options := map[string]string{"country": "italy"}
 	mr := NewMangarock(options)

@@ -34,10 +34,26 @@ func TestComicextraRetrieveIssueLinks(t *testing.T) {
 	assert.Equal(t, 100, len(issues))
 }
 
+func TestComicextraRetrieveIssueLinksLastChapter(t *testing.T) {
+	comicextra := new(Comicextra)
+	issues, err := comicextra.RetrieveIssueLinks("https://www.comicextra.com/comic/100-bullets", false, true)
+
+	assert.Nil(t, err)
+	assert.Equal(t, 1, len(issues))
+}
+
 func TestComicExtraRetrieveLastIssueLink(t *testing.T) {
 	comicextra := new(Comicextra)
 	issue, err := comicextra.retrieveLastIssue("https://www.comicextra.com/batman-2016/chapter-58/full")
 
 	assert.Nil(t, err)
 	assert.Equal(t, "https://www.comicextra.com/batman-2016/chapter-73/full", issue)
+}
+
+func TestComicExtraRetrieveLastIssueLinkNotDetail(t *testing.T) {
+	comicextra := new(Comicextra)
+	issue, err := comicextra.retrieveLastIssue("https://www.comicextra.com/comic/100-bullets")
+
+	assert.Nil(t, err)
+	assert.Equal(t, "https://www.comicextra.com/100-bullets/chapter-100", issue)
 }

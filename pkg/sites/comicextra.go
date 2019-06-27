@@ -36,6 +36,8 @@ func (c *Comicextra) isSingleIssue(url string) bool {
 }
 
 func (c *Comicextra) retrieveLastIssue(url string) (string, error) {
+	var lastIssue string
+
 	response, err := soup.Get(url)
 
 	if err != nil {
@@ -45,7 +47,14 @@ func (c *Comicextra) retrieveLastIssue(url string) (string, error) {
 	doc := soup.HTMLParse(response)
 
 	issues := doc.FindAll("option")
-	lastIssue := issues[len(issues)-1].Attrs()["value"]
+	if len(issues) != 0 {
+		lastIssue = issues[len(issues)-1].Attrs()["value"]
+
+		return lastIssue, nil
+	}
+
+	issues = doc.Find("tbody", "id", "list").FindAll("a")
+	lastIssue = issues[0].Attrs()["href"]
 
 	return lastIssue, nil
 }
