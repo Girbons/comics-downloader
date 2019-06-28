@@ -47,6 +47,8 @@ You can invoke the `--help`:
         Set the country to retrieve a manga, Used by MangaRock
   -format string
         Comic format output, supported formats are pdf,epub,cbr,cbz (default "pdf")
+  -last
+        Download the last Comic issue
   -url string
         Comic URL or Comic URLS by separating each site with a comma without the use of spaces
   -version
