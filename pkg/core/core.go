@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/BakeRolls/mri"
-	"github.com/Girbons/comics-downloader/pkg/config"
 	"github.com/Girbons/comics-downloader/pkg/util"
 	epub "github.com/bmaupin/go-epub"
 	"github.com/jung-kurt/gofpdf"
@@ -39,18 +38,6 @@ type Comic struct {
 	URLSource   string
 	Links       []string
 	Format      string
-
-	Config *config.ComicConfig
-}
-
-// getConfigValues will try to get some
-func (comic *Comic) readConfigValues() {
-	// retrieve values from config file
-	if comic.Format == "" {
-		if configFormat := comic.Config.DefaultOutputFormat; configFormat != "" {
-			comic.Format = configFormat
-		}
-	}
 }
 
 // RetrieveImageFromResponse will return the image byte and its type
@@ -316,10 +303,6 @@ func (comic *Comic) makeCBRZ() error {
 // MakeComic will create the file based on the output format selected.
 func (comic *Comic) MakeComic() error {
 	var err error
-
-	if comic.Config != nil {
-		comic.readConfigValues()
-	}
 
 	switch comic.Format {
 	case EPUB:

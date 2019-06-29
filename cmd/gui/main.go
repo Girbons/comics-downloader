@@ -17,6 +17,16 @@ func watchLogs(logSection *widget.ScrollContainer, box *widget.Box) {
 	}
 }
 
+func appStatus(downloadButton *widget.Button) {
+	for {
+		if <-downloader.AppStatus {
+			downloadButton.Disable()
+		} else {
+			downloadButton.Enable()
+		}
+	}
+}
+
 var release string // sha1 revision used to build the program
 
 func main() {
@@ -96,6 +106,7 @@ func main() {
 	logSection := widget.NewScrollContainer(box)
 
 	go watchLogs(logSection, box)
+	go appStatus(submitButton)
 
 	w.SetContent(fyne.NewContainerWithLayout(layout.NewBorderLayout(form, buttons, nil, nil), form, buttons, logSection))
 	w.Resize(fyne.NewSize(800, 400))

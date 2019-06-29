@@ -22,5 +22,5 @@ func (d *Downloader) ClearCountryField() {
 }
 
 func (d *Downloader) Submit() {
-	downloader.Run(d.URL.Text, d.Format.Selected, d.Country.Text, d.AllChapters.Checked, d.LastChapter.Checked, true)
+	downloader.GuiRun(d.URL.Text, d.Format.Selected, d.Country.Text, d.AllChapters.Checked, d.LastChapter.Checked)
 }

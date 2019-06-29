@@ -15,12 +15,15 @@ var (
 )
 
 func main() {
-	url := flag.String("url", "", "Comic URL or Comic URLS by separating each site with a comma without the use of spaces")
-	format := flag.String("format", "pdf", "Comic format output, supported formats are pdf,epub,cbr,cbz")
-	country := flag.String("country", "", "Set the country to retrieve a manga, Used by MangaRock")
-	versionFlag := flag.Bool("version", false, "Display the release")
 	all := flag.Bool("all", false, "Download all issues of the Comic or Comics")
+	country := flag.String("country", "", "Set the country to retrieve a manga, Used by MangaRock")
+	deamon := flag.Bool("deamon", false, "Run the download as deamon")
+	format := flag.String("format", "pdf", "Comic format output, supported formats are pdf,epub,cbr,cbz")
 	last := flag.Bool("last", false, "Download the last Comic issue")
+	sleepTime := flag.Int("sleepTime", 30, "Deamon sleep time")
+	url := flag.String("url", "", "Comic URL or Comic URLS by separating each site with a comma without the use of spaces")
+	versionFlag := flag.Bool("version", false, "Display the release")
+
 	flag.Parse()
 
 	if *versionFlag {
@@ -39,5 +42,5 @@ func main() {
 		}
 	}
 
-	app.Run(*url, *format, *country, *all, *last, false)
+	app.Run(*url, *format, *country, *all, *last, *deamon, *sleepTime)
 }

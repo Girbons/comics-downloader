@@ -4,13 +4,12 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/Girbons/comics-downloader/pkg/config"
 	"github.com/Girbons/comics-downloader/pkg/core"
 	"github.com/Girbons/comics-downloader/pkg/util"
 	log "github.com/sirupsen/logrus"
 )
 
-func initializeCollection(issues []string, conf *config.ComicConfig, url, format, source string, siteSource BaseSite) ([]*core.Comic, error) {
+func initializeCollection(issues []string, url, format, source string, siteSource BaseSite) ([]*core.Comic, error) {
 	var collection []*core.Comic
 	var err error
 
@@ -31,7 +30,6 @@ func initializeCollection(issues []string, conf *config.ComicConfig, url, format
 				Name:        name,
 				IssueNumber: issueNumber,
 				URLSource:   url,
-				Config:      conf,
 				Source:      source,
 				Format:      format,
 			}
@@ -48,7 +46,7 @@ func initializeCollection(issues []string, conf *config.ComicConfig, url, format
 }
 
 // LoadComicFromSource will return a `comic` instance initialized based on the source
-func LoadComicFromSource(conf *config.ComicConfig, source, url, country, format string, all, last bool) ([]*core.Comic, error) {
+func LoadComicFromSource(source, url, country, format string, all, last bool) ([]*core.Comic, error) {
 	var siteSource BaseSite
 	var collection []*core.Comic
 	var issues []string
@@ -75,5 +73,5 @@ func LoadComicFromSource(conf *config.ComicConfig, source, url, country, format 
 		return collection, err
 	}
 
-	return initializeCollection(issues, conf, url, format, source, siteSource)
+	return initializeCollection(issues, url, format, source, siteSource)
 }
