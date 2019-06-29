@@ -1,3 +1,18 @@
+<a name="v0.14"></a>
+# [0.14 (v0.14)](https://github.com/Girbons/comics-downloader/releases/tag/v0.14) - 29 Jun 2019
+
+# What's new
+
+* added `-deamon` and `-timeout` flags 
+
+# Improvements
+
+* [GUI] download button is now disabled once pressed until the current job is done
+* Removed config file
+
+[Changes][v0.14]
+
+
 <a name="v0.13"></a>
 # [0.13 (v0.13)](https://github.com/Girbons/comics-downloader/releases/tag/v0.13) - 29 Jun 2019
 
@@ -291,6 +306,7 @@ Well,  this is the first release :)
 [Changes][v0.1.0]
 
 
+[v0.14]: https://github.com/Girbons/comics-downloader/compare/v0.13...v0.14
 [v0.13]: https://github.com/Girbons/comics-downloader/compare/v0.13-alpha...v0.13
 [v0.13-alpha]: https://github.com/Girbons/comics-downloader/compare/v0.12.4...v0.13-alpha
 [v0.12.4]: https://github.com/Girbons/comics-downloader/compare/v0.12.3...v0.12.4
