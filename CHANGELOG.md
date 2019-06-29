@@ -1,3 +1,21 @@
+<a name="v0.13"></a>
+# [0.13 (v0.13)](https://github.com/Girbons/comics-downloader/releases/tag/v0.13) - 29 Jun 2019
+
+# What's new
+
+* added `--last` option to download the last comic issue.
+
+[Changes][v0.13]
+
+
+<a name="v0.13-alpha"></a>
+# [0.13-alpha (v0.13-alpha)](https://github.com/Girbons/comics-downloader/releases/tag/v0.13-alpha) - 27 Jun 2019
+
+
+
+[Changes][v0.13-alpha]
+
+
 <a name="v0.12.4"></a>
 # [0.12.4 (v0.12.4)](https://github.com/Girbons/comics-downloader/releases/tag/v0.12.4) - 24 Jun 2019
 
@@ -273,6 +291,8 @@ Well,  this is the first release :)
 [Changes][v0.1.0]
 
 
+[v0.13]: https://github.com/Girbons/comics-downloader/compare/v0.13-alpha...v0.13
+[v0.13-alpha]: https://github.com/Girbons/comics-downloader/compare/v0.12.4...v0.13-alpha
 [v0.12.4]: https://github.com/Girbons/comics-downloader/compare/v0.12.3...v0.12.4
 [v0.12.3]: https://github.com/Girbons/comics-downloader/compare/v0.12.2...v0.12.3
 [v0.12.2]: https://github.com/Girbons/comics-downloader/compare/v0.12.1...v0.12.2
