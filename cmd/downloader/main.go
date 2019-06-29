@@ -10,8 +10,10 @@ import (
 )
 
 var (
-	release   string // sha1 revision used to build the program
-	buildTime string // when the executable was built
+	// sha1 revision used to build the program
+	release string
+	// executable build date
+	buildTime string
 )
 
 func main() {
@@ -20,9 +22,9 @@ func main() {
 	deamon := flag.Bool("deamon", false, "Run the download as deamon")
 	format := flag.String("format", "pdf", "Comic format output, supported formats are pdf,epub,cbr,cbz")
 	last := flag.Bool("last", false, "Download the last Comic issue")
-	sleepTime := flag.Int("sleepTime", 30, "Deamon sleep time")
+	timeout := flag.Int("timeout", 600, "Timeout (seconds), specifies how often the downloader runs")
 	url := flag.String("url", "", "Comic URL or Comic URLS by separating each site with a comma without the use of spaces")
-	versionFlag := flag.Bool("version", false, "Display the release")
+	versionFlag := flag.Bool("version", false, "Display build date and release informations")
 
 	flag.Parse()
 
@@ -42,5 +44,5 @@ func main() {
 		}
 	}
 
-	app.Run(*url, *format, *country, *all, *last, *deamon, *sleepTime)
+	app.Run(*url, *format, *country, *all, *last, *deamon, *timeout)
 }

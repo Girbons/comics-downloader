@@ -1,28 +1,20 @@
 package detector
 
 import (
+	"github.com/Girbons/comics-downloader/pkg/sites"
 	"github.com/Girbons/comics-downloader/pkg/util"
 	log "github.com/sirupsen/logrus"
 )
 
-// DetectComic will look for the url source in order to properly
-// instantiate the Comic struct.
+// DetectComic will look for the url source to check if a source is supported or not.
 func DetectComic(url string) (string, bool) {
-	var supportedSites = []string{
-		"www.comicextra.com",
-		"mangarock.com",
-		"www.mangareader.net",
-		"www.mangatown.com",
-		"www.mangahere.cc",
-	}
-
 	source, err := util.URLSource(url)
 
 	if err != nil {
 		log.Error(err)
 	}
 
-	for _, site := range supportedSites {
+	for _, site := range sites.SupportedSites {
 		if source == site {
 			return source, true
 		}

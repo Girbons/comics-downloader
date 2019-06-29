@@ -2,7 +2,6 @@ package app
 
 import (
 	"fmt"
-	"os"
 	"strings"
 	"time"
 
@@ -11,8 +10,12 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var Messages = make(chan string)
-var AppStatus = make(chan bool)
+var (
+	// AppStatus is used in GUI app to disable the `download` button
+	AppStatus = make(chan bool)
+	// Messages is used in GUI app to show app logs inside its specific box
+	Messages = make(chan string)
+)
 
 func init() {
 	// use log INFO Level
@@ -62,21 +65,15 @@ func download(link, format, country string, all, last, bindLogsToChannel bool) {
 	}
 }
 
+// GuiRun will start the GUI app
 func GuiRun(link, format, country string, all, last bool) {
-	// used for the gui to disable the `download` button
-	if link == "" {
-		msg := "url parameter required"
-		log.Error(msg)
-		sendToChannel(true, msg)
-	}
-	// used to disable submit button
 	AppStatus <- true
 	download(link, format, country, all, last, true)
 	AppStatus <- false
 }
 
-// Run will run the downloader app
-func Run(link, format, country string, all, last, deamon bool, sleepTime int) {
+// Run will start the CLI app
+func Run(link, format, country string, all, last, deamon bool, timeout int) {
 	if all && last {
 		last = false
 		log.Warning("all and last are selected, all parameter will be used")
@@ -84,18 +81,17 @@ func Run(link, format, country string, all, last, deamon bool, sleepTime int) {
 
 	// link is required
 	if link == "" {
-		msg := "url parameter required"
-		log.Error(msg)
-		os.Exit(1)
+		log.Fatal("url parameter is required")
 	}
 
-	if deamon {
+	// deamon is started only if `all` or `last` flags are used
+	if deamon && (all || last) {
 		for {
-			fmt.Println("fooo")
 			download(link, format, country, all, last, false)
-			time.Sleep(time.Duration(sleepTime) * time.Second)
-			fmt.Println("bar")
+			time.Sleep(time.Duration(timeout) * time.Second)
 		}
+	} else {
+		log.Warning("To use `-deamon` be sure to pass `-all` or `-last` flags")
 	}
 
 	download(link, format, country, all, last, false)

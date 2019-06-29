@@ -45,10 +45,14 @@ You can invoke the `--help`:
         Download all issues of the Comic or Comics
   -country string
         Set the country to retrieve a manga, Used by MangaRock
+  -deamon
+        Run the download as deamon
   -format string
         Comic format output, supported formats are pdf,epub,cbr,cbz (default "pdf")
   -last
         Download the last Comic issue
+  -timeout int
+        Timeout (seconds), specifies how often the downloader runs (default 600)
   -url string
         Comic URL or Comic URLS by separating each site with a comma without the use of spaces
   -version
@@ -98,6 +102,29 @@ example:
 
 ```bash
 ./comics-downloader -url=[your url] -all
+```
+
+### Download the last comic issue
+
+To download the last comic issue use `-last` flag.
+
+```bash
+./comics-downloader -url=[your url] -last
+```
+
+### Run as Deamon
+
+You can run the CLI downloader as deamon using `-deamon` flag.
+works only if `-all` or `-last` flags are specified.
+
+```bash
+./comics-downloader -url=[your url] -deamon
+```
+
+You can customize the deamon timeout using the `-timeout` flag.
+
+```bash
+./comics-downloader -url=[your url] -deamon -timeout=300
 ```
 
 ## Built With
