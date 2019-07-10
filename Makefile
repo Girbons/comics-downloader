@@ -29,7 +29,7 @@ osx-gui-build: # Creates OSX Gui
 	@GOOS=darwin GOARCH=amd64 go build -ldflags=${LDFLAGS} -o build/comics-downloader-gui-osx ./cmd/gui
 
 windows-gui-build: # Creates Window GUI executable
-	@CGO_ENABLED=1 GOOS=windows CC=x86_64-w64-mingw32-gcc go build -ldflags=${LDFLAGSWINDOWS} -o build/comics-downloader-gui-windows ./cmd/gui
+	@CGO_ENABLED=1 GOOS=windows CC=x86_64-w64-mingw32-gcc go build -ldflags=${LDFLAGSWINDOWS} -o build/comics-downloader-gui-windows.exe ./cmd/gui
 
 linux-gui-build: # Creates LINUX executable
 	@fyne-cross --ldflags=${LDFLAGS} --output=comics-downloader-gui --targets=linux/amd64 ./cmd/gui

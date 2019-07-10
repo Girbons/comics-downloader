@@ -58,7 +58,8 @@ func download(link, format, country string, all, last, bindLogsToChannel bool) {
 					log.Error(err)
 					sendToChannel(bindLogsToChannel, fmt.Sprintf("ERROR: %s", err))
 				} else {
-					sendToChannel(bindLogsToChannel, fmt.Sprintf("%s, Succesfully Downloaded", comic.Name))
+					name := fmt.Sprintf("%s %s.%s", comic.Name, comic.IssueNumber, comic.Format)
+					sendToChannel(bindLogsToChannel, fmt.Sprintf("%s, Succesfully Downloaded", name))
 				}
 			}
 		}
@@ -90,8 +91,6 @@ func Run(link, format, country string, all, last, deamon bool, timeout int) {
 			download(link, format, country, all, last, false)
 			time.Sleep(time.Duration(timeout) * time.Second)
 		}
-	} else {
-		log.Warning("To use `-deamon` be sure to pass `-all` or `-last` flags")
 	}
 
 	download(link, format, country, all, last, false)
