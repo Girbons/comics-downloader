@@ -6,10 +6,9 @@ import (
 
 	"github.com/Girbons/comics-downloader/pkg/core"
 	"github.com/Girbons/comics-downloader/pkg/util"
-	log "github.com/sirupsen/logrus"
 )
 
-func initializeCollection(issues []string, url, format, source string, siteSource BaseSite) ([]*core.Comic, error) {
+func initializeCollection(issues []string, url, format, source, imagesFormat string, siteSource BaseSite, imagesOnly bool) ([]*core.Comic, error) {
 	var collection []*core.Comic
 	var err error
 
@@ -25,20 +24,19 @@ func initializeCollection(issues []string, url, format, source string, siteSourc
 		dir, _ := util.PathSetup(source, name)
 		fileName := util.GenerateFileName(dir, name, issueNumber, format)
 
-		if util.FileDoesNotExist(fileName) {
+		if util.DirectoryOrFileDoesNotExist(fileName) || imagesOnly {
 			comic := &core.Comic{
-				Name:        name,
-				IssueNumber: issueNumber,
-				URLSource:   url,
-				Source:      source,
-				Format:      format,
+				Name:         name,
+				IssueNumber:  issueNumber,
+				URLSource:    url,
+				Source:       source,
+				Format:       format,
+				ImagesFormat: imagesFormat,
 			}
 			if err = Initialize(siteSource, comic); err != nil {
 				return collection, err
 			}
 			collection = append(collection, comic)
-		} else {
-			log.Info(fmt.Sprintf("%s/%s.%s Already exist", name, issueNumber, format))
 		}
 	}
 
@@ -46,7 +44,7 @@ func initializeCollection(issues []string, url, format, source string, siteSourc
 }
 
 // LoadComicFromSource will return a `comic` instance initialized based on the source
-func LoadComicFromSource(source, url, country, format string, all, last bool) ([]*core.Comic, error) {
+func LoadComicFromSource(source, url, country, format, imagesFormat string, all, last, imagesOnly bool) ([]*core.Comic, error) {
 	var siteSource BaseSite
 	var collection []*core.Comic
 	var issues []string
@@ -73,5 +71,5 @@ func LoadComicFromSource(source, url, country, format string, all, last bool) ([
 		return collection, err
 	}
 
-	return initializeCollection(issues, url, format, source, siteSource)
+	return initializeCollection(issues, url, format, source, imagesFormat, siteSource, imagesOnly)
 }

@@ -6,11 +6,13 @@ import (
 )
 
 type Downloader struct {
-	URL         *widget.Entry
-	Country     *widget.Entry
-	Format      *widget.Radio
-	AllChapters *widget.Check
-	LastChapter *widget.Check
+	URL          *widget.Entry
+	Country      *widget.Entry
+	Format       *widget.Radio
+	AllChapters  *widget.Check
+	LastChapter  *widget.Check
+	ImagesOnly   *widget.Check
+	ImagesFormat *widget.Radio
 }
 
 func (d *Downloader) ClearURLField() {
@@ -22,5 +24,13 @@ func (d *Downloader) ClearCountryField() {
 }
 
 func (d *Downloader) Submit() {
-	downloader.GuiRun(d.URL.Text, d.Format.Selected, d.Country.Text, d.AllChapters.Checked, d.LastChapter.Checked)
+	downloader.GuiRun(
+		d.URL.Text,
+		d.Format.Selected,
+		d.Country.Text,
+		d.ImagesFormat.Selected,
+		d.AllChapters.Checked,
+		d.LastChapter.Checked,
+		d.ImagesOnly.Checked,
+	)
 }

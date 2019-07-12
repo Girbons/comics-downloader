@@ -9,8 +9,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-
-	log "github.com/sirupsen/logrus"
 )
 
 // IMAGEREGEX to extract the image html tag
@@ -67,13 +65,13 @@ func ConvertToJPG(img image.Image, imgData *bytes.Buffer) error {
 // ImageType return the image type
 func ImageType(mimeStr string) (tp string) {
 	switch mimeStr {
-	case "image/png":
+	case "image/png", "png":
 		tp = "png"
-	case "image/jpg":
+	case "image/jpg", "jpg":
 		tp = "jpg"
-	case "image/jpeg":
+	case "image/jpeg", "jpeg":
 		tp = "jpg"
-	case "image/gif":
+	case "image/gif", "gif":
 		tp = "gif"
 	default:
 		tp = "unknown"
@@ -83,16 +81,38 @@ func ImageType(mimeStr string) (tp string) {
 
 // PathSetup will create the folders where the comic will be saved
 func PathSetup(source, name string) (string, error) {
-	dir, err := filepath.Abs(fmt.Sprintf("%s/%s/%s/%s/", filepath.Dir(os.Args[0]), "comics", source, name))
+	var dir string
+	var err error
+
+	dir, err = filepath.Abs(fmt.Sprintf("%s/comics/%s/%s/", filepath.Dir(os.Args[0]), source, name))
 
 	if err != nil {
-		log.Error(err)
+		return dir, err
 	}
 
 	// create folders
 	err = os.MkdirAll(dir, os.ModePerm)
 	if err != nil {
-		log.Error(err)
+		return dir, err
+	}
+
+	return dir, err
+}
+
+func ImagesPathSetup(source, name, issueNumber string) (string, error) {
+	var dir string
+	var err error
+
+	dir, err = filepath.Abs(fmt.Sprintf("%s/comics/%s/%s/images-%s/", filepath.Dir(os.Args[0]), source, name, issueNumber))
+
+	if err != nil {
+		return dir, err
+	}
+
+	// create folders
+	err = os.MkdirAll(dir, os.ModePerm)
+	if err != nil {
+		return dir, err
 	}
 
 	return dir, err
@@ -103,8 +123,8 @@ func CurrentDir() (string, error) {
 	return filepath.Abs(filepath.Dir(os.Args[0]))
 }
 
-// FileDoesNotExist check if a file exist or not
-func FileDoesNotExist(filePath string) bool {
+// DirectoryOrFileDoesNotExist check if a directory/file exist or not
+func DirectoryOrFileDoesNotExist(filePath string) bool {
 	_, err := os.Stat(filePath)
 
 	return os.IsNotExist(err)

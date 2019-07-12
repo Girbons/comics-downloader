@@ -31,6 +31,7 @@ var release string // sha1 revision used to build the program
 
 func main() {
 	options := []string{"pdf", "epub", "cbr", "cbz"}
+	imagesFormat := []string{"png", "jpg", "img"}
 
 	app := app.New()
 	w := app.NewWindow(fmt.Sprintf("Comics Downloader %s", release))
@@ -45,15 +46,21 @@ func main() {
 	choices := widget.NewRadio(options, nil)
 	choices.SetSelected("pdf")
 
+	imagesFormatChoices := widget.NewRadio(imagesFormat, nil)
+	imagesFormatChoices.SetSelected("jpg")
+
 	allChaptersCheck := widget.NewCheck("", nil)
 	lastChapterCheck := widget.NewCheck("", nil)
+	imagesOnlyCheck := widget.NewCheck("", nil)
 
 	d := &Downloader{
-		URL:         urlEntry,
-		Country:     countryEntry,
-		Format:      choices,
-		AllChapters: allChaptersCheck,
-		LastChapter: lastChapterCheck,
+		URL:          urlEntry,
+		Country:      countryEntry,
+		Format:       choices,
+		AllChapters:  allChaptersCheck,
+		LastChapter:  lastChapterCheck,
+		ImagesOnly:   imagesOnlyCheck,
+		ImagesFormat: imagesFormatChoices,
 	}
 
 	clearCountryFieldButton := widget.NewButton("Clear Country", func() {
@@ -78,6 +85,8 @@ func main() {
 	form.Append("Output", d.Format)
 	form.Append("All chapters", d.AllChapters)
 	form.Append("Last chapter", d.LastChapter)
+	form.Append("Images Only", d.ImagesOnly)
+	form.Append("Images Format", d.ImagesFormat)
 
 	box := widget.NewVBox()
 

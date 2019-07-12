@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -27,6 +28,7 @@ func TestNewComic(t *testing.T) {
 	comic.IssueNumber = "2"
 	comic.Links = links
 	comic.Source = "bar"
+	comic.ImagesFormat = "png"
 
 	assert.Equal(t, "foo", comic.Name)
 	assert.Equal(t, "2", comic.IssueNumber)
@@ -42,6 +44,7 @@ func TestMakeComicPDF(t *testing.T) {
 	comic.Format = "pdf"
 	comic.IssueNumber = "example-chapter-1"
 	comic.Links = []string{"http://via.placeholder.com/150", "http://via.placeholder.com/150", "http://via.placeholder.com/150"}
+	comic.ImagesFormat = "png"
 
 	err := comic.MakeComic()
 	assert.Nil(t, err)
@@ -57,6 +60,7 @@ func TestMakeComicEPUB(t *testing.T) {
 	comic.Format = "epub"
 	comic.IssueNumber = "example-chapter-1"
 	comic.Author = "author"
+	comic.ImagesFormat = "png"
 
 	comic.Links = []string{"http://via.placeholder.com/150", "http://via.placeholder.com/150", "http://via.placeholder.com/150"}
 	err := comic.MakeComic()
@@ -77,6 +81,7 @@ func TestMakeComicEPUBMangarock(t *testing.T) {
 	comic.Format = "epub"
 	comic.IssueNumber = "chapter-13"
 	comic.Source = "mangarock.com"
+	comic.ImagesFormat = "png"
 	comic.Links = result.Data
 
 	err := comic.MakeComic()
@@ -96,6 +101,7 @@ func TestMakeComicCBZMangarock(t *testing.T) {
 	comic.Format = "cbz"
 	comic.IssueNumber = "chapter-13"
 	comic.Source = "mangarock.com"
+	comic.ImagesFormat = "png"
 	comic.Links = result.Data
 
 	err := comic.MakeComic()
@@ -115,6 +121,7 @@ func TestMakeComicCBRMangarock(t *testing.T) {
 	comic.Format = "cbr"
 	comic.IssueNumber = "chapter-13"
 	comic.Source = "mangarock.com"
+	comic.ImagesFormat = "png"
 	comic.Links = result.Data
 
 	err := comic.MakeComic()
@@ -135,6 +142,7 @@ func TestMakeComicPDFMangarock(t *testing.T) {
 	comic.Format = "pdf"
 	comic.IssueNumber = "chapter-13"
 	comic.Source = "mangarock.com"
+	comic.ImagesFormat = "jpg"
 	comic.Links = result.Data
 
 	err := comic.MakeComic()
@@ -142,4 +150,68 @@ func TestMakeComicPDFMangarock(t *testing.T) {
 
 	dir, _ := filepath.Abs(fmt.Sprintf("%s/%s/%s/%s/%s/", filepath.Dir(os.Args[0]), "comics", "mangarock.com", "Boruto", "Boruto-chapter-13.pdf"))
 	assert.True(t, exists(dir))
+}
+
+func TestDownloadImagesPNGFormat(t *testing.T) {
+	comic := new(Comic)
+
+	comic.Name = "foo-png"
+	comic.Source = "fake"
+	comic.IssueNumber = "example-chapter-1"
+	comic.Links = []string{"http://via.placeholder.com/150", "http://via.placeholder.com/150", "http://via.placeholder.com/150"}
+	comic.ImagesFormat = "png"
+
+	dir, err := comic.DownloadImages()
+	files, _ := ioutil.ReadDir(dir)
+
+	assert.Nil(t, err)
+	assert.Equal(t, 3, len(files))
+}
+
+func TestDownloadImagesJPGFormat(t *testing.T) {
+	comic := new(Comic)
+
+	comic.Name = "foo-jpg"
+	comic.Source = "fake"
+	comic.IssueNumber = "example-chapter-1"
+	comic.Links = []string{"http://via.placeholder.com/150", "http://via.placeholder.com/150", "http://via.placeholder.com/150"}
+	comic.ImagesFormat = "jpg"
+
+	dir, err := comic.DownloadImages()
+	files, _ := ioutil.ReadDir(dir)
+
+	assert.Nil(t, err)
+	assert.Equal(t, 3, len(files))
+}
+
+func TestDownloadImagesJPEGFormat(t *testing.T) {
+	comic := new(Comic)
+
+	comic.Name = "bar-jpeg"
+	comic.Source = "fake"
+	comic.IssueNumber = "example-chapter-1"
+	comic.ImagesFormat = "jpeg"
+	comic.Links = []string{"http://via.placeholder.com/150", "http://via.placeholder.com/150", "http://via.placeholder.com/150"}
+
+	dir, err := comic.DownloadImages()
+	files, _ := ioutil.ReadDir(dir)
+
+	assert.Nil(t, err)
+	assert.Equal(t, 3, len(files))
+}
+
+func TestDownloadImagesIMGFormat(t *testing.T) {
+	comic := new(Comic)
+
+	comic.Name = "bar-img"
+	comic.Source = "fake"
+	comic.IssueNumber = "example-chapter-1"
+	comic.Links = []string{"http://via.placeholder.com/150", "http://via.placeholder.com/150", "http://via.placeholder.com/150"}
+	comic.ImagesFormat = "img"
+
+	dir, err := comic.DownloadImages()
+	files, _ := ioutil.ReadDir(dir)
+
+	assert.Nil(t, err)
+	assert.Equal(t, 3, len(files))
 }

@@ -9,7 +9,7 @@ import (
 
 func TestSiteLoaderMangatown(t *testing.T) {
 	url := "https://www.mangatown.com/manga/naruto/v63/c693/"
-	collection, err := LoadComicFromSource("www.mangatown.com", url, "", "pdf", false, false)
+	collection, err := LoadComicFromSource("www.mangatown.com", url, "", "pdf", "png", false, false, false)
 
 	assert.Nil(t, err)
 	assert.Equal(t, len(collection), 1)
@@ -25,7 +25,7 @@ func TestSiteLoaderMangatown(t *testing.T) {
 
 func TestSiteLoaderMangarock(t *testing.T) {
 	url := "https://mangarock.com/manga/mrs-serie-35593/chapter/mrs-chapter-100051049"
-	collection, err := LoadComicFromSource("mangarock.com", url, "italy", "pdf", false, false)
+	collection, err := LoadComicFromSource("mangarock.com", url, "italy", "pdf", "png", false, false, false)
 
 	assert.Nil(t, err)
 	assert.Equal(t, len(collection), 1)
@@ -41,7 +41,7 @@ func TestSiteLoaderMangarock(t *testing.T) {
 
 func TestSiteLoaderMangareader(t *testing.T) {
 	url := "https://www.mangareader.net/naruto/700"
-	collection, err := LoadComicFromSource("www.mangareader.net", url, "", "pdf", false, false)
+	collection, err := LoadComicFromSource("www.mangareader.net", url, "", "pdf", "png", false, false, false)
 
 	assert.Nil(t, err)
 	assert.Equal(t, len(collection), 1)
@@ -57,7 +57,7 @@ func TestSiteLoaderMangareader(t *testing.T) {
 
 func TestSiteLoaderComicExtra(t *testing.T) {
 	url := "https://www.comicextra.com/daredevil-2016/chapter-600/full"
-	collection, err := LoadComicFromSource("www.comicextra.com", url, "", "pdf", false, false)
+	collection, err := LoadComicFromSource("www.comicextra.com", url, "", "pdf", "png", false, false, false)
 
 	assert.Nil(t, err)
 	assert.Equal(t, len(collection), 1)
@@ -74,7 +74,7 @@ func TestSiteLoaderComicExtra(t *testing.T) {
 func TestLoaderUnknownSource(t *testing.T) {
 	url := "http://example.com"
 
-	collection, err := LoadComicFromSource("example.com", url, "", "pdf", false, false)
+	collection, err := LoadComicFromSource("example.com", url, "", "pdf", "png", false, false, false)
 
 	if assert.NotNil(t, err) {
 		assert.Equal(t, fmt.Errorf("It was not possible to determine the source"), err)

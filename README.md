@@ -49,6 +49,10 @@ You can invoke the `--help`:
         Run the download as deamon
   -format string
         Comic format output, supported formats are pdf,epub,cbr,cbz (default "pdf")
+  -images-format
+        To use with images-only flag, choose the image format, available png,jpeg,img (default "jpg")
+  -images-only
+        Download comic/manga images
   -last
         Download the last Comic issue
   -timeout int
@@ -125,6 +129,26 @@ You can customize the deamon timeout using the `-timeout` flag.
 
 ```bash
 ./comics-downloader -url=[your url] -deamon -timeout=300
+```
+
+### Download Only the Images
+
+You can download only the images using `-images-only` flag.
+
+```bash
+./comics-downloader -url=[your url] -images-only
+```
+
+To choose the format use `-images-format` flag, the available formats are:
+
+* img
+* png
+* jpg
+
+Default is __jpg__.
+
+```bash
+./comics-downloader -url=[your url] -images-only -images-format=jpg
 ```
 
 ## Built With

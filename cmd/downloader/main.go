@@ -21,6 +21,8 @@ func main() {
 	country := flag.String("country", "", "Set the country to retrieve a manga, Used by MangaRock")
 	deamon := flag.Bool("deamon", false, "Run the download as deamon")
 	format := flag.String("format", "pdf", "Comic format output, supported formats are pdf,epub,cbr,cbz")
+	imagesOnly := flag.Bool("images-only", false, "Download comic/manga images")
+	imagesFormat := flag.String("images-format", "jpg", "To use with `images-only` flag, choose the image format, available png,jpeg,img")
 	last := flag.Bool("last", false, "Download the last Comic issue")
 	timeout := flag.Int("timeout", 600, "Timeout (seconds), specifies how often the downloader runs")
 	url := flag.String("url", "", "Comic URL or Comic URLS by separating each site with a comma without the use of spaces")
@@ -44,5 +46,5 @@ func main() {
 		}
 	}
 
-	app.Run(*url, *format, *country, *all, *last, *deamon, *timeout)
+	app.Run(*url, *format, *country, *imagesFormat, *all, *last, *deamon, *imagesOnly, *timeout)
 }
