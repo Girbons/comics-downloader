@@ -1,3 +1,16 @@
+<a name="v0.15"></a>
+# [0.15 (v0.15)](https://github.com/Girbons/comics-downloader/releases/tag/v0.15) - 22 Jul 2019
+
+# What's new
+
+* Its now possible to download only the images related to a comic/manga with the `-images-only` flag.
+* Its possible to specify the images format with `-images-format` flag.
+
+
+
+[Changes][v0.15]
+
+
 <a name="v0.14.1"></a>
 # [0.14.1 (v0.14.1)](https://github.com/Girbons/comics-downloader/releases/tag/v0.14.1) - 10 Jul 2019
 
@@ -316,6 +329,7 @@ Well,  this is the first release :)
 [Changes][v0.1.0]
 
 
+[v0.15]: https://github.com/Girbons/comics-downloader/compare/v0.14.1...v0.15
 [v0.14.1]: https://github.com/Girbons/comics-downloader/compare/v0.14...v0.14.1
 [v0.14]: https://github.com/Girbons/comics-downloader/compare/v0.13...v0.14
 [v0.13]: https://github.com/Girbons/comics-downloader/compare/v0.13-alpha...v0.13
