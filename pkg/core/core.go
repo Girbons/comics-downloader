@@ -14,7 +14,7 @@ import (
 	epub "github.com/bmaupin/go-epub"
 	"github.com/jung-kurt/gofpdf"
 	"github.com/mholt/archiver"
-	"github.com/schollz/progressbar"
+	"github.com/schollz/progressbar/v2"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -164,9 +164,6 @@ func (comic *Comic) makePDF() error {
 	for _, file := range files {
 		// add a new PDF page
 		pdf.AddPage()
-		if err != nil {
-			return err
-		}
 		imageOptions := gofpdf.ImageOptions{ImageType: util.ImageType(comic.ImagesFormat), ReadDpi: true, AllowNegativePosition: false}
 		fileName := fmt.Sprintf("%s/%s", imagesPath, file.Name())
 		data, err := ioutil.ReadFile(fileName)

@@ -44,10 +44,10 @@ func TestComicextraRetrieveIssueLinksLastChapter(t *testing.T) {
 
 func TestComicExtraRetrieveLastIssueLink(t *testing.T) {
 	comicextra := new(Comicextra)
-	issue, err := comicextra.retrieveLastIssue("https://www.comicextra.com/batman-2016/chapter-58/full")
+	issue, err := comicextra.retrieveLastIssue("https://www.comicextra.com/comic/100-bullets")
 
 	assert.Nil(t, err)
-	assert.Equal(t, "https://www.comicextra.com/batman-2016/chapter-75/full", issue)
+	assert.Equal(t, "https://www.comicextra.com/100-bullets/chapter-100", issue)
 }
 
 func TestComicExtraRetrieveLastIssueLinkNotDetail(t *testing.T) {

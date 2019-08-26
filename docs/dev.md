@@ -2,26 +2,35 @@
 
 ## Go
 
-You must install [go](https://golang.org/doc/install).
+You must have [go](https://golang.org/doc/install).
 
 ## Installing dependencies
 
-Dependencies are handled using [dep](https://github.com/golang/dep), [here](https://golang.github.io/dep/docs/installation.html) is the guide to install it.
+Dependencies are handled with [modules](https://github.com/golang/go/wiki/Modules).
 
-Once installed run:
+## Build
 
-```
-dep ensure
-```
+There's a [Makefile](https://github.com/Girbons/comics-downloader/blob/master/Makefile) which should make this step easier.
 
-which will install the project's dependencies
-
-## Linter
-
-This project use [golangci-lint](https://github.com/golangci/golangci-lint), [here](https://github.com/golangci/golangci-lint#install) the guide to install it.
-
-Once installed run:
+### CLI version:
 
 ```
-golangci-lint run
+go build -o comics-downloader ./cmd/downloader
+```
+
+### GUI version
+
+[Prerequisites](https://fyne.io//develop/compiling.html) then you can run:
+
+```
+go build -o comics-downloader-gui ./cmd/gui
+```
+
+if you don't want to install extra dependencies to build the GUI version you could use [fyne-cross](https://github.com/lucor/fyne-cross)
+which requires [Docker](https://www.docker.com/get-started).
+
+## Run Tests
+
+```
+go test -v ./...
 ```
