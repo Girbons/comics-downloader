@@ -28,7 +28,7 @@ Download the latest release:
 
 Download the latest GUI release:
 
-- [Linux](https://github.com/Girbons/comics-downloader/releases/download/v0.15/comics-downloader-gui-linux)
+- [Linux](https://github.com/Girbons/comics-downloader/releases/download/v0.15/comics-downloader-gui-linux-amd64)
 - [Mac OSX](https://github.com/Girbons/comics-downloader/releases/download/v0.15/comics-downloader-gui-osx)
 - [Windows](https://github.com/Girbons/comics-downloader/releases/download/v0.15/comics-downloader-gui-windows.exe)
 
