@@ -7,6 +7,7 @@ require (
 	github.com/BakeRolls/mri v0.0.0-20190425192657-438a0b611ec0
 	github.com/Girbons/mangarock v0.0.0-20190725180316-ca97fc422a34
 	github.com/anaskhan96/soup v1.1.1
+	github.com/bake/mangadex v0.0.0-20190918122836-0261a89dc30d
 	github.com/bmaupin/go-epub v0.5.3
 	github.com/dsnet/compress v0.0.1 // indirect
 	github.com/frankban/quicktest v1.4.1 // indirect

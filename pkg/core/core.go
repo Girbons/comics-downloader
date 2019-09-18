@@ -276,8 +276,8 @@ func (comic *Comic) DownloadImages() (string, error) {
 			if err != nil {
 				return dir, err
 			}
-
 			defer rsp.Body.Close()
+
 			// retrieve the image from the response
 			content, _, err := comic.retrieveImageFromResponse(rsp)
 			if err != nil {
@@ -285,12 +285,13 @@ func (comic *Comic) DownloadImages() (string, error) {
 			}
 
 			imgFile, err := os.Create(fmt.Sprintf("%04d-image.%s", i, format))
-
 			if err != nil {
 				return dir, err
 			}
+			defer imgFile.Close()
 
-			if _, err = io.Copy(imgFile, content); err != nil {
+			err = util.SaveImage(imgFile, content, format)
+			if err != nil {
 				return dir, err
 			}
 		}

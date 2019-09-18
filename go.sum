@@ -8,6 +8,10 @@ github.com/Kodeworks/golang-image-ico v0.0.0-20141118225523-73f0f4cfade9/go.mod 
 github.com/akavel/rsrc v0.8.0/go.mod h1:uLoCtb9J+EyAqh+26kdrTgmzRBFPGOolLWKpdxkKq+c=
 github.com/anaskhan96/soup v1.1.1 h1:Duux/0htS2Va7XLJ9qIakCSey790hg9OFRm2FwlMTy0=
 github.com/anaskhan96/soup v1.1.1/go.mod h1:pT5vs4HXDwA5y4KQCsKvnkpQd3D+joP7IqpiGskfWW0=
+github.com/bake/httpcache v0.0.0-20190425194625-775d0adac809 h1:+WthOY6+9RdivM1SPr5KRregzgSYmu++u0uphYgmoyk=
+github.com/bake/httpcache v0.0.0-20190425194625-775d0adac809/go.mod h1:4NG8FC+Gt0aSRAFe+GcCsKUGCL63u0doQyQBQffWX90=
+github.com/bake/mangadex v0.0.0-20190918122836-0261a89dc30d h1:WpnqIe+TLGBW+cHHm2SA8lwlCtIMYhWNl2H+Z0peTJM=
+github.com/bake/mangadex v0.0.0-20190918122836-0261a89dc30d/go.mod h1:0EIa3RFRprO7Ey+7O0TveUY6epgxsabT82R3bkUjkzU=
 github.com/bmaupin/go-epub v0.5.3 h1:HBOJS2KqsRGGcEzM470/9l5q2l9JwAUxQabEgPMrW90=
 github.com/bmaupin/go-epub v0.5.3/go.mod h1:4RBr0Zo03mRGOyGAcc25eLOqIPCkMbfz+tINVmH6clQ=
 github.com/boombuler/barcode v1.0.0/go.mod h1:paBWMcWSl3LHKBqUq+rly7CNSldXjb2rDl3JlRe0mD8=
@@ -29,6 +33,8 @@ github.com/goki/freetype v0.0.0-20181231101311-fa8a33aabaff h1:W71vTCKoxtdXgnm1E
 github.com/goki/freetype v0.0.0-20181231101311-fa8a33aabaff/go.mod h1:wfqRWLHRBsRgkp5dmbG56SA0DmVtwrF5N3oPdI8t+Aw=
 github.com/golang/snappy v0.0.1 h1:Qgr9rKW7uDUkrbSmQeiDsGa8SjGyCOGtuasMWwvp2P4=
 github.com/golang/snappy v0.0.1/go.mod h1:/XxbfmMg8lxefKM7IXC3fBNl/7bRcc72aCRzEWrmP2Q=
+github.com/google/btree v1.0.0 h1:0udJVsspx3VBr5FwtLhQQtuAsVc79tTq0ocGIPAU6qo=
+github.com/google/btree v1.0.0/go.mod h1:lNA+9X1NB3Zf8V7Ke586lFgjr2dZNuvo3lPJSGZ5JPQ=
 github.com/google/go-cmp v0.3.0 h1:crn/baboCvb5fXaQ0IJ1SGTsTVrWpDsCWC8EGETZijY=
 github.com/google/go-cmp v0.3.0/go.mod h1:8QqcDgzrUqlUb/G2PQTWiueGozuR1884gddMywk6iLU=
 github.com/jackmordaunt/icns v0.0.0-20181231085925-4f16af745526/go.mod h1:UQkeMHVoNcyXYq9otUupF7/h/2tmHlhrS2zw7ZVvUqc=
@@ -51,6 +57,8 @@ github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db/go.mod h1:l0
 github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646/go.mod h1:jpp1/29i3P1S/RLdc7JQKbRpFeM1dOBd8T9ki5s+AY8=
 github.com/nwaples/rardecode v1.0.0 h1:r7vGuS5akxOnR4JQSkko62RJ1ReCMXxQRPtxsiFMBOs=
 github.com/nwaples/rardecode v1.0.0/go.mod h1:5DzqNKiOdpKKBH87u8VlvAnPZMXcGRhxWkRpHbbfGS0=
+github.com/peterbourgon/diskv v2.0.1+incompatible h1:UBdAOUP5p4RWqPBg048CAvpKN+vxiaj6gdUUzhl4XmI=
+github.com/peterbourgon/diskv v2.0.1+incompatible/go.mod h1:uqqh8zWWbv1HBMNONnaR/tNboyR3/BZd58JJSHlUSCU=
 github.com/phpdave11/gofpdi v1.0.7/go.mod h1:vBmVV0Do6hSBHC8uKUQ71JGW+ZGQq74llk/7bXwjDoI=
 github.com/pierrec/lz4 v2.2.6+incompatible h1:6aCX4/YZ9v8q69hTyiR7dNLnTA3fgtKHVVW5BCd5Znw=
 github.com/pierrec/lz4 v2.2.6+incompatible/go.mod h1:pdkljMzZIN41W+lC3N2tnIh5sFi+IEE17M5jbnwPHcY=

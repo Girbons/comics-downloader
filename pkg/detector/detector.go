@@ -6,7 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// DetectComic will look for the url source to check if a source is supported or not.
+// DetectComic will look for the url source to check if a source is supported.
 func DetectComic(url string) (string, bool) {
 	source, err := util.URLSource(url)
 

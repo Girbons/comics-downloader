@@ -13,6 +13,7 @@
 - https://mangarock.com/
 - https://www.mangareader.net/
 - http://www.mangatown.com/
+- https://mangadex.org/
 
 ## Getting Started
 
@@ -159,7 +160,8 @@ Default is __jpg__.
 - [soup](https://github.com/anaskhan96/soup)
 - [progressbar](https://github.com/schollz/progressbar)
 - [logrus](https://github.com/sirupsen/logrus)
-- [mri](https://github.com/BakeRolls/mri/blob/master/mri.go)
+- [mri](https://github.com/bake/mri/blob/master/mri.go)
+- [mangadex](https://github.com/bake/mangadex)
 - [archiver](https://github.com/mholt/archiver)
 
 ## Contribuiting
