@@ -1,3 +1,17 @@
+<a name="v0.16"></a>
+# [0.16 (v0.16)](https://github.com/Girbons/comics-downloader/releases/tag/v0.16) - 19 Sep 2019
+
+# What's new
+
+* added support to https://mangadex.org/
+
+## Notes
+
+mangadex does not support `all` and `last` parameters.
+
+[Changes][v0.16]
+
+
 <a name="v0.15"></a>
 # [0.15 (v0.15)](https://github.com/Girbons/comics-downloader/releases/tag/v0.15) - 22 Jul 2019
 
@@ -329,6 +343,7 @@ Well,  this is the first release :)
 [Changes][v0.1.0]
 
 
+[v0.16]: https://github.com/Girbons/comics-downloader/compare/v0.15...v0.16
 [v0.15]: https://github.com/Girbons/comics-downloader/compare/v0.14.1...v0.15
 [v0.14.1]: https://github.com/Girbons/comics-downloader/compare/v0.14...v0.14.1
 [v0.14]: https://github.com/Girbons/comics-downloader/compare/v0.13...v0.14
