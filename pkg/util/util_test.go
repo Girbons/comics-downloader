@@ -5,6 +5,7 @@ import (
 	"image/png"
 	"net/http"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -60,7 +61,7 @@ func TestConvertImage(t *testing.T) {
 }
 
 func TestPathSetup(t *testing.T) {
-	result, err := PathSetup("example-source", "comic-name")
+	result, err := PathSetup(filepath.Dir(os.Args[0]), "example-source", "comic-name")
 
 	assert.Nil(t, err)
 	assert.Contains(t, result, "example-source")
@@ -80,7 +81,7 @@ func TestGenerateFileName(t *testing.T) {
 }
 
 func TestDirectoryOrFileDoesNotExist(t *testing.T) {
-	path, _ := ImagesPathSetup("source", "name", "issueNumber")
+	path, _ := ImagesPathSetup(filepath.Dir(os.Args[0]), "source", "name", "issueNumber")
 	defer os.RemoveAll(path)
 
 	result := DirectoryOrFileDoesNotExist(path)

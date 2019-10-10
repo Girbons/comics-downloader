@@ -13,6 +13,7 @@ type Downloader struct {
 	LastChapter  *widget.Check
 	ImagesOnly   *widget.Check
 	ImagesFormat *widget.Radio
+	OutputFolder *widget.Entry
 }
 
 func (d *Downloader) ClearURLField() {
@@ -21,6 +22,10 @@ func (d *Downloader) ClearURLField() {
 
 func (d *Downloader) ClearCountryField() {
 	d.Country.SetText("")
+}
+
+func (d *Downloader) ClearOutputFolderField() {
+	d.OutputFolder.SetText("")
 }
 
 func (d *Downloader) Submit() {
@@ -32,5 +37,6 @@ func (d *Downloader) Submit() {
 		d.AllChapters.Checked,
 		d.LastChapter.Checked,
 		d.ImagesOnly.Checked,
+		d.OutputFolder.Text,
 	)
 }

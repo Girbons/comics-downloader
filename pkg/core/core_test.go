@@ -46,7 +46,7 @@ func TestMakeComicPDF(t *testing.T) {
 	comic.Links = []string{"http://via.placeholder.com/150", "http://via.placeholder.com/150", "http://via.placeholder.com/150"}
 	comic.ImagesFormat = "png"
 
-	err := comic.MakeComic()
+	err := comic.MakeComic(filepath.Dir(os.Args[0]))
 	assert.Nil(t, err)
 
 	dir, _ := filepath.Abs(fmt.Sprintf("%s/%s/%s/%s/", filepath.Dir(os.Args[0]), "comics", "foo", "foo-example-chapter-1.pdf"))
@@ -63,7 +63,7 @@ func TestMakeComicEPUB(t *testing.T) {
 	comic.ImagesFormat = "png"
 
 	comic.Links = []string{"http://via.placeholder.com/150", "http://via.placeholder.com/150", "http://via.placeholder.com/150"}
-	err := comic.MakeComic()
+	err := comic.MakeComic(filepath.Dir(os.Args[0]))
 	assert.Nil(t, err)
 
 	dir, _ := filepath.Abs(fmt.Sprintf("%s/%s/%s/%s/", filepath.Dir(os.Args[0]), "comics", "foo", "foo-example-chapter-1.epub"))
@@ -84,7 +84,7 @@ func TestMakeComicEPUBMangarock(t *testing.T) {
 	comic.ImagesFormat = "png"
 	comic.Links = result.Data
 
-	err := comic.MakeComic()
+	err := comic.MakeComic(filepath.Dir(os.Args[0]))
 	assert.Nil(t, err)
 
 	dir, _ := filepath.Abs(fmt.Sprintf("%s/%s/%s/%s/%s/", filepath.Dir(os.Args[0]), "comics", "mangarock.com", "Boruto", "Boruto-chapter-13.epub"))
@@ -104,7 +104,7 @@ func TestMakeComicCBZMangarock(t *testing.T) {
 	comic.ImagesFormat = "png"
 	comic.Links = result.Data
 
-	err := comic.MakeComic()
+	err := comic.MakeComic(filepath.Dir(os.Args[0]))
 	assert.Nil(t, err)
 
 	dir, _ := filepath.Abs(fmt.Sprintf("%s/%s/%s/%s/%s/", filepath.Dir(os.Args[0]), "comics", "mangarock.com", "Boruto", "Boruto-chapter-13.cbz"))
@@ -124,7 +124,7 @@ func TestMakeComicCBRMangarock(t *testing.T) {
 	comic.ImagesFormat = "png"
 	comic.Links = result.Data
 
-	err := comic.MakeComic()
+	err := comic.MakeComic(filepath.Dir(os.Args[0]))
 	assert.Nil(t, err)
 
 	dir, _ := filepath.Abs(fmt.Sprintf("%s/%s/%s/%s/%s/", filepath.Dir(os.Args[0]), "comics", "mangarock.com", "Boruto", "Boruto-chapter-13.cbr"))
@@ -145,7 +145,7 @@ func TestMakeComicPDFMangarock(t *testing.T) {
 	comic.ImagesFormat = "jpg"
 	comic.Links = result.Data
 
-	err := comic.MakeComic()
+	err := comic.MakeComic(filepath.Dir(os.Args[0]))
 	assert.Nil(t, err)
 
 	dir, _ := filepath.Abs(fmt.Sprintf("%s/%s/%s/%s/%s/", filepath.Dir(os.Args[0]), "comics", "mangarock.com", "Boruto", "Boruto-chapter-13.pdf"))
@@ -161,7 +161,7 @@ func TestDownloadImagesPNGFormat(t *testing.T) {
 	comic.Links = []string{"http://via.placeholder.com/150", "http://via.placeholder.com/150", "http://via.placeholder.com/150"}
 	comic.ImagesFormat = "png"
 
-	dir, err := comic.DownloadImages()
+	dir, err := comic.DownloadImages(filepath.Dir(os.Args[0]))
 	files, _ := ioutil.ReadDir(dir)
 
 	assert.Nil(t, err)
@@ -177,7 +177,7 @@ func TestDownloadImagesJPGFormat(t *testing.T) {
 	comic.Links = []string{"http://via.placeholder.com/150", "http://via.placeholder.com/150", "http://via.placeholder.com/150"}
 	comic.ImagesFormat = "jpg"
 
-	dir, err := comic.DownloadImages()
+	dir, err := comic.DownloadImages(filepath.Dir(os.Args[0]))
 	files, _ := ioutil.ReadDir(dir)
 
 	assert.Nil(t, err)
@@ -193,7 +193,7 @@ func TestDownloadImagesJPEGFormat(t *testing.T) {
 	comic.ImagesFormat = "jpeg"
 	comic.Links = []string{"http://via.placeholder.com/150", "http://via.placeholder.com/150", "http://via.placeholder.com/150"}
 
-	dir, err := comic.DownloadImages()
+	dir, err := comic.DownloadImages(filepath.Dir(os.Args[0]))
 	files, _ := ioutil.ReadDir(dir)
 
 	assert.Nil(t, err)
@@ -209,7 +209,7 @@ func TestDownloadImagesIMGFormat(t *testing.T) {
 	comic.Links = []string{"http://via.placeholder.com/150", "http://via.placeholder.com/150", "http://via.placeholder.com/150"}
 	comic.ImagesFormat = "img"
 
-	dir, err := comic.DownloadImages()
+	dir, err := comic.DownloadImages(filepath.Dir(os.Args[0]))
 	files, _ := ioutil.ReadDir(dir)
 
 	assert.Nil(t, err)

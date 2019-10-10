@@ -8,7 +8,7 @@ import (
 	"github.com/Girbons/comics-downloader/pkg/util"
 )
 
-func initializeCollection(issues []string, url, format, source, imagesFormat string, siteSource BaseSite, imagesOnly bool) ([]*core.Comic, error) {
+func initializeCollection(issues []string, url, format, source, imagesFormat string, siteSource BaseSite, imagesOnly bool, outputFolder string) ([]*core.Comic, error) {
 	var collection []*core.Comic
 	var err error
 
@@ -21,7 +21,7 @@ func initializeCollection(issues []string, url, format, source, imagesFormat str
 		name = util.Parse(name)
 		issueNumber = util.Parse(issueNumber)
 
-		dir, _ := util.PathSetup(source, name)
+		dir, _ := util.PathSetup(outputFolder, source, name)
 		fileName := util.GenerateFileName(dir, name, issueNumber, format)
 
 		if util.DirectoryOrFileDoesNotExist(fileName) || imagesOnly {
@@ -44,7 +44,7 @@ func initializeCollection(issues []string, url, format, source, imagesFormat str
 }
 
 // LoadComicFromSource will return a `comic` instance initialized based on the source
-func LoadComicFromSource(source, url, country, format, imagesFormat string, all, last, imagesOnly bool) ([]*core.Comic, error) {
+func LoadComicFromSource(source, url, country, format, imagesFormat string, all, last, imagesOnly bool, outputFolder string) ([]*core.Comic, error) {
 	var siteSource BaseSite
 	var collection []*core.Comic
 	var issues []string
@@ -73,5 +73,5 @@ func LoadComicFromSource(source, url, country, format, imagesFormat string, all,
 		return collection, err
 	}
 
-	return initializeCollection(issues, url, format, source, imagesFormat, siteSource, imagesOnly)
+	return initializeCollection(issues, url, format, source, imagesFormat, siteSource, imagesOnly, outputFolder)
 }

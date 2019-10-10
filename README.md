@@ -56,6 +56,8 @@ You can invoke the `--help`:
         Download comic/manga images
   -last
         Download the last Comic issue
+  -output string
+        Folder where the comics will be saved
   -timeout int
         Timeout (seconds), specifies how often the downloader runs (default 600)
   -url string
@@ -116,6 +118,14 @@ To download the last comic issue use `-last` flag.
 ```bash
 ./comics-downloader -url=[your url] -last
 ```
+
+### Download to custom folder
+
+To download to a custom folder use the `-output` flag.
+The folder will be created if not already existing.
+
+```bash
+./comics-downloader -url=[your url] -output=[your path]
 
 ### Run as Deamon
 

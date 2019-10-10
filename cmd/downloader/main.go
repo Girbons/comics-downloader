@@ -27,6 +27,7 @@ func main() {
 	timeout := flag.Int("timeout", 600, "Timeout (seconds), specifies how often the downloader runs")
 	url := flag.String("url", "", "Comic URL or Comic URLS by separating each site with a comma without the use of spaces")
 	versionFlag := flag.Bool("version", false, "Display build date and release informations")
+	outputFolder := flag.String("output", "", "Folder where the comics will be saved")
 
 	flag.Parse()
 
@@ -46,5 +47,5 @@ func main() {
 		}
 	}
 
-	app.Run(*url, *format, *country, *imagesFormat, *all, *last, *deamon, *imagesOnly, *timeout)
+	app.Run(*url, *format, *country, *imagesFormat, *all, *last, *deamon, *imagesOnly, *timeout, *outputFolder)
 }

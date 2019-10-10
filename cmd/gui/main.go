@@ -53,6 +53,9 @@ func main() {
 	lastChapterCheck := widget.NewCheck("", nil)
 	imagesOnlyCheck := widget.NewCheck("", nil)
 
+	outputFolderEntry := widget.NewEntry()
+	outputFolderEntry.SetPlaceHolder("Folder where the comics will be saved")
+
 	d := &Downloader{
 		URL:          urlEntry,
 		Country:      countryEntry,
@@ -61,6 +64,7 @@ func main() {
 		LastChapter:  lastChapterCheck,
 		ImagesOnly:   imagesOnlyCheck,
 		ImagesFormat: imagesFormatChoices,
+		OutputFolder: outputFolderEntry,
 	}
 
 	clearCountryFieldButton := widget.NewButton("Clear Country", func() {
@@ -87,6 +91,7 @@ func main() {
 	form.Append("Last chapter", d.LastChapter)
 	form.Append("Images Only", d.ImagesOnly)
 	form.Append("Images Format", d.ImagesFormat)
+	form.Append("Output Folder", d.OutputFolder)
 
 	box := widget.NewVBox()
 
@@ -99,6 +104,10 @@ func main() {
 		widget.Refresh(box)
 	})
 
+	clearOutputFolderButton := widget.NewButton("Clear Output Folder", func() {
+		d.ClearOutputFolderField()
+	})
+
 	submitButton := widget.NewButton("Download", func() {
 		d.Submit()
 	})
@@ -108,6 +117,7 @@ func main() {
 		clearURLFieldButton,
 		clearLogsButton,
 		clearCountryFieldButton,
+		clearOutputFolderButton,
 		layout.NewSpacer(),
 		submitButton,
 	)
