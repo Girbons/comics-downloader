@@ -126,6 +126,7 @@ The folder will be created if not already existing.
 
 ```bash
 ./comics-downloader -url=[your url] -output=[your path]
+```
 
 ### Run as Deamon
 
@@ -135,7 +136,6 @@ works only if `-all` or `-last` flags are specified.
 ```bash
 ./comics-downloader -url=[your url] -deamon
 ```
-
 You can customize the deamon timeout using the `-timeout` flag.
 
 ```bash
