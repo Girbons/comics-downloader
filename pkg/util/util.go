@@ -86,11 +86,11 @@ func ImageType(mimeStr string) (tp string) {
 }
 
 // PathSetup will create the folders where the comic will be saved
-func PathSetup(source, name string) (string, error) {
+func PathSetup(outputFolder, source, name string) (string, error) {
 	var dir string
 	var err error
 
-	dir, err = filepath.Abs(fmt.Sprintf("%s/comics/%s/%s/", filepath.Dir(os.Args[0]), source, name))
+	dir, err = filepath.Abs(fmt.Sprintf("%s/comics/%s/%s/", outputFolder, source, name))
 
 	if err != nil {
 		return dir, err
@@ -105,11 +105,11 @@ func PathSetup(source, name string) (string, error) {
 	return dir, err
 }
 
-func ImagesPathSetup(source, name, issueNumber string) (string, error) {
+func ImagesPathSetup(outputFolder, source, name, issueNumber string) (string, error) {
 	var dir string
 	var err error
 
-	dir, err = filepath.Abs(fmt.Sprintf("%s/comics/%s/%s/images-%s/", filepath.Dir(os.Args[0]), source, name, issueNumber))
+	dir, err = filepath.Abs(fmt.Sprintf("%s/comics/%s/%s/images-%s/", outputFolder, source, name, issueNumber))
 
 	if err != nil {
 		return dir, err

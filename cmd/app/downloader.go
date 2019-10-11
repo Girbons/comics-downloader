@@ -2,6 +2,8 @@ package app
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -39,7 +41,11 @@ func checkErr(err error, bindLogsToChannel bool, comic *core.Comic) {
 	}
 }
 
-func download(link, format, country string, all, last, bindLogsToChannel, imagesOnly bool, imagesFormat string) {
+func download(link, format, country string, all, last, bindLogsToChannel, imagesOnly bool, imagesFormat, outputFolder string) {
+	if outputFolder == "" {
+		outputFolder = filepath.Dir(os.Args[0])
+	}
+
 	for _, u := range strings.Split(link, ",") {
 		if u != "" {
 			// check if the link is supported
@@ -64,7 +70,7 @@ func download(link, format, country string, all, last, bindLogsToChannel, images
 			sendToChannel(bindLogsToChannel, msg)
 			// in case the link is supported
 			// setup the right strategy to parse a comic
-			collection, err := sites.LoadComicFromSource(source, u, country, format, imagesFormat, all, last, imagesOnly)
+			collection, err := sites.LoadComicFromSource(source, u, country, format, imagesFormat, all, last, imagesOnly, outputFolder)
 			if err != nil {
 				log.Error(err)
 				sendToChannel(bindLogsToChannel, fmt.Sprintf("ERROR: %s", err))
@@ -73,9 +79,9 @@ func download(link, format, country string, all, last, bindLogsToChannel, images
 
 			for _, comic := range collection {
 				if imagesOnly {
-					_, err = comic.DownloadImages()
+					_, err = comic.DownloadImages(outputFolder)
 				} else {
-					err = comic.MakeComic()
+					err = comic.MakeComic(outputFolder)
 				}
 				checkErr(err, bindLogsToChannel, comic)
 			}
@@ -84,14 +90,14 @@ func download(link, format, country string, all, last, bindLogsToChannel, images
 }
 
 // GuiRun will start the GUI app
-func GuiRun(link, format, country, imagesFormat string, all, last, imagesOnly bool) {
+func GuiRun(link, format, country, imagesFormat string, all, last, imagesOnly bool, outputFolder string) {
 	AppStatus <- true
-	download(link, format, country, all, last, true, imagesOnly, imagesFormat)
+	download(link, format, country, all, last, true, imagesOnly, imagesFormat, outputFolder)
 	AppStatus <- false
 }
 
 // Run will start the CLI app
-func Run(link, format, country, imagesFormat string, all, last, deamon, imagesOnly bool, timeout int) {
+func Run(link, format, country, imagesFormat string, all, last, deamon, imagesOnly bool, timeout int, outputFolder string) {
 	if all && last {
 		last = false
 		log.Warning("all and last are selected, all parameter will be used")
@@ -105,10 +111,10 @@ func Run(link, format, country, imagesFormat string, all, last, deamon, imagesOn
 	// deamon is started only if `all` or `last` flags are used
 	if deamon && (all || last) {
 		for {
-			download(link, format, country, all, last, false, imagesOnly, imagesFormat)
+			download(link, format, country, all, last, false, imagesOnly, imagesFormat, outputFolder)
 			time.Sleep(time.Duration(timeout) * time.Second)
 		}
 	}
 
-	download(link, format, country, all, last, false, imagesOnly, imagesFormat)
+	download(link, format, country, all, last, false, imagesOnly, imagesFormat, outputFolder)
 }

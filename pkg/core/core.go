@@ -73,7 +73,7 @@ func (comic *Comic) retrieveImageFromResponse(response *http.Response) (io.Reade
 }
 
 // makeEPUB create the epub file
-func (comic *Comic) makeEPUB() error {
+func (comic *Comic) makeEPUB(outputFolder string) error {
 	var err error
 
 	currentDir, err := util.CurrentDir()
@@ -93,7 +93,7 @@ func (comic *Comic) makeEPUB() error {
 		e.SetAuthor(comic.Author)
 	}
 
-	imagesPath, err := comic.DownloadImages()
+	imagesPath, err := comic.DownloadImages(outputFolder)
 	if err != nil {
 		return err
 	}
@@ -129,7 +129,7 @@ func (comic *Comic) makeEPUB() error {
 
 	// get the PathSetup where the file should be saved
 	// e.g. /www.mangarock.com/comic-name/
-	dir, err := util.PathSetup(comic.Source, comic.Name)
+	dir, err := util.PathSetup(outputFolder, comic.Source, comic.Name)
 	if err != nil {
 		return err
 	}
@@ -143,12 +143,12 @@ func (comic *Comic) makeEPUB() error {
 }
 
 // makePDF create the pdf file
-func (comic *Comic) makePDF() error {
+func (comic *Comic) makePDF(outputFolder string) error {
 	var err error
 	// setup the pdf
 	pdf := gofpdf.New("P", "mm", "A4", "")
 
-	imagesPath, err := comic.DownloadImages()
+	imagesPath, err := comic.DownloadImages(outputFolder)
 	if err != nil {
 		return err
 	}
@@ -177,7 +177,7 @@ func (comic *Comic) makePDF() error {
 	}
 	// get the PathSetup where the file should be saved
 	// e.g. /www.mangarock.com/comic-name/
-	dir, err := util.PathSetup(comic.Source, comic.Name)
+	dir, err := util.PathSetup(outputFolder, comic.Source, comic.Name)
 	if err != nil {
 		return err
 	}
@@ -192,14 +192,14 @@ func (comic *Comic) makePDF() error {
 }
 
 // makeCBRZ will create the CBR/CBZ
-func (comic *Comic) makeCBRZ() error {
+func (comic *Comic) makeCBRZ(outputFolder string) error {
 	var filesToAdd []string
 	var err error
 
 	// setup a new Epub instance
 	archive := archiver.NewZip()
 
-	imagesPath, err := comic.DownloadImages()
+	imagesPath, err := comic.DownloadImages(outputFolder)
 	if err != nil {
 		return err
 	}
@@ -215,7 +215,7 @@ func (comic *Comic) makeCBRZ() error {
 	}
 
 	// e.g. /www.mangarock.com/comic-name/
-	dir, err := util.PathSetup(comic.Source, comic.Name)
+	dir, err := util.PathSetup(outputFolder, comic.Source, comic.Name)
 	if err != nil {
 		return err
 	}
@@ -237,11 +237,11 @@ func (comic *Comic) makeCBRZ() error {
 }
 
 // DownloadImages will download the comic/manga images
-func (comic *Comic) DownloadImages() (string, error) {
+func (comic *Comic) DownloadImages(outputFolder string) (string, error) {
 	var dir string
 	var err error
 
-	dir, err = util.ImagesPathSetup(comic.Source, comic.Name, comic.IssueNumber)
+	dir, err = util.ImagesPathSetup(outputFolder, comic.Source, comic.Name, comic.IssueNumber)
 	if err != nil {
 		return dir, err
 	}
@@ -310,16 +310,16 @@ func (comic *Comic) DownloadImages() (string, error) {
 }
 
 // MakeComic will create the file based on the output format selected.
-func (comic *Comic) MakeComic() error {
+func (comic *Comic) MakeComic(outputFolder string) error {
 	var err error
 
 	switch comic.Format {
 	case EPUB:
-		err = comic.makeEPUB()
+		err = comic.makeEPUB(outputFolder)
 	case CBR, CBZ:
-		err = comic.makeCBRZ()
+		err = comic.makeCBRZ(outputFolder)
 	default:
-		err = comic.makePDF()
+		err = comic.makePDF(outputFolder)
 	}
 
 	return err
