@@ -50,7 +50,7 @@ mangadex does not support `all` and `last` parameters.
 
 # What's new
 
-* added `-deamon` and `-timeout` flags 
+* added `-daemon` and `-timeout` flags 
 
 # Improvements
 

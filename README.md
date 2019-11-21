@@ -46,8 +46,8 @@ You can invoke the `--help`:
         Download all issues of the Comic or Comics
   -country string
         Set the country to retrieve a manga, Used by MangaRock
-  -deamon
-        Run the download as deamon
+  -daemon
+        Run the download as daemon
   -format string
         Comic format output, supported formats are pdf,epub,cbr,cbz (default "pdf")
   -images-format
@@ -128,18 +128,18 @@ The folder will be created if not already existing.
 ./comics-downloader -url=[your url] -output=[your path]
 ```
 
-### Run as Deamon
+### Run as daemon
 
-You can run the CLI downloader as deamon using `-deamon` flag.
+You can run the CLI downloader as daemon using `-daemon` flag.
 works only if `-all` or `-last` flags are specified.
 
 ```bash
-./comics-downloader -url=[your url] -deamon
+./comics-downloader -url=[your url] -daemon
 ```
-You can customize the deamon timeout using the `-timeout` flag.
+You can customize the daemon timeout using the `-timeout` flag.
 
 ```bash
-./comics-downloader -url=[your url] -deamon -timeout=300
+./comics-downloader -url=[your url] -daemon -timeout=300
 ```
 
 ### Download Only the Images
@@ -176,7 +176,7 @@ Default is __jpg__.
 
 ## Contribuiting
 
-Feel free to submit a pull request.
+Feel free to submit a pull request, a guide to setup the development enviroment is available [here](docs/dev.md)
 
 ## License
 

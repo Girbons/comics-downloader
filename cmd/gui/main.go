@@ -8,6 +8,7 @@ import (
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
 	downloader "github.com/Girbons/comics-downloader/cmd/app"
+	"github.com/Girbons/comics-downloader/internal/version"
 )
 
 func watchLogs(logSection *widget.ScrollContainer, box *widget.Box) {
@@ -27,14 +28,12 @@ func appStatus(downloadButton *widget.Button) {
 	}
 }
 
-var release string // sha1 revision used to build the program
-
 func main() {
 	options := []string{"pdf", "epub", "cbr", "cbz"}
 	imagesFormat := []string{"png", "jpg", "img"}
 
 	app := app.New()
-	w := app.NewWindow(fmt.Sprintf("Comics Downloader %s", release))
+	w := app.NewWindow(fmt.Sprintf("Comics Downloader %s", version.Tag))
 
 	urlEntry := widget.NewEntry()
 	urlEntry.SetPlaceHolder("Comic URL or URLs separated by a comma")

@@ -97,7 +97,7 @@ func GuiRun(link, format, country, imagesFormat string, all, last, imagesOnly bo
 }
 
 // Run will start the CLI app
-func Run(link, format, country, imagesFormat string, all, last, deamon, imagesOnly bool, timeout int, outputFolder string) {
+func Run(link, format, country, imagesFormat string, all, last, daemon, imagesOnly bool, timeout int, outputFolder string) {
 	if all && last {
 		last = false
 		log.Warning("all and last are selected, all parameter will be used")
@@ -108,8 +108,8 @@ func Run(link, format, country, imagesFormat string, all, last, deamon, imagesOn
 		log.Fatal("url parameter is required")
 	}
 
-	// deamon is started only if `all` or `last` flags are used
-	if deamon && (all || last) {
+	// daemon is started only if `all` or `last` flags are used
+	if daemon && (all || last) {
 		for {
 			download(link, format, country, all, last, false, imagesOnly, imagesFormat, outputFolder)
 			time.Sleep(time.Duration(timeout) * time.Second)
