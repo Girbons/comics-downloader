@@ -7,6 +7,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
+    - name: Install libgl1
+      run: |
+        sudo apt-get install -y libgl1-mesa-dev
+
     - name: Set up Go 1.13
       uses: actions/setup-go@v1
       with:
