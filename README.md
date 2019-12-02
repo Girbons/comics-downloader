@@ -66,6 +66,17 @@ You can invoke the `--help`:
         Display build date and release informations
 ```
 
+## Options supported
+
+| Source                      | all    | country| last   |
+|-----------------------------|--------|--------|--------|
+|http://www.comicextra.com/   |&#x2713;|&#x2717;|&#x2713;|
+|https://mangarock.com/       |&#x2713;|&#x2713;|&#x2713;|
+|https://www.mangareader.net/ |&#x2713;|&#x2717;|&#x2713;|
+|http://www.mangatown.com/    |&#x2713;|&#x2717;|&#x2713;|
+|https://mangadex.org/        |&#x2717;|&#x2717;|&#x2717;|
+
+
 ### Checking for mangas using a Raspberry Pi
 
 If you'd like to track your favourite mangas you can use this bash [script](https://gist.github.com/nestukh/5397b836c8e5f34f6feb4ec4efe6b86a).
