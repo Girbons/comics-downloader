@@ -9,10 +9,10 @@
 
 ## Supported Sites
 
-- http://www.comicextra.com/
+- https://www.comicextra.com/
 - https://mangarock.com/
 - https://www.mangareader.net/
-- http://www.mangatown.com/
+- https://www.mangatown.com/
 - https://mangadex.org/
 
 ## Getting Started
@@ -45,7 +45,7 @@ You can invoke the `--help`:
   -all
         Download all issues of the Comic or Comics
   -country string
-        Set the country to retrieve a manga, Used by MangaRock
+        Set the country to retrieve a manga, Used by MangaRock and MangaDex
   -daemon
         Run the download as daemon
   -format string
@@ -74,7 +74,7 @@ You can invoke the `--help`:
 |https://mangarock.com/       |&#x2713;|&#x2713;|&#x2713;|
 |https://www.mangareader.net/ |&#x2713;|&#x2717;|&#x2713;|
 |http://www.mangatown.com/    |&#x2713;|&#x2717;|&#x2713;|
-|https://mangadex.org/        |&#x2717;|&#x2717;|&#x2717;|
+|https://mangadex.org/        |&#x2713;|&#x2713;|&#x2717;|
 
 
 ### Checking for mangas using a Raspberry Pi
