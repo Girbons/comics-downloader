@@ -58,9 +58,6 @@ func (m *Mangadex) RetrieveIssueLinks(url string, all, last bool) ([]string, err
 		if len(urls) == 0 {
 			return nil, errors.New("no chapters found")
 		}
-		if last {
-			urls = urls[:1]
-		}
 		return urls, nil
 	default:
 		return nil, errors.New("URL not supported")
