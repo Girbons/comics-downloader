@@ -1,6 +1,7 @@
 package sites
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/Girbons/comics-downloader/pkg/core"
@@ -9,13 +10,15 @@ import (
 )
 
 type Mangadex struct {
-	Client *mangadex.Client
+	country string
+	Client  *mangadex.Client
 }
 
 // NewMangadex returns a Mangadex instance
-func NewMangadex() *Mangadex {
+func NewMangadex(country string) *Mangadex {
 	return &Mangadex{
-		Client: mangadex.New(),
+		country: country,
+		Client:  mangadex.New(),
 	}
 }
 
@@ -36,7 +39,29 @@ func (m *Mangadex) getLinks(url string) ([]string, error) {
 }
 
 func (m *Mangadex) RetrieveIssueLinks(url string, all, last bool) ([]string, error) {
-	return []string{url}, nil
+	parts := util.TrimAndSplitURL(url)
+	switch parts[3] {
+	case "chapter":
+		return []string{url}, nil
+	case "title":
+		_, cs, err := m.Client.Manga(parts[4])
+		if err != nil {
+			return nil, err
+		}
+		var urls []string
+		for _, c := range cs {
+			if m.country != "" && c.LangCode != m.country {
+				continue
+			}
+			urls = append(urls, "https://mangadex.org/chapter/"+c.ID.String())
+		}
+		if len(urls) == 0 {
+			return nil, errors.New("no chapters found")
+		}
+		return urls, nil
+	default:
+		return nil, errors.New("URL not supported")
+	}
 }
 
 func (m *Mangadex) GetInfo(url string) (string, string) {

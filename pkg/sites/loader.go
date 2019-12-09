@@ -62,7 +62,7 @@ func LoadComicFromSource(source, url, country, format, imagesFormat string, all,
 	case "www.mangatown.com":
 		siteSource = &Mangatown{}
 	case "mangadex.org":
-		siteSource = NewMangadex()
+		siteSource = NewMangadex(country)
 	default:
 		err = fmt.Errorf("It was not possible to determine the source")
 		return collection, err

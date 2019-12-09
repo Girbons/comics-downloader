@@ -8,7 +8,7 @@ import (
 )
 
 func TestMangadexGetInfo(t *testing.T) {
-	md := NewMangadex()
+	md := NewMangadex("")
 
 	name, issueNumber := md.GetInfo("https://mangadex.org/chapter/155061/1")
 	assert.Equal(t, "Naruto", name)
@@ -16,7 +16,7 @@ func TestMangadexGetInfo(t *testing.T) {
 }
 
 func TestMangadexSetup(t *testing.T) {
-	md := NewMangadex()
+	md := NewMangadex("")
 	comic := new(core.Comic)
 
 	comic.URLSource = "https://mangadex.org/chapter/155061/1"
@@ -28,7 +28,7 @@ func TestMangadexSetup(t *testing.T) {
 }
 
 func TestMangadexRetrieveIssueLinks(t *testing.T) {
-	md := NewMangadex()
+	md := NewMangadex("")
 
 	issues, err := md.RetrieveIssueLinks("https://mangadex.org/chapter/155061/1", false, false)
 
