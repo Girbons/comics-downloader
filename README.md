@@ -74,7 +74,7 @@ You can invoke the `--help`:
 |https://mangarock.com/       |&#x2713;|&#x2713;|&#x2713;|
 |https://www.mangareader.net/ |&#x2713;|&#x2717;|&#x2713;|
 |http://www.mangatown.com/    |&#x2713;|&#x2717;|&#x2713;|
-|https://mangadex.org/        |&#x2713;|&#x2713;|&#x2717;|
+|https://mangadex.org/        |&#x2713;|&#x2713;|&#x2713;|
 
 
 ### Checking for mangas using a Raspberry Pi

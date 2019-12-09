@@ -9,8 +9,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/BakeRolls/mri"
 	"github.com/Girbons/comics-downloader/pkg/util"
+	"github.com/bake/mri"
 	epub "github.com/bmaupin/go-epub"
 	"github.com/jung-kurt/gofpdf"
 	"github.com/mholt/archiver"
