@@ -93,6 +93,5 @@ func (m *Mangadex) GetInfo(url string) (string, string) {
 func (m *Mangadex) Initialize(comic *core.Comic) error {
 	links, err := m.getLinks(comic.URLSource)
 	comic.Links = links
-
 	return err
 }
