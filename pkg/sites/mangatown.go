@@ -71,7 +71,7 @@ func (m *Mangatown) retrieveLastIssue(url string) (string, error) {
 	chapters := doc.Find("ul", "class", "chapter_list").FindAll("a")
 
 	// the first element is the last chapter
-	lastIssue := "https:" + chapters[0].Attrs()["href"]
+	lastIssue := "https://www.mangatown.com" + chapters[0].Attrs()["href"]
 	return lastIssue, nil
 }
 
