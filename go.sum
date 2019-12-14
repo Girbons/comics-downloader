@@ -1,7 +1,5 @@
 fyne.io/fyne v1.1.1 h1:vmeT7lqdho+Upt/PWuDInj8xAkNAaZC/rbtr3goJczY=
 fyne.io/fyne v1.1.1/go.mod h1:mz0CvQX1ACEjiDGpSH3D8Qf9yHq8dfYA039kG7p8ZhQ=
-github.com/BakeRolls/mri v0.0.0-20190425192657-438a0b611ec0 h1:c+QNUfCT1Zu0fwRMFEiKgCsYiEF13HGsWf47VMtAtbw=
-github.com/BakeRolls/mri v0.0.0-20190425192657-438a0b611ec0/go.mod h1:lYbZQJuNWU9Fhp922h0f8H949KuqSRjnh19lUgK9dlQ=
 github.com/Girbons/mangarock v0.0.0-20190725180316-ca97fc422a34 h1:xA3kIurxuPIBtdLe8OCmsVTsxx+yDAYPKIYhOhLzE74=
 github.com/Girbons/mangarock v0.0.0-20190725180316-ca97fc422a34/go.mod h1:4JwFTbX7V1Cm/RtPspR8JAoOYGcdMBNoKtku4m6B85c=
 github.com/Kodeworks/golang-image-ico v0.0.0-20141118225523-73f0f4cfade9/go.mod h1:7uhhqiBaR4CpN0k9rMjOtjpcfGd6DG2m04zQxKnWQ0I=
@@ -12,6 +10,10 @@ github.com/bake/httpcache v0.0.0-20190425194625-775d0adac809 h1:+WthOY6+9RdivM1S
 github.com/bake/httpcache v0.0.0-20190425194625-775d0adac809/go.mod h1:4NG8FC+Gt0aSRAFe+GcCsKUGCL63u0doQyQBQffWX90=
 github.com/bake/mangadex v0.0.0-20190918122836-0261a89dc30d h1:WpnqIe+TLGBW+cHHm2SA8lwlCtIMYhWNl2H+Z0peTJM=
 github.com/bake/mangadex v0.0.0-20190918122836-0261a89dc30d/go.mod h1:0EIa3RFRprO7Ey+7O0TveUY6epgxsabT82R3bkUjkzU=
+github.com/bake/mangadex v0.0.0-20191208094511-1b8be9f2df20 h1:QrnRIo2F6hK6LvPstkj4m0NFs+DRtUbgKfYqys42ec4=
+github.com/bake/mangadex v0.0.0-20191208094511-1b8be9f2df20/go.mod h1:0EIa3RFRprO7Ey+7O0TveUY6epgxsabT82R3bkUjkzU=
+github.com/bake/mri v0.0.0-20190425192657-438a0b611ec0 h1:KwTV21ZriTZIZBdFU2g0HfPq8XYEkaMKJRS9oCbBwYY=
+github.com/bake/mri v0.0.0-20190425192657-438a0b611ec0/go.mod h1:8fakjROSAHC99lr4SIARs4xZa0pPXcWTRT4TBaqfRHI=
 github.com/bmaupin/go-epub v0.5.3 h1:HBOJS2KqsRGGcEzM470/9l5q2l9JwAUxQabEgPMrW90=
 github.com/bmaupin/go-epub v0.5.3/go.mod h1:4RBr0Zo03mRGOyGAcc25eLOqIPCkMbfz+tINVmH6clQ=
 github.com/boombuler/barcode v1.0.0/go.mod h1:paBWMcWSl3LHKBqUq+rly7CNSldXjb2rDl3JlRe0mD8=
@@ -69,8 +71,6 @@ github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINE
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/ruudk/golang-pdf417 v0.0.0-20181029194003-1af4ab5afa58/go.mod h1:6lfFZQK844Gfx8o5WFuvpxWRwnSoipWe/p622j1v06w=
-github.com/schollz/progressbar v1.0.0 h1:gbyFReLHDkZo8mxy/dLWMr+Mpb1MokGJ1FqCiqacjZM=
-github.com/schollz/progressbar v1.0.0/go.mod h1:/l9I7PC3L3erOuz54ghIRKUEFcosiWfLvJv+Eq26UMs=
 github.com/schollz/progressbar/v2 v2.13.2 h1:3L9bP5KQOGEnFP8P5V8dz+U0yo5I29iY5Oa9s9EAwn0=
 github.com/schollz/progressbar/v2 v2.13.2/go.mod h1:6YZjqdthH6SCZKv2rqGryrxPtfmRB/DWZxSMfCXPyD8=
 github.com/sirupsen/logrus v1.4.2 h1:SPIRibHv4MatM3XXNO2BJeFLZwZ2LvZgfQ5+UNI2im4=

@@ -57,13 +57,6 @@ func download(link, format, country string, all, last, bindLogsToChannel, images
 				continue
 			}
 
-			if strings.Contains(source, "mangadex") && (last) {
-				msg := "`last` parameter is not supported"
-				log.WithFields(log.Fields{"site": u}).Warning(msg)
-				sendToChannel(bindLogsToChannel, msg)
-				last = false
-			}
-
 			msg := "Downloading..."
 			log.WithFields(log.Fields{"url": u}).Info(msg)
 			sendToChannel(bindLogsToChannel, msg)

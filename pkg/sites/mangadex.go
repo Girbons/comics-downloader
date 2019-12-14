@@ -40,6 +40,9 @@ func (m *Mangadex) getLinks(url string) ([]string, error) {
 
 func (m *Mangadex) RetrieveIssueLinks(url string, all, last bool) ([]string, error) {
 	parts := util.TrimAndSplitURL(url)
+	if len(parts) < 5 {
+		return nil, errors.New("URL not supported")
+	}
 	switch parts[3] {
 	case "chapter":
 		return []string{url}, nil
@@ -57,6 +60,9 @@ func (m *Mangadex) RetrieveIssueLinks(url string, all, last bool) ([]string, err
 		}
 		if len(urls) == 0 {
 			return nil, errors.New("no chapters found")
+		}
+		if last {
+			urls = urls[len(urls)-1:]
 		}
 		return urls, nil
 	default:
@@ -87,6 +93,5 @@ func (m *Mangadex) GetInfo(url string) (string, string) {
 func (m *Mangadex) Initialize(comic *core.Comic) error {
 	links, err := m.getLinks(comic.URLSource)
 	comic.Links = links
-
 	return err
 }
