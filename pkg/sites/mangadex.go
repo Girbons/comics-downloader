@@ -18,7 +18,9 @@ type Mangadex struct {
 func NewMangadex(country string) *Mangadex {
 	return &Mangadex{
 		country: country,
-		Client:  mangadex.New(),
+		Client: mangadex.New(
+			mangadex.WithBase("https://mangadex.cc/"),
+		),
 	}
 }
 
@@ -56,7 +58,7 @@ func (m *Mangadex) RetrieveIssueLinks(url string, all, last bool) ([]string, err
 			if m.country != "" && c.LangCode != m.country {
 				continue
 			}
-			urls = append(urls, "https://mangadex.org/chapter/"+c.ID.String())
+			urls = append(urls, "https://mangadex.cc/chapter"+c.ID.String())
 		}
 		if len(urls) == 0 {
 			return nil, errors.New("no chapters found")

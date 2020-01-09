@@ -9,7 +9,7 @@ var SupportedSites = []string{
 	"www.mangareader.net",
 	"www.mangatown.com",
 	"www.mangahere.cc",
-	"mangadex.org",
+	"mangadex.cc",
 }
 
 // BaseSite specifies an implementation of a Site which allows you
