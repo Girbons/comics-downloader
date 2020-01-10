@@ -46,7 +46,7 @@ func TestMangadexRetrieveIssueLinksLastChapter(t *testing.T) {
 	urls, err := md.RetrieveIssueLinks("https://mangadex.cc/title/5/naruto/", false, true)
 	assert.Nil(t, err)
 	assert.Len(t, urls, 1)
-	assert.Equal(t, "https://mangadex.cc/chapter/670438", urls[0])
+	assert.Equal(t, "https://mangadex.cc/chapter670438", urls[0])
 }
 
 func TestMangadexUnsupportedURL(t *testing.T) {

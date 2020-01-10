@@ -49,10 +49,17 @@ func download(link, format, country string, all, last, bindLogsToChannel, images
 	for _, u := range strings.Split(link, ",") {
 		if u != "" {
 			// check if the link is supported
-			source, check := detector.DetectComic(u)
+			source, check, isDisabled := detector.DetectComic(u)
 			if !check {
 				msg := "This site is not supported :("
 				log.WithFields(log.Fields{"site": u}).Error(msg)
+				sendToChannel(bindLogsToChannel, msg)
+				continue
+			}
+
+			if isDisabled {
+				msg := "Site currently disabled, please check https://github.com/Girbons/comics-downloader/issues/"
+				log.WithFields(log.Fields{"site": u}).Warning(msg)
 				sendToChannel(bindLogsToChannel, msg)
 				continue
 			}

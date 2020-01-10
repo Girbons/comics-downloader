@@ -50,13 +50,9 @@ func LoadComicFromSource(source, url, country, format, imagesFormat string, all,
 	var issues []string
 	var err error
 
-	options := map[string]string{"country": country}
-
 	switch source {
 	case "www.comicextra.com":
 		siteSource = &Comicextra{}
-	case "mangarock.com":
-		siteSource = NewMangarock(options)
 	case "www.mangareader.net":
 		siteSource = &Mangareader{}
 	case "www.mangatown.com":

@@ -7,7 +7,11 @@ import (
 )
 
 // DetectComic will look for the url source to check if a source is supported.
-func DetectComic(url string) (string, bool) {
+func DetectComic(url string) (string, bool, bool) {
+	isSupported := false
+	isDisabled := false
+	source := ""
+
 	source, err := util.URLSource(url)
 
 	if err != nil {
@@ -16,9 +20,15 @@ func DetectComic(url string) (string, bool) {
 
 	for _, site := range sites.SupportedSites {
 		if source == site {
-			return source, true
+			isSupported = true
 		}
 	}
 
-	return "", false
+	for _, site := range sites.DisabledSites {
+		if source == site {
+			isDisabled = true
+		}
+	}
+
+	return source, isSupported, isDisabled
 }

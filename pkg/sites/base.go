@@ -5,11 +5,15 @@ import "github.com/Girbons/comics-downloader/pkg/core"
 // SupportedSites are the supported sites.
 var SupportedSites = []string{
 	"www.comicextra.com",
-	"mangarock.com",
 	"www.mangareader.net",
 	"www.mangatown.com",
 	"www.mangahere.cc",
 	"mangadex.cc",
+}
+
+// DisabledSites are the sites that are currently disabled.
+var DisabledSites = []string{
+	"www.comicextra.com",
 }
 
 // BaseSite specifies an implementation of a Site which allows you

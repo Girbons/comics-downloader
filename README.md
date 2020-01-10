@@ -10,7 +10,6 @@
 ## Supported Sites
 
 - https://www.comicextra.com/
-- https://mangarock.com/
 - https://www.mangareader.net/
 - https://www.mangatown.com/
 - https://mangadex.cc/
@@ -71,7 +70,6 @@ You can invoke the `--help`:
 | Source                      | all    | country| last   |
 |-----------------------------|--------|--------|--------|
 |http://www.comicextra.com/   |&#x2713;|&#x2717;|&#x2713;|
-|https://mangarock.com/       |&#x2713;|&#x2713;|&#x2713;|
 |https://www.mangareader.net/ |&#x2713;|&#x2717;|&#x2713;|
 |http://www.mangatown.com/    |&#x2713;|&#x2717;|&#x2713;|
 |https://mangadex.cc/         |&#x2713;|&#x2713;|&#x2713;|

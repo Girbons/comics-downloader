@@ -3,14 +3,12 @@ package core
 import (
 	"bytes"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"strings"
 
 	"github.com/Girbons/comics-downloader/pkg/util"
-	"github.com/bake/mri"
 	epub "github.com/bmaupin/go-epub"
 	"github.com/jung-kurt/gofpdf"
 	"github.com/mholt/archiver"
@@ -39,37 +37,6 @@ type Comic struct {
 	Links        []string
 	Format       string
 	ImagesFormat string
-}
-
-// RetrieveImageFromResponse will return the image byte and its type
-func (comic *Comic) retrieveImageFromResponse(response *http.Response) (io.Reader, string, error) {
-	var (
-		content io.Reader
-		tp      string
-		err     error
-	)
-
-	switch comic.Source {
-	case "mangarock.com":
-		// mangarock image needs to be decoded first
-		img, decErr := mri.Decode(response.Body)
-		if decErr != nil {
-			return content, tp, decErr
-		}
-
-		imgData := new(bytes.Buffer)
-		if err := util.ConvertToJPG(img, imgData); err != nil {
-			return content, tp, err
-		}
-
-		content = imgData
-		tp = "jpg"
-	default:
-		content = response.Body
-		tp = util.ImageType(response.Header["Content-Type"][0])
-	}
-
-	return content, tp, err
 }
 
 // makeEPUB create the epub file
@@ -279,7 +246,6 @@ func (comic *Comic) DownloadImages(outputFolder string) (string, error) {
 			defer rsp.Body.Close()
 
 			// retrieve the image from the response
-			content, _, err := comic.retrieveImageFromResponse(rsp)
 			if err != nil {
 				return dir, err
 			}
@@ -290,7 +256,7 @@ func (comic *Comic) DownloadImages(outputFolder string) (string, error) {
 			}
 			defer imgFile.Close()
 
-			err = util.SaveImage(imgFile, content, format)
+			err = util.SaveImage(imgFile, rsp.Body, format)
 			if err != nil {
 				return dir, err
 			}
