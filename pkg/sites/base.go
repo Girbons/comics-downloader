@@ -9,6 +9,7 @@ var SupportedSites = []string{
 	"www.mangatown.com",
 	"www.mangahere.cc",
 	"mangadex.cc",
+	"mangadex.org",
 }
 
 // DisabledSites are the sites that are currently disabled.

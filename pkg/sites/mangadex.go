@@ -11,15 +11,18 @@ import (
 
 type Mangadex struct {
 	country string
+	baseURL string
 	Client  *mangadex.Client
 }
 
 // NewMangadex returns a Mangadex instance
-func NewMangadex(country string) *Mangadex {
+func NewMangadex(country, source string) *Mangadex {
+	mangadexBase := "https://"+source+"/"
 	return &Mangadex{
 		country: country,
+		baseURL: mangadexBase,
 		Client: mangadex.New(
-			mangadex.WithBase("https://mangadex.cc/"),
+			mangadex.WithBase(mangadexBase),
 		),
 	}
 }
@@ -58,7 +61,7 @@ func (m *Mangadex) RetrieveIssueLinks(url string, all, last bool) ([]string, err
 			if m.country != "" && c.LangCode != m.country {
 				continue
 			}
-			urls = append(urls, "https://mangadex.cc/chapter"+c.ID.String())
+			urls = append(urls, m.baseURL+"chapter"+c.ID.String())
 		}
 		if len(urls) == 0 {
 			return nil, errors.New("no chapters found")
