@@ -7,10 +7,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const testMangadexURL string = "https://mangadex.org/"
+const testMangadexBase string = "mangadex.org"
+const testMangadexURL  string = "https://"+testMangadexBase+"/"
 
 func TestMangadexGetInfo(t *testing.T) {
-	md := NewMangadex("")
+	md := NewMangadex("", testMangadexBase)
 
 	name, issueNumber := md.GetInfo(testMangadexURL+"chapter/155061/1")
 	assert.Equal(t, "Naruto", name)
@@ -18,7 +19,7 @@ func TestMangadexGetInfo(t *testing.T) {
 }
 
 func TestMangadexSetup(t *testing.T) {
-	md := NewMangadex("")
+	md := NewMangadex("", testMangadexBase)
 	comic := new(core.Comic)
 
 	comic.URLSource = testMangadexURL+"chapter/155061/1"
@@ -30,21 +31,21 @@ func TestMangadexSetup(t *testing.T) {
 }
 
 func TestMangadexRetrieveIssueLinks(t *testing.T) {
-	md := NewMangadex("")
+	md := NewMangadex("", testMangadexBase)
 	urls, err := md.RetrieveIssueLinks(testMangadexURL+"chapter/155061/", false, false)
 	assert.Nil(t, err)
 	assert.Equal(t, 1, len(urls))
 }
 
 func TestMangadexRetrieveIssueLinksAllChapter(t *testing.T) {
-	md := NewMangadex("gb")
+	md := NewMangadex("gb", testMangadexBase)
 	urls, err := md.RetrieveIssueLinks(testMangadexURL+"title/5/naruto/", true, false)
 	assert.Nil(t, err)
 	assert.Len(t, urls, 569)
 }
 
 func TestMangadexRetrieveIssueLinksLastChapter(t *testing.T) {
-	md := NewMangadex("gb")
+	md := NewMangadex("gb", testMangadexBase)
 	urls, err := md.RetrieveIssueLinks(testMangadexURL+"title/5/naruto/", false, true)
 	assert.Nil(t, err)
 	assert.Len(t, urls, 1)
@@ -52,7 +53,7 @@ func TestMangadexRetrieveIssueLinksLastChapter(t *testing.T) {
 }
 
 func TestMangadexUnsupportedURL(t *testing.T) {
-	md := NewMangadex("")
+	md := NewMangadex("", testMangadexBase)
 	_, err := md.RetrieveIssueLinks(testMangadexURL, false, false)
 	assert.EqualError(t, err, "URL not supported")
 	_, err = md.RetrieveIssueLinks(testMangadexURL+"test/0/", false, false)
@@ -60,14 +61,14 @@ func TestMangadexUnsupportedURL(t *testing.T) {
 }
 
 func TestMangadexNoManga(t *testing.T) {
-	md := NewMangadex("")
+	md := NewMangadex("", testMangadexBase)
 	_, err := md.RetrieveIssueLinks(testMangadexURL+"title/0/", false, false)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "Manga ID does not exist")
 }
 
 func TestMangadexNoChapters(t *testing.T) {
-	md := NewMangadex("xyz")
+	md := NewMangadex("xyz", testMangadexBase)
 	_, err := md.RetrieveIssueLinks(testMangadexURL+"title/5/naruto/", true, false)
 	assert.EqualError(t, err, "no chapters found")
 }

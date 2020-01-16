@@ -61,7 +61,7 @@ func (m *Mangadex) RetrieveIssueLinks(url string, all, last bool) ([]string, err
 			if m.country != "" && c.LangCode != m.country {
 				continue
 			}
-			urls = append(urls, m.baseURL+"chapter"+c.ID.String())
+			urls = append(urls, m.baseURL+"chapter/"+c.ID.String())
 		}
 		if len(urls) == 0 {
 			return nil, errors.New("no chapters found")
