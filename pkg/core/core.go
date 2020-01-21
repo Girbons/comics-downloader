@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/Girbons/comics-downloader/pkg/util"
 	epub "github.com/bmaupin/go-epub"
@@ -237,18 +238,20 @@ func (comic *Comic) DownloadImages(outputFolder string) (string, error) {
 		return dir, err
 	}
 
+	client := &http.Client{
+		Transport: &http.Transport{
+			MaxIdleConns:    11,
+			IdleConnTimeout: 30 * time.Second,
+		},
+	}
+
 	for i, link := range comic.Links {
 		if link != "" {
-			rsp, err := http.Get(link)
+			rsp, err := client.Get(link)
 			if err != nil {
 				return dir, err
 			}
 			defer rsp.Body.Close()
-
-			// retrieve the image from the response
-			if err != nil {
-				return dir, err
-			}
 
 			imgFile, err := os.Create(fmt.Sprintf("%04d-image.%s", i, format))
 			if err != nil {
