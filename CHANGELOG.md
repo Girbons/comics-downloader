@@ -1,3 +1,14 @@
+[Changes][v0.21.2]
+<a name="v0.21.2"></a>
+# [0.21.2 (v0.21.2)](https://github.com/Girbons/comics-downloader/releases/tag/v0.21.2) - 3 Mar 2020
+
+# Fixes
+
+* Mangadex update -- issue https://github.com/bake/mangadex/issues/2s
+* Updated dependencies
+
+
+[Changes][v0.21.1]
 <a name="v0.21.1"></a>
 # [0.21.1 (v0.21.1)](https://github.com/Girbons/comics-downloader/releases/tag/v0.21.1) - 24 Jan 2020
 
@@ -21,7 +32,7 @@
 
 # Changes
 
-[mangadex] - restored `.org` domain -- (thanks @turtletowerz) 
+[mangadex] - restored `.org` domain -- (thanks @turtletowerz)
 
 [Changes][v0.21.0]
 
@@ -67,7 +78,7 @@
 
 # What's new
 
-* mangadex now supports `-all` flag. - (thanks @bake) 
+* mangadex now supports `-all` flag. - (thanks @bake)
 
 [Changes][v0.18.0]
 
@@ -136,7 +147,7 @@ mangadex does not support `all` and `last` parameters.
 
 # What's new
 
-* added `-deamon` and `-timeout` flags 
+* added `-deamon` and `-timeout` flags
 
 # Improvements
 
@@ -169,7 +180,7 @@ mangadex does not support `all` and `last` parameters.
 
 # Improvements
 
-* Modified filename output #30 
+* Modified filename output #30
 
 [Changes][v0.12.4]
 
@@ -179,7 +190,7 @@ mangadex does not support `all` and `last` parameters.
 
 # Improvements
 
-* Added check that prevents to download a comic/manga if already exist #24 
+* Added check that prevents to download a comic/manga if already exist #24
 
 [Changes][v0.12.3]
 
