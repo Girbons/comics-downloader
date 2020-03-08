@@ -17,7 +17,7 @@ type Mangadex struct {
 
 // NewMangadex returns a Mangadex instance
 func NewMangadex(country, source string) *Mangadex {
-	mangadexBase := "https://"+source+"/"
+	mangadexBase := "https://" + source + "/"
 	return &Mangadex{
 		country: country,
 		baseURL: mangadexBase,
@@ -84,7 +84,8 @@ func (m *Mangadex) GetInfo(url string) (string, string) {
 		return "", ""
 	}
 
-	mangaInfo, _, err := m.Client.Manga(string(chapterInfo.MangaID))
+	mangaID := chapterInfo.MangaID.Number
+	mangaInfo, _, err := m.Client.Manga(string(mangaID))
 	if err != nil {
 		return "", ""
 	}

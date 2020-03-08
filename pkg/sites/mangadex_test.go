@@ -8,12 +8,12 @@ import (
 )
 
 const testMangadexBase string = "mangadex.org"
-const testMangadexURL  string = "https://"+testMangadexBase+"/"
+const testMangadexURL string = "https://" + testMangadexBase + "/"
 
 func TestMangadexGetInfo(t *testing.T) {
 	md := NewMangadex("", testMangadexBase)
 
-	name, issueNumber := md.GetInfo(testMangadexURL+"chapter/155061/1")
+	name, issueNumber := md.GetInfo(testMangadexURL + "chapter/155061/1")
 	assert.Equal(t, "Naruto", name)
 	assert.Equal(t, "Vol 60 Chapter 575, A Will of Stone", issueNumber)
 }
@@ -22,7 +22,7 @@ func TestMangadexSetup(t *testing.T) {
 	md := NewMangadex("", testMangadexBase)
 	comic := new(core.Comic)
 
-	comic.URLSource = testMangadexURL+"chapter/155061/1"
+	comic.URLSource = testMangadexURL + "chapter/155061/1"
 
 	err := md.Initialize(comic)
 
@@ -64,7 +64,7 @@ func TestMangadexNoManga(t *testing.T) {
 	md := NewMangadex("", testMangadexBase)
 	_, err := md.RetrieveIssueLinks(testMangadexURL+"title/0/", false, false)
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "Manga ID does not exist")
+	assert.Contains(t, err.Error(), "could not get manga 0")
 }
 
 func TestMangadexNoChapters(t *testing.T) {

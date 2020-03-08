@@ -5,7 +5,7 @@ go 1.14
 require (
 	fyne.io/fyne v1.2.3
 	github.com/anaskhan96/soup v1.1.1
-	github.com/bake/mangadex v0.0.0-20200305194006-6360cbcb29d0
+	github.com/bake/mangadex v0.0.0-20200308152818-cb733691b670
 	github.com/bmaupin/go-epub v0.5.3
 	github.com/dsnet/compress v0.0.1 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
