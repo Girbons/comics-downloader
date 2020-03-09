@@ -3,6 +3,7 @@ package sites
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/Girbons/comics-downloader/pkg/core"
 	"github.com/Girbons/comics-downloader/pkg/util"
@@ -19,7 +20,7 @@ type Mangadex struct {
 func NewMangadex(country, source string) *Mangadex {
 	mangadexBase := "https://" + source + "/"
 	return &Mangadex{
-		country: country,
+		country: strings.ToLower(country),
 		baseURL: mangadexBase,
 		Client: mangadex.New(
 			mangadex.WithBase(mangadexBase),

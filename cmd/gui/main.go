@@ -39,8 +39,7 @@ func main() {
 	urlEntry.SetPlaceHolder("Comic URL or URLs separated by a comma")
 
 	countryEntry := widget.NewEntry()
-	countryEntry.SetPlaceHolder("Country param used by mangarock")
-	countryEntry.Hide()
+	countryEntry.SetPlaceHolder("Country param used by mangadex which uses ISO 3166-1 codes")
 
 	choices := widget.NewRadio(options, nil)
 	choices.SetSelected("pdf")
@@ -66,25 +65,9 @@ func main() {
 		OutputFolder: outputFolderEntry,
 	}
 
-	clearCountryFieldButton := widget.NewButton("Clear Country", func() {
-		d.ClearCountryField()
-	})
-	clearCountryFieldButton.Hide()
-
-	showCountryOption := widget.NewCheck("Show Country Options", func(on bool) {
-		if on {
-			countryEntry.Show()
-			clearCountryFieldButton.Show()
-		} else {
-			countryEntry.Hide()
-			clearCountryFieldButton.Hide()
-		}
-	})
-
 	form := widget.NewForm()
 	form.Append("URL", d.URL)
 	form.Append("Country", d.Country)
-	form.Append("", showCountryOption)
 	form.Append("Output", d.Format)
 	form.Append("All chapters", d.AllChapters)
 	form.Append("Last chapter", d.LastChapter)
@@ -94,17 +77,9 @@ func main() {
 
 	box := widget.NewVBox()
 
-	clearURLFieldButton := widget.NewButton("Clear URL", func() {
-		d.ClearURLField()
-	})
-
 	clearLogsButton := widget.NewButton("Clear Logs", func() {
 		box.Children = make([]fyne.CanvasObject, 0)
 		widget.Refresh(box)
-	})
-
-	clearOutputFolderButton := widget.NewButton("Clear Output Folder", func() {
-		d.ClearOutputFolderField()
 	})
 
 	submitButton := widget.NewButton("Download", func() {
@@ -113,10 +88,7 @@ func main() {
 	submitButton.Style = widget.PrimaryButton
 
 	buttons := widget.NewHBox(
-		clearURLFieldButton,
 		clearLogsButton,
-		clearCountryFieldButton,
-		clearOutputFolderButton,
 		layout.NewSpacer(),
 		submitButton,
 	)

@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Girbons/comics-downloader/pkg/config"
 	"github.com/Girbons/comics-downloader/pkg/core"
 	"github.com/Girbons/comics-downloader/pkg/detector"
 	"github.com/Girbons/comics-downloader/pkg/sites"
@@ -41,15 +42,18 @@ func checkErr(err error, bindLogsToChannel bool, comic *core.Comic) {
 	}
 }
 
-func download(link, format, country string, all, last, bindLogsToChannel, imagesOnly bool, imagesFormat, outputFolder string) {
-	if outputFolder == "" {
-		outputFolder = filepath.Dir(os.Args[0])
+func download(options *config.Options, bindLogsToChannel bool) {
+	if options.OutputFolder == "" {
+		options.OutputFolder = filepath.Dir(os.Args[0])
 	}
 
-	for _, u := range strings.Split(link, ",") {
+	for _, u := range strings.Split(options.Url, ",") {
 		if u != "" {
 			// check if the link is supported
 			source, check, isDisabled := detector.DetectComic(u)
+
+			options.Source = source
+
 			if !check {
 				msg := "This site is not supported :("
 				log.WithFields(log.Fields{"site": u}).Error(msg)
@@ -69,7 +73,7 @@ func download(link, format, country string, all, last, bindLogsToChannel, images
 			sendToChannel(bindLogsToChannel, msg)
 			// in case the link is supported
 			// setup the right strategy to parse a comic
-			collection, err := sites.LoadComicFromSource(source, u, country, format, imagesFormat, all, last, imagesOnly, outputFolder)
+			collection, err := sites.LoadComicFromSource(options)
 			if err != nil {
 				log.Error(err)
 				sendToChannel(bindLogsToChannel, fmt.Sprintf("ERROR: %s", err))
@@ -77,10 +81,10 @@ func download(link, format, country string, all, last, bindLogsToChannel, images
 			}
 
 			for _, comic := range collection {
-				if imagesOnly {
-					_, err = comic.DownloadImages(outputFolder)
+				if options.ImagesOnly {
+					_, err = comic.DownloadImages(options.OutputFolder)
 				} else {
-					err = comic.MakeComic(outputFolder)
+					err = comic.MakeComic(options.OutputFolder)
 				}
 				checkErr(err, bindLogsToChannel, comic)
 			}
@@ -89,31 +93,31 @@ func download(link, format, country string, all, last, bindLogsToChannel, images
 }
 
 // GuiRun will start the GUI app
-func GuiRun(link, format, country, imagesFormat string, all, last, imagesOnly bool, outputFolder string) {
+func GuiRun(options *config.Options) {
 	AppStatus <- true
-	download(link, format, country, all, last, true, imagesOnly, imagesFormat, outputFolder)
+	download(options, true)
 	AppStatus <- false
 }
 
 // Run will start the CLI app
-func Run(link, format, country, imagesFormat string, all, last, daemon, imagesOnly bool, timeout int, outputFolder string) {
-	if all && last {
-		last = false
+func Run(options *config.Options) {
+	if options.All && options.Last {
+		options.Last = false
 		log.Warning("all and last are selected, all parameter will be used")
 	}
 
 	// link is required
-	if link == "" {
+	if options.Url == "" {
 		log.Fatal("url parameter is required")
 	}
 
 	// daemon is started only if `all` or `last` flags are used
-	if daemon && (all || last) {
+	if options.Daemon && (options.All || options.Last) {
 		for {
-			download(link, format, country, all, last, false, imagesOnly, imagesFormat, outputFolder)
-			time.Sleep(time.Duration(timeout) * time.Second)
+			download(options, false)
+			time.Sleep(time.Duration(options.Timeout) * time.Second)
 		}
 	}
 
-	download(link, format, country, all, last, false, imagesOnly, imagesFormat, outputFolder)
+	download(options, false)
 }

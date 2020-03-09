@@ -6,13 +6,26 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/Girbons/comics-downloader/pkg/config"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestSiteLoaderMangatown(t *testing.T) {
 	url := "https://www.mangatown.com/manga/naruto/v63/c693/"
 	outputFolder := filepath.Dir(os.Args[0])
-	collection, err := LoadComicFromSource("www.mangatown.com", url, "", "pdf", "png", false, false, false, outputFolder)
+
+	options := &config.Options{
+		All:          false,
+		Last:         false,
+		ImagesOnly:   false,
+		Source:       "www.mangatown.com",
+		Url:          url,
+		Format:       "pdf",
+		ImagesFormat: "png",
+		OutputFolder: outputFolder,
+	}
+
+	collection, err := LoadComicFromSource(options)
 
 	assert.Nil(t, err)
 	assert.Equal(t, len(collection), 1)
@@ -29,7 +42,19 @@ func TestSiteLoaderMangatown(t *testing.T) {
 func TestSiteLoaderMangareader(t *testing.T) {
 	url := "https://www.mangareader.net/naruto/700"
 	outputFolder := filepath.Dir(os.Args[0])
-	collection, err := LoadComicFromSource("www.mangareader.net", url, "", "pdf", "png", false, false, false, outputFolder)
+
+	options := &config.Options{
+		All:          false,
+		Last:         false,
+		ImagesOnly:   false,
+		Source:       "www.mangareader.net",
+		Url:          url,
+		Format:       "pdf",
+		ImagesFormat: "png",
+		OutputFolder: outputFolder,
+	}
+
+	collection, err := LoadComicFromSource(options)
 
 	assert.Nil(t, err)
 	assert.Equal(t, len(collection), 1)
@@ -64,7 +89,19 @@ func TestSiteLoaderMangareader(t *testing.T) {
 func TestLoaderUnknownSource(t *testing.T) {
 	url := "http://example.com"
 	outputFolder := filepath.Dir(os.Args[0])
-	collection, err := LoadComicFromSource("example.com", url, "", "pdf", "png", false, false, false, outputFolder)
+
+	options := &config.Options{
+		All:          false,
+		Last:         false,
+		ImagesOnly:   false,
+		Source:       "example.com",
+		Url:          url,
+		Format:       "pdf",
+		ImagesFormat: "png",
+		OutputFolder: outputFolder,
+	}
+
+	collection, err := LoadComicFromSource(options)
 
 	if assert.NotNil(t, err) {
 		assert.Equal(t, fmt.Errorf("It was not possible to determine the source"), err)

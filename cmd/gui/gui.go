@@ -2,7 +2,9 @@ package main
 
 import (
 	"fyne.io/fyne/widget"
+
 	downloader "github.com/Girbons/comics-downloader/cmd/app"
+	"github.com/Girbons/comics-downloader/pkg/config"
 )
 
 type Downloader struct {
@@ -29,14 +31,16 @@ func (d *Downloader) ClearOutputFolderField() {
 }
 
 func (d *Downloader) Submit() {
-	downloader.GuiRun(
-		d.URL.Text,
-		d.Format.Selected,
-		d.Country.Text,
-		d.ImagesFormat.Selected,
-		d.AllChapters.Checked,
-		d.LastChapter.Checked,
-		d.ImagesOnly.Checked,
-		d.OutputFolder.Text,
-	)
+	opts := &config.Options{
+		All:          d.AllChapters.Checked,
+		Last:         d.LastChapter.Checked,
+		Url:          d.URL.Text,
+		Format:       d.Format.Selected,
+		Country:      d.Country.Text,
+		ImagesFormat: d.ImagesFormat.Selected,
+		ImagesOnly:   d.ImagesOnly.Checked,
+		OutputFolder: d.OutputFolder.Text,
+	}
+
+	downloader.GuiRun(opts)
 }

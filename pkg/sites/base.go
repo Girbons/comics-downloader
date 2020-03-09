@@ -17,7 +17,7 @@ var DisabledSites = []string{
 	"www.comicextra.com",
 }
 
-// BaseSite specifies an implementation of a Site which allows you
+// BaseSite specifies an implementation of a Site which allows
 // to retrieve a manga/comic basics info and imges links
 type BaseSite interface {
 	// Initialize will initialize the comic struct with the images link
@@ -28,16 +28,4 @@ type BaseSite interface {
 
 	// RetrieveIssueLinks will return the images links of a comic
 	RetrieveIssueLinks(url string, all, last bool) ([]string, error)
-}
-
-func Initialize(b BaseSite, comic *core.Comic) error {
-	return b.Initialize(comic)
-}
-
-func GetInfo(b BaseSite, url string) (string, string) {
-	return b.GetInfo(url)
-}
-
-func RetrieveIssueLinks(b BaseSite, url string, all, last bool) ([]string, error) {
-	return b.RetrieveIssueLinks(url, all, last)
 }

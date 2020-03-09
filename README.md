@@ -41,13 +41,11 @@ Put the script under a folder.
 You can invoke the `--help`:
 
 ```
+Usage:
   -all
         Download all issues of the Comic or Comics
   -country string
-        Set the country to retrieve a manga, Used by MangaRock and MangaDex. For MangaDex, ISO 3166-1 codes are
-        used for the country flag. a full list of codes MangaDex uses can be found at
-        https://github.com/md-y/mangadex-full-api/blob/master/src/enum/language.js on the left side.
-        Make sure the country code is lowercase before adding it as a flag
+        Set the country to retrieve a manga, Used by MangaDex which uses ISO 3166-1 codes
   -daemon
         Run the download as daemon
   -format string
@@ -65,7 +63,7 @@ You can invoke the `--help`:
   -url string
         Comic URL or Comic URLS by separating each site with a comma without the use of spaces
   -version
-        Display build date and release informations
+        Display release version
 ```
 
 ## Options supported
