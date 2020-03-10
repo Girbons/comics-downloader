@@ -1,3 +1,11 @@
+[Changes][v0.21.4]
+<a name="v0.21.4"></a>
+# [0.21.4 (v0.21.4)](https://github.com/Girbons/comics-downloader/releases/tag/v0.21.4) - 10 Mar 2020
+# Improvements & Fixes
+
+* [core] Improved handling of command line options
+* [GUI] removed buttons to clear text fields
+
 [Changes][v0.21.3]
 <a name="v0.21.3"></a>
 # [0.21.3 (v0.21.3)](https://github.com/Girbons/comics-downloader/releases/tag/v0.21.3) - 8 Mar 2020
