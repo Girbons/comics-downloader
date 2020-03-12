@@ -1,3 +1,10 @@
+[Changes][v0.22.0]
+<a name="v0.22.0"></a>
+# [0.22.0 (v0.22.0)](https://github.com/Girbons/comics-downloader/releases/tag/v0.22.0) - 12 Mar 2020
+# Changes
+
+* re-enabled comicextra
+
 [Changes][v0.21.4]
 <a name="v0.21.4"></a>
 # [0.21.4 (v0.21.4)](https://github.com/Girbons/comics-downloader/releases/tag/v0.21.4) - 10 Mar 2020
