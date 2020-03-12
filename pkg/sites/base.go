@@ -13,9 +13,7 @@ var SupportedSites = []string{
 }
 
 // DisabledSites are the sites that are currently disabled.
-var DisabledSites = []string{
-	"www.comicextra.com",
-}
+var DisabledSites = []string{}
 
 // BaseSite specifies an implementation of a Site which allows
 // to retrieve a manga/comic basics info and imges links

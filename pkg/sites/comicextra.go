@@ -2,6 +2,7 @@ package sites
 
 import (
 	"regexp"
+	"strings"
 
 	"github.com/Girbons/comics-downloader/pkg/core"
 	"github.com/Girbons/comics-downloader/pkg/util"
@@ -72,21 +73,56 @@ func (c *Comicextra) RetrieveIssueLinks(url string, all, last bool) ([]string, e
 		return []string{url}, nil
 	}
 
+	// retrieve pages before
+
 	name := util.TrimAndSplitURL(url)[4]
-	var links []string
+	var (
+		pages []string
+		links []string
+	)
+
+	// do not handle pagination
+	// remove the page that comes within the url
+	parts := strings.Split(url, "/")
+	if len(parts) >= 6 {
+		url = parts[0] + "//" + parts[2] + "/" + parts[3] + "/" + parts[4]
+	}
+
+	// and start from 1
+	pages = append(pages, url+"/1")
 
 	response, err := soup.Get(url)
 	if err != nil {
 		return nil, err
 	}
 
-	re := regexp.MustCompile("<a[^>]+href=\"([^\">]+" + "/" + name + "/.+)\"")
-	match := re.FindAllStringSubmatch(response, -1)
+	doc := soup.HTMLParse(response)
+	elements := doc.Find("div", "class", "general-nav").FindAll("a")
+	for _, element := range elements {
+		pageURL := element.Attrs()["href"]
+		if !strings.Contains(pageURL, "onclick") && !util.IsValueInSlice(pageURL, pages) {
+			pages = append(pages, pageURL)
+		}
+	}
 
-	for i := range match {
-		url := match[i][1] + "/full"
-		if util.IsURLValid(url) && !util.IsValueInSlice(url, links) {
-			links = append(links, url)
+	re := regexp.MustCompile("<a[^>]+href=\"([^\">]+" + "/" + name + "/.+)\"")
+
+	for _, pageURL := range pages {
+		response, err := soup.Get(pageURL)
+		if err != nil {
+			return nil, err
+		}
+
+		match := re.FindAllStringSubmatch(response, -1)
+
+		for i := range match {
+			url := match[i][1]
+			if !strings.Contains(url, "onclick") && !util.IsValueInSlice(url, pages) {
+				url = url + "/full"
+				if util.IsURLValid(url) && !util.IsValueInSlice(url, links) {
+					links = append(links, url)
+				}
+			}
 		}
 	}
 

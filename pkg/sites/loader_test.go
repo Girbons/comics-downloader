@@ -68,23 +68,32 @@ func TestSiteLoaderMangareader(t *testing.T) {
 	assert.Equal(t, 23, len(comic.Links))
 }
 
-// DISABLED --> https://github.com/Girbons/comics-downloader/issues/47
-//func TestSiteLoaderComicExtra(t *testing.T) {
-//url := "https://www.comicextra.com/daredevil-2016/chapter-600/full"
-//outputFolder := filepath.Dir(os.Args[0])
-//collection, err := LoadComicFromSource("www.comicextra.com", url, "", "pdf", "png", false, false, false, outputFolder)
+func TestSiteLoaderComicExtra(t *testing.T) {
+	url := "https://www.comicextra.com/daredevil-2016/chapter-600/full"
+	outputFolder := filepath.Dir(os.Args[0])
+	options := &config.Options{
+		All:          false,
+		Last:         false,
+		ImagesOnly:   false,
+		Source:       "www.comicextra.com",
+		Url:          url,
+		Format:       "pdf",
+		ImagesFormat: "png",
+		OutputFolder: outputFolder,
+	}
+	collection, err := LoadComicFromSource(options)
 
-//assert.Nil(t, err)
-//assert.Equal(t, len(collection), 1)
+	assert.Nil(t, err)
+	assert.Equal(t, len(collection), 1)
 
-//comic := collection[0]
+	comic := collection[0]
 
-//assert.Equal(t, "www.comicextra.com", comic.Source)
-//assert.Equal(t, url, comic.URLSource)
-//assert.Equal(t, "daredevil-2016", comic.Name)
-//assert.Equal(t, "chapter-600", comic.IssueNumber)
-//assert.Equal(t, 43, len(comic.Links))
-//}
+	assert.Equal(t, "www.comicextra.com", comic.Source)
+	assert.Equal(t, url, comic.URLSource)
+	assert.Equal(t, "daredevil-2016", comic.Name)
+	assert.Equal(t, "chapter-600", comic.IssueNumber)
+	assert.Equal(t, 43, len(comic.Links))
+}
 
 func TestLoaderUnknownSource(t *testing.T) {
 	url := "http://example.com"
