@@ -1,3 +1,10 @@
+[Changes][v0.22.1]
+<a name="v0.22.1"></a>
+# [0.22.1 (v0.22.1)](https://github.com/Girbons/comics-downloader/releases/tag/v0.22.1) - 14 Mar 2020
+# Fixes
+
+* [comicextra] - handle comic link with issues in a single page
+
 [Changes][v0.22.0]
 <a name="v0.22.0"></a>
 # [0.22.0 (v0.22.0)](https://github.com/Girbons/comics-downloader/releases/tag/v0.22.0) - 12 Mar 2020
