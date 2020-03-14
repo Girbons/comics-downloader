@@ -42,6 +42,14 @@ func TestComicextraRetrieveIssueLinksURLWithPage(t *testing.T) {
 	assert.Equal(t, 100, len(issues))
 }
 
+func TestComicextraRetrieveIssueLinksInASinglePage(t *testing.T) {
+	comicextra := new(Comicextra)
+	issues, err := comicextra.RetrieveIssueLinks("https://www.comicextra.com/comic/captain-marvel-2016", false, false)
+
+	assert.Nil(t, err)
+	assert.Equal(t, 10, len(issues))
+}
+
 func TestComicextraRetrieveIssueLinksLastChapter(t *testing.T) {
 	comicextra := new(Comicextra)
 	issues, err := comicextra.RetrieveIssueLinks("https://www.comicextra.com/comic/100-bullets", false, true)

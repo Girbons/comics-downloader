@@ -77,8 +77,9 @@ func (c *Comicextra) RetrieveIssueLinks(url string, all, last bool) ([]string, e
 
 	name := util.TrimAndSplitURL(url)[4]
 	var (
-		pages []string
-		links []string
+		pages    []string
+		links    []string
+		elements []soup.Root
 	)
 
 	// do not handle pagination
@@ -97,7 +98,12 @@ func (c *Comicextra) RetrieveIssueLinks(url string, all, last bool) ([]string, e
 	}
 
 	doc := soup.HTMLParse(response)
-	elements := doc.Find("div", "class", "general-nav").FindAll("a")
+
+	pagesDiv := doc.Find("div", "class", "general-nav")
+	if pagesDiv.Pointer != nil {
+		elements = pagesDiv.FindAll("a")
+	}
+
 	for _, element := range elements {
 		pageURL := element.Attrs()["href"]
 		if !strings.Contains(pageURL, "onclick") && !util.IsValueInSlice(pageURL, pages) {
