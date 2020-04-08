@@ -48,7 +48,7 @@ func (m *Mangatown) retrieveImageLinks(comic *core.Comic) ([]string, error) {
 
 		document = soup.HTMLParse(response)
 		img := document.Find("div", "id", "viewer").Find("a").Find("img")
-		links = append(links, img.Attrs()["src"])
+		links = append(links, fmt.Sprintf("https:%s", img.Attrs()["src"]))
 	}
 
 	return links, err
