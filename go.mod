@@ -12,11 +12,11 @@ require (
 	github.com/jung-kurt/gofpdf v1.16.2
 	github.com/mholt/archiver v3.1.1+incompatible
 	github.com/nwaples/rardecode v1.1.0 // indirect
-	github.com/pierrec/lz4 v2.4.1+incompatible // indirect
+	github.com/pierrec/lz4 v2.5.0+incompatible // indirect
 	github.com/schollz/progressbar/v2 v2.15.0
-	github.com/sirupsen/logrus v1.4.2
+	github.com/sirupsen/logrus v1.5.0
 	github.com/stretchr/testify v1.3.1-0.20190311161405-34c6fa2dc709
 	github.com/ulikunitz/xz v0.5.7 // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
-	golang.org/x/net v0.0.0-20200301022130-244492dfa37a // indirect
+	golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e // indirect
 )

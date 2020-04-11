@@ -47,12 +47,15 @@ func download(options *config.Options, bindLogsToChannel bool) {
 		options.OutputFolder = filepath.Dir(os.Args[0])
 	}
 
-	for _, u := range strings.Split(options.Url, ",") {
+	urls := options.Url
+
+	for _, u := range strings.Split(urls, ",") {
 		if u != "" {
 			// check if the link is supported
 			source, check, isDisabled := detector.DetectComic(u)
 
 			options.Source = source
+			options.Url = u
 
 			if !check {
 				msg := "This site is not supported :("
