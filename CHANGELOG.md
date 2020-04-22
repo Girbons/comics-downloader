@@ -1,3 +1,10 @@
+[Changes][v0.22.3]
+<a name="v0.22.3"></a>
+# [0.22.3 (v0.22.3)](https://github.com/Girbons/comics-downloader/releases/tag/v0.22.3) - 22 Apr 2020
+# Fixes
+
+* file overwriting issue when using the `all` parameter
+
 [Changes][v0.22.2]
 <a name="v0.22.2"></a>
 # [0.22.2 (v0.22.2)](https://github.com/Girbons/comics-downloader/releases/tag/v0.22.2) - 11 Apr 2020
