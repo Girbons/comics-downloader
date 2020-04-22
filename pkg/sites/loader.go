@@ -18,7 +18,7 @@ func initializeCollection(issues []string, options *config.Options, base BaseSit
 	}
 
 	for _, url := range issues {
-		name, issueNumber := base.GetInfo(options.Url)
+		name, issueNumber := base.GetInfo(url)
 		name = util.Parse(name)
 		issueNumber = util.Parse(issueNumber)
 
