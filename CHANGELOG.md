@@ -1,5 +1,12 @@
 [Changes][v0.22.3]
 <a name="v0.22.3"></a>
+# [0.22.4 (v0.22.4)](https://github.com/Girbons/comics-downloader/releases/tag/v0.22.4) - 11 Jun 2020
+# Improvements
+
+* version in cli is now shown in a new line - (thanks @whalehub )
+
+[Changes][v0.22.3]
+<a name="v0.22.3"></a>
 # [0.22.3 (v0.22.3)](https://github.com/Girbons/comics-downloader/releases/tag/v0.22.3) - 22 Apr 2020
 # Fixes
 
