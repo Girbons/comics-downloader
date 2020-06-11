@@ -53,7 +53,7 @@ func main() {
 	flag.Parse()
 
 	if versionFlag {
-		fmt.Printf("comics-downloader version %s", version.Tag, "\n")
+		fmt.Printf("comics-downloader version", version.Tag)
 		os.Exit(0)
 	}
 
