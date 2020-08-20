@@ -1,5 +1,12 @@
 [Changes][v0.22.3]
-<a name="v0.22.3"></a>
+<a name="v0.22.5"></a>
+# [0.22.5 (v0.22.5)](https://github.com/Girbons/comics-downloader/releases/tag/v0.22.3) - 20 Aug 2020
+# Fixes
+
+* [mangareader] - fixed runtime error on `-all` argument #56
+
+[Changes][v0.22.4]
+<a name="v0.22.4"></a>
 # [0.22.4 (v0.22.4)](https://github.com/Girbons/comics-downloader/releases/tag/v0.22.4) - 11 Jun 2020
 # Improvements
 
