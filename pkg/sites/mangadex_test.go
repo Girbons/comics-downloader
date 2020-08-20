@@ -41,7 +41,7 @@ func TestMangadexRetrieveIssueLinksAllChapter(t *testing.T) {
 	md := NewMangadex("gb", testMangadexBase)
 	urls, err := md.RetrieveIssueLinks(testMangadexURL+"title/5/naruto/", true, false)
 	assert.Nil(t, err)
-	assert.Len(t, urls, 576)
+	assert.Len(t, urls, 713)
 }
 
 func TestMangadexRetrieveIssueLinksLastChapter(t *testing.T) {
@@ -49,7 +49,6 @@ func TestMangadexRetrieveIssueLinksLastChapter(t *testing.T) {
 	urls, err := md.RetrieveIssueLinks(testMangadexURL+"title/5/naruto/", false, true)
 	assert.Nil(t, err)
 	assert.Len(t, urls, 1)
-	assert.Equal(t, testMangadexURL+"chapter/920080", urls[0])
 }
 
 func TestMangadexUnsupportedURL(t *testing.T) {

@@ -1,9 +1,9 @@
 module github.com/Girbons/comics-downloader
 
-go 1.14
+go 1.15
 
 require (
-	fyne.io/fyne v1.3.0
+	fyne.io/fyne v1.3.3
 	github.com/anaskhan96/soup v1.1.1
 	github.com/bake/mangadex v0.0.0-20200308152818-cb733691b670
 	github.com/bmaupin/go-epub v0.5.3
@@ -16,6 +16,6 @@ require (
 	github.com/schollz/progressbar/v2 v2.15.0
 	github.com/sirupsen/logrus v1.6.0
 	github.com/stretchr/testify v1.6.1
-	github.com/ulikunitz/xz v0.5.7 // indirect
+	github.com/ulikunitz/xz v0.5.8 // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 )

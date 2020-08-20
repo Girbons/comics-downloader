@@ -1,7 +1,8 @@
 package sites
 
 import (
-	"fmt"
+	"encoding/json"
+	"reflect"
 	"strings"
 
 	"github.com/Girbons/comics-downloader/pkg/core"
@@ -21,24 +22,28 @@ func (m *Mangareader) retrieveImageLinks(comic *core.Comic) ([]string, error) {
 	}
 
 	doc := soup.HTMLParse(response)
-	// retrieve the <option>
-	options := doc.FindAll("option")
+	// to retrieve the comic images: in the html there's a piece of javascript
+	// accessible through `document["mj"]`:
+	// document["mj"]["im"] --> contains the comic images.
 
-	for i := 1; i <= len(options); i++ {
-		pageLink := fmt.Sprintf("https://%s/%s/%s/%d", comic.Source, comic.Name, comic.IssueNumber, i)
-		rsp, soupErr := soup.Get(pageLink)
-		if soupErr != nil {
-			return nil, soupErr
+	// retrieve js code in script tag
+	script := doc.FindAll("script")[1]
+	data := map[string]interface{}{}
+	// slice to`15` to cut `document["mj"] =`
+	err = json.Unmarshal([]byte(script.Text()[15:]), &data)
+	if err != nil {
+		return links, err
+	}
+
+	images := reflect.ValueOf(data["im"])
+	for i := 0; i < images.Len(); i++ {
+		element := images.Index(i).Elem()
+		for _, key := range element.MapKeys() {
+			if key.String() == "u" {
+				value := element.MapIndex(key)
+				links = append(links, "https:"+value.Elem().String())
+			}
 		}
-
-		doc = soup.HTMLParse(rsp)
-		// return the first `<img>`
-		// e.g. <img src="http://example.com">
-		imgTag := doc.Find("img")
-		// doc.Find returns an html.Node
-		// the line below will return the src value
-		src := imgTag.Pointer.Attr[3].Val
-		links = append(links, src)
 	}
 
 	return links, err
@@ -57,9 +62,7 @@ func (m *Mangareader) retrieveLastIssue(url string) (string, error) {
 	}
 
 	doc := soup.HTMLParse(response)
-	chapters := doc.Find("div", "id", "chapterlist").FindAll("a")
-
-	lastIssue := chapters[len(chapters)-1].Attrs()["href"]
+	lastIssue := doc.Find("ul", "class", "d44").FindAll("li")[0].Find("a").Attrs()["href"]
 	lastIssueUrl := "https://www.mangareader.net" + lastIssue
 
 	return lastIssueUrl, nil
@@ -86,12 +89,14 @@ func (m *Mangareader) RetrieveIssueLinks(url string, all, last bool) ([]string, 
 	}
 
 	doc := soup.HTMLParse(response)
-	chapters := doc.Find("div", "id", "chapterlist").FindAll("a")
-
-	for _, chapter := range chapters {
-		url := "https://www.mangareader.net" + chapter.Attrs()["href"]
-		if util.IsURLValid(url) {
-			links = append(links, url)
+	nodes := doc.Find("table", "class", "d48").FindAll("tr")
+	for _, node := range nodes {
+		element := node.Find("a")
+		if !strings.Contains(element.NodeValue, "not found") && element.Pointer != nil {
+			url := "https://www.mangareader.net" + element.Attrs()["href"]
+			if util.IsURLValid(url) {
+				links = append(links, url)
+			}
 		}
 	}
 

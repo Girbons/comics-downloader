@@ -113,7 +113,7 @@ func TestLoaderUnknownSource(t *testing.T) {
 	collection, err := LoadComicFromSource(options)
 
 	if assert.NotNil(t, err) {
-		assert.Equal(t, fmt.Errorf("It was not possible to determine the source"), err)
+		assert.Equal(t, fmt.Errorf("source unknown"), err)
 	}
 	assert.Equal(t, len(collection), 0)
 }

@@ -12,7 +12,7 @@ const (
 	SOURCE = "www.mangareader.net"
 )
 
-func TestMangaReadGetInfo(t *testing.T) {
+func TestMangareaderGetInfo(t *testing.T) {
 	mr := new(Mangareader)
 	name, issueNumber := mr.GetInfo(URL)
 
@@ -20,7 +20,7 @@ func TestMangaReadGetInfo(t *testing.T) {
 	assert.Equal(t, "1", issueNumber)
 }
 
-func TestRetrieveMangaReaderImageLinks(t *testing.T) {
+func TestRetrieveMangareaderImageLinks(t *testing.T) {
 	mr := new(Mangareader)
 
 	comic := new(core.Comic)
@@ -35,7 +35,7 @@ func TestRetrieveMangaReaderImageLinks(t *testing.T) {
 	assert.Nil(t, err)
 }
 
-func TestSetupMangaReader(t *testing.T) {
+func TestSetupMangareader(t *testing.T) {
 	mr := new(Mangareader)
 
 	comic := new(core.Comic)
@@ -66,7 +66,7 @@ func TestMangareaderRetrieveIssueLinksLast(t *testing.T) {
 	assert.Equal(t, 1, len(issues))
 }
 
-func TestMangaReaderRetrieveLastIssueLink(t *testing.T) {
+func TestMangareaderRetrieveLastIssueLink(t *testing.T) {
 	mr := new(Mangareader)
 	issue, err := mr.retrieveLastIssue("https://www.mangareader.net/naruto")
 

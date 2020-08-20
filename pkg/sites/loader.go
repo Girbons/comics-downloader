@@ -63,7 +63,7 @@ func LoadComicFromSource(options *config.Options) ([]*core.Comic, error) {
 	case "mangadex.cc", "mangadex.org":
 		base = NewMangadex(options.Country, options.Source)
 	default:
-		err = fmt.Errorf("It was not possible to determine the source")
+		err = fmt.Errorf("source unknown")
 		return collection, err
 	}
 
