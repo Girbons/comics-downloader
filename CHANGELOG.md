@@ -1,3 +1,11 @@
+[Changes][v0.23.0]
+<a name="v0.23.0"></a>
+# [0.23.0 (v0.23.0)](https://github.com/Girbons/comics-downloader/releases/tag/v0.23.0) - 21 Aug 2020
+# What's new
+
+* notify user if a new version is available
+
+
 [Changes][v0.22.3]
 <a name="v0.22.5"></a>
 # [0.22.5 (v0.22.5)](https://github.com/Girbons/comics-downloader/releases/tag/v0.22.3) - 20 Aug 2020

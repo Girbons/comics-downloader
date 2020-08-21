@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Girbons/comics-downloader/internal/version"
 	"github.com/Girbons/comics-downloader/pkg/config"
 	"github.com/Girbons/comics-downloader/pkg/core"
 	"github.com/Girbons/comics-downloader/pkg/detector"
@@ -45,6 +46,13 @@ func checkErr(err error, bindLogsToChannel bool, comic *core.Comic) {
 func download(options *config.Options, bindLogsToChannel bool) {
 	if options.OutputFolder == "" {
 		options.OutputFolder = filepath.Dir(os.Args[0])
+	}
+
+	isNewVersionAvailable, newVersionLink := version.IsNewAvailable()
+	if isNewVersionAvailable {
+		msg := fmt.Sprintf("A new comics-downloader version is available at %s", newVersionLink)
+		log.Info(msg)
+		sendToChannel(bindLogsToChannel, msg)
 	}
 
 	urls := options.Url
