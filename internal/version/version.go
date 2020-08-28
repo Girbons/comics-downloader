@@ -13,18 +13,23 @@ const Tag = "v0.23.0"
 
 // IsNewAvailable() will fetch the latest project releases
 // and will compare the latest release Tag against the current Tag.
-func IsNewAvailable() (bool, string) {
+func IsNewAvailable() (bool, string, error) {
 	ctx := context.Background()
 	client := github.NewClient(nil)
-	res, _, _ := client.Repositories.ListReleases(ctx, "Girbons", "comics-downloader", nil)
+	releases, _, err := client.Repositories.ListReleases(ctx, "Girbons", "comics-downloader", nil)
+
+	if err != nil {
+		return false, "", err
+	}
+
 	// Compare returns an integer comparing two versions
 	// according to semantic version precedence.
-	result := semver.Compare(Tag, *res[0].TagName)
+	result := semver.Compare(Tag, *releases[0].TagName)
 
 	// -1 if v < w
 	if result == -1 {
-		return true, *res[0].HTMLURL
+		return true, *releases[0].HTMLURL, err
 	}
 
-	return false, ""
+	return false, "", err
 }

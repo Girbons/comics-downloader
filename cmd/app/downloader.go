@@ -48,7 +48,13 @@ func download(options *config.Options, bindLogsToChannel bool) {
 		options.OutputFolder = filepath.Dir(os.Args[0])
 	}
 
-	isNewVersionAvailable, newVersionLink := version.IsNewAvailable()
+	isNewVersionAvailable, newVersionLink, err := version.IsNewAvailable()
+	if err != nil {
+		msg := "There was an error while checking for a new comics-downloader version"
+		log.Error(msg)
+		sendToChannel(bindLogsToChannel, msg)
+	}
+
 	if isNewVersionAvailable {
 		msg := fmt.Sprintf("A new comics-downloader version is available at %s", newVersionLink)
 		log.Info(msg)
