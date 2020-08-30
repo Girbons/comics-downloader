@@ -1,3 +1,10 @@
+[Changes][v0.23.1]
+<a name="v0.23.1"></a>
+# [0.23.1 (v0.23.1)](https://github.com/Girbons/comics-downloader/releases/tag/v0.23.1) - 30 Aug 2020
+# Fixes
+
+* updated mangadex.
+
 [Changes][v0.23.0]
 <a name="v0.23.0"></a>
 # [0.23.0 (v0.23.0)](https://github.com/Girbons/comics-downloader/releases/tag/v0.23.0) - 21 Aug 2020

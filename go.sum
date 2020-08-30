@@ -5,8 +5,8 @@ github.com/akavel/rsrc v0.8.0/go.mod h1:uLoCtb9J+EyAqh+26kdrTgmzRBFPGOolLWKpdxkK
 github.com/anaskhan96/soup v1.1.1 h1:Duux/0htS2Va7XLJ9qIakCSey790hg9OFRm2FwlMTy0=
 github.com/anaskhan96/soup v1.1.1/go.mod h1:pT5vs4HXDwA5y4KQCsKvnkpQd3D+joP7IqpiGskfWW0=
 github.com/bake/httpcache v0.0.0-20190425194625-775d0adac809/go.mod h1:4NG8FC+Gt0aSRAFe+GcCsKUGCL63u0doQyQBQffWX90=
-github.com/bake/mangadex v0.0.0-20200308152818-cb733691b670 h1:XBQFpSv0pkpT6N/p7vF8VbROw/edBejOiMf7cOVrTwg=
-github.com/bake/mangadex v0.0.0-20200308152818-cb733691b670/go.mod h1:bUshzroFkkuGzxrjzwMr/8gcBRFWW6OTNy+PYvtG9zw=
+github.com/bake/mangadex v0.0.0-20200830124632-5ec8c2facc70 h1:Er9NbxM4qZInzctfvs5AfWHVVfq7OAJvHSZbNU+yu38=
+github.com/bake/mangadex v0.0.0-20200830124632-5ec8c2facc70/go.mod h1:bUshzroFkkuGzxrjzwMr/8gcBRFWW6OTNy+PYvtG9zw=
 github.com/bmaupin/go-epub v0.5.3 h1:HBOJS2KqsRGGcEzM470/9l5q2l9JwAUxQabEgPMrW90=
 github.com/bmaupin/go-epub v0.5.3/go.mod h1:4RBr0Zo03mRGOyGAcc25eLOqIPCkMbfz+tINVmH6clQ=
 github.com/boombuler/barcode v1.0.0/go.mod h1:paBWMcWSl3LHKBqUq+rly7CNSldXjb2rDl3JlRe0mD8=
@@ -98,8 +98,9 @@ golang.org/x/image v0.0.0-20190802002840-cff245a6509b/go.mod h1:FeLwcggjj3mMvU+o
 golang.org/x/image v0.0.0-20190910094157-69e4b8554b2a/go.mod h1:FeLwcggjj3mMvU+oOTbSwawSJRM1uh48EjtB4UJZlP0=
 golang.org/x/image v0.0.0-20200430140353-33d19683fad8 h1:6WW6V3x1P/jokJBpRQYUJnMHRP6isStQwCozxnU7XQw=
 golang.org/x/image v0.0.0-20200430140353-33d19683fad8/go.mod h1:FeLwcggjj3mMvU+oOTbSwawSJRM1uh48EjtB4UJZlP0=
-golang.org/x/mod v0.2.0 h1:KU7oHjnv3XNWfa5COkzUifxZmxp1TyI7ImMXqFxLwvQ=
 golang.org/x/mod v0.2.0/go.mod h1:s0Qsj1ACt9ePp/hMypM3fl4fZqREWJwdYDEqhRiZZUA=
+golang.org/x/mod v0.3.0 h1:RM4zey1++hCTbCVQfnWeKs9/IEsaBLA8vTkd0WVtmH4=
+golang.org/x/mod v0.3.0/go.mod h1:s0Qsj1ACt9ePp/hMypM3fl4fZqREWJwdYDEqhRiZZUA=
 golang.org/x/net v0.0.0-20190404232315-eb5bcb51f2a3/go.mod h1:t9HGtf8HONx5eT2rtn7q6eTqICYqUVnKs3thJo3Qplg=
 golang.org/x/net v0.0.0-20190620200207-3b0461eec859/go.mod h1:z5CRVTTTmAJ677TzLLGU+0bjPO0LkuOLi4/5GtJWs/s=
 golang.org/x/net v0.0.0-20200226121028-0de0cce0169b/go.mod h1:z5CRVTTTmAJ677TzLLGU+0bjPO0LkuOLi4/5GtJWs/s=

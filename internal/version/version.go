@@ -9,7 +9,7 @@ import (
 
 // Tag specifies the current release tag.
 // It needs to be manually updated.
-const Tag = "v0.23.0"
+const Tag = "v0.23.1"
 
 // IsNewAvailable() will fetch the latest project releases
 // and will compare the latest release Tag against the current Tag.

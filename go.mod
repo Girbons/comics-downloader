@@ -5,7 +5,7 @@ go 1.15
 require (
 	fyne.io/fyne v1.3.3
 	github.com/anaskhan96/soup v1.1.1
-	github.com/bake/mangadex v0.0.0-20200308152818-cb733691b670
+	github.com/bake/mangadex v0.0.0-20200830124632-5ec8c2facc70
 	github.com/bmaupin/go-epub v0.5.3
 	github.com/dsnet/compress v0.0.1 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
@@ -20,5 +20,5 @@ require (
 	github.com/stretchr/testify v1.6.1
 	github.com/ulikunitz/xz v0.5.8 // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
-	golang.org/x/mod v0.2.0
+	golang.org/x/mod v0.3.0
 )
