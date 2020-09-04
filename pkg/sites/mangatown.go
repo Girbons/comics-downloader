@@ -99,7 +99,7 @@ func (m *Mangatown) RetrieveIssueLinks(url string, all, last bool) ([]string, er
 	chapters := doc.Find("ul", "class", "chapter_list").FindAll("a")
 
 	for _, chapter := range chapters {
-		url := "https:" + chapter.Attrs()["href"]
+		url := "https://mangatown.com" + chapter.Attrs()["href"]
 		if util.IsURLValid(url) {
 			links = append(links, url)
 		}

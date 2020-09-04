@@ -1,3 +1,10 @@
+[Changes][v0.23.2]
+<a name="v0.23.2"></a>
+# [0.23.2 (v0.23.2)](https://github.com/Girbons/comics-downloader/releases/tag/v0.23.2) - 4 Sep 2020
+# Fixes
+
+* [mangatown] fixed issue on `all` argument.
+
 [Changes][v0.23.1]
 <a name="v0.23.1"></a>
 # [0.23.1 (v0.23.1)](https://github.com/Girbons/comics-downloader/releases/tag/v0.23.1) - 30 Aug 2020
