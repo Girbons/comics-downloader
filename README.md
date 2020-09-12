@@ -12,6 +12,7 @@
 ## Supported Sites
 
 - https://www.comicextra.com/
+- https://readcomiconline.to/
 - https://www.mangareader.net/
 - https://www.mangatown.com/
 - https://mangadex.cc/
@@ -73,6 +74,7 @@ Usage:
 | Source                      | all    | country| last   |
 |-----------------------------|--------|--------|--------|
 |http://www.comicextra.com/   |&#x2713;|&#x2717;|&#x2713;|
+|https://readcomiconline.to/  |&#x2713;|&#x2717;|&#x2713;|
 |https://www.mangareader.net/ |&#x2713;|&#x2717;|&#x2713;|
 |http://www.mangatown.com/    |&#x2713;|&#x2717;|&#x2713;|
 |https://mangadex.cc/         |&#x2713;|&#x2713;|&#x2713;|
