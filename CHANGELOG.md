@@ -1,3 +1,11 @@
+[Changes][v0.25.0]
+<a name="v0.25.0"></a>
+# [0.25.0 (v0.25.0)](https://github.com/Girbons/comics-downloader/releases/tag/v0.25.0) - 23 Oct 2020
+# What's new
+
+* Introduced health check #69 - (thanks @hakuamesan)
+
+
 [Changes][v0.24.0]
 <a name="v0.24.0"></a>
 # [0.24.0 (v0.24.0)](https://github.com/Girbons/comics-downloader/releases/tag/v0.24.0) - 12 Sep 2020
