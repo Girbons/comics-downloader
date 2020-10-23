@@ -88,12 +88,16 @@ func download(options *config.Options, bindLogsToChannel bool) {
 
 			res, err := http.Get(u)
 			if err != nil {
-				log.Error("Invalid url")
+				msg := "Invalid URL"
+				log.Error(msg)
+				sendToChannel(bindLogsToChannel, msg)
 				continue
 			}
 
 			if res.StatusCode == 404 {
-				log.Error("404: URL not found")
+				msg := "404: URL not found"
+				log.Error(msg)
+				sendToChannel(bindLogsToChannel, msg)
 				continue
 			}
 
