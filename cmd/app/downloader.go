@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -82,6 +83,17 @@ func download(options *config.Options, bindLogsToChannel bool) {
 				msg := "Site currently disabled, please check https://github.com/Girbons/comics-downloader/issues/"
 				log.WithFields(log.Fields{"site": u}).Warning(msg)
 				sendToChannel(bindLogsToChannel, msg)
+				continue
+			}
+
+			res, err := http.Get(u)
+			if err != nil {
+				log.Error("Invalid url")
+				continue
+			}
+
+			if res.StatusCode == 404 {
+				log.Error("404: URL not found")
 				continue
 			}
 
