@@ -117,3 +117,32 @@ func TestLoaderUnknownSource(t *testing.T) {
 	}
 	assert.Equal(t, len(collection), 0)
 }
+
+func TestIssuesRange(t *testing.T) {
+	url := "https://www.comicextra.com/daredevil-2016/chapter-600/full"
+	outputFolder := filepath.Dir(os.Args[0])
+	options := &config.Options{
+		All:          true,
+		Last:         false,
+		ImagesOnly:   false,
+		Source:       "www.comicextra.com",
+		Url:          url,
+		Format:       "pdf",
+		ImagesFormat: "png",
+		OutputFolder: outputFolder,
+		IssuesRage:   "5-7",
+	}
+	collection, err := LoadComicFromSource(options)
+
+	assert.Nil(t, err)
+	assert.Equal(t, len(collection), 3)
+
+	issues := make([]string, 0, len(collection))
+	for _, c := range collection {
+		issues = append(issues, c.IssueNumber)
+	}
+
+	assert.Contains(t, issues, "chapter-5")
+	assert.Contains(t, issues, "chapter-6")
+	assert.Contains(t, issues, "chapter-7")
+}
