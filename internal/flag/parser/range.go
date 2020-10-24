@@ -17,7 +17,7 @@ func ParseIssuesRange(rng string) (int, int, error) {
 
 	startRange, err := strconv.Atoi(values[0])
 	if err != nil {
-		return 0, 0, fmt.Errorf("wrong the start range value: %w", err)
+		return 0, 0, fmt.Errorf("wrong the start range value: %v", err)
 	}
 
 	if startRange == 0 {
@@ -26,7 +26,7 @@ func ParseIssuesRange(rng string) (int, int, error) {
 
 	endRange, err := strconv.Atoi(values[1])
 	if err != nil {
-		return 0, 0, fmt.Errorf("wrong the end range value: %w", err)
+		return 0, 0, fmt.Errorf("wrong the end range value: %v", err)
 	}
 
 	if endRange == 0 {
