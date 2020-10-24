@@ -21,7 +21,7 @@ func initializeCollection(issues []string, options *config.Options, base BaseSit
 	}
 
 	var startRange, endRange int
-	if options.IssuesRage != "" {
+	if options.All && options.IssuesRage != "" {
 		start, end, err := parser.ParseIssuesRange(options.IssuesRage)
 		if err != nil {
 			return collection, err
@@ -65,7 +65,7 @@ var onlyNumbers = regexp.MustCompile("[^0-9]+")
 
 func notInIssuesRange(issueNumber string, start, end int) bool {
 	if start == 0 || end == 0 {
-		return true
+		return false
 	}
 
 	normalizedNumber := onlyNumbers.ReplaceAllString(issueNumber, "")
@@ -75,7 +75,7 @@ func notInIssuesRange(issueNumber string, start, end int) bool {
 
 	number, err := strconv.Atoi(normalizedNumber)
 	if err != nil {
-		return false
+		return true
 	}
 
 	return number < start || number > end
