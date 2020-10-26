@@ -61,6 +61,8 @@ Usage:
         Download the last Comic issue
   -output string
         Folder where the comics will be saved
+  -range
+        Range of issues to download, example 3-9
   -timeout int
         Timeout (seconds), specifies how often the downloader runs (default 600)
   -url string
@@ -123,6 +125,16 @@ example:
 
 ```bash
 ./comics-downloader -url=[your url] -all
+```
+
+### Download the range of issues
+
+Provide the comic url and use the `-all` and `-range` flags. The url provided can be any issue of the comic, or the main comic page url.
+
+example:
+
+```bash
+./comics-downloader -url=[your url] -all -range=[start-end]
 ```
 
 ### Download the last comic issue
