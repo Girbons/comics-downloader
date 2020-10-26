@@ -1,3 +1,10 @@
+[Changes][v0.26.0]
+<a name="v0.26.0"></a>
+# [0.26.0 (v0.26.0)](https://github.com/Girbons/comics-downloader/releases/tag/v0.26.0) - 26 Oct 2020
+# What's new
+
+* Introduced range flag - (thanks @ivanlemeshev)
+
 [Changes][v0.25.0]
 <a name="v0.25.0"></a>
 # [0.25.0 (v0.25.0)](https://github.com/Girbons/comics-downloader/releases/tag/v0.25.0) - 23 Oct 2020
