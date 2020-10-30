@@ -54,6 +54,9 @@ func main() {
 	outputFolderEntry := widget.NewEntry()
 	outputFolderEntry.SetPlaceHolder("Folder where the comics will be saved")
 
+	issuesRange := widget.NewEntry()
+	issuesRange.SetPlaceHolder("1-10")
+
 	d := &Downloader{
 		URL:          urlEntry,
 		Country:      countryEntry,
@@ -63,6 +66,7 @@ func main() {
 		ImagesOnly:   imagesOnlyCheck,
 		ImagesFormat: imagesFormatChoices,
 		OutputFolder: outputFolderEntry,
+		IssuesRange:  issuesRange,
 	}
 
 	form := widget.NewForm()
@@ -71,6 +75,7 @@ func main() {
 	form.Append("Output", d.Format)
 	form.Append("All chapters", d.AllChapters)
 	form.Append("Last chapter", d.LastChapter)
+	form.Append("Issues Range", d.IssuesRange)
 	form.Append("Images Only", d.ImagesOnly)
 	form.Append("Images Format", d.ImagesFormat)
 	form.Append("Output Folder", d.OutputFolder)

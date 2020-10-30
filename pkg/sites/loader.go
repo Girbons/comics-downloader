@@ -21,8 +21,8 @@ func initializeCollection(issues []string, options *config.Options, base BaseSit
 	}
 
 	var startRange, endRange int
-	if options.All && options.IssuesRage != "" {
-		start, end, err := parser.ParseIssuesRange(options.IssuesRage)
+	if options.All && options.IssuesRange != "" {
+		start, end, err := parser.ParseIssuesRange(options.IssuesRange)
 		if err != nil {
 			return collection, err
 		}

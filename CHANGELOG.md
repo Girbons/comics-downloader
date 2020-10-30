@@ -1,3 +1,14 @@
+[Changes][v0.26.1]
+<a name="v0.26.1"></a>
+# [0.26.1 (v0.26.1)](https://github.com/Girbons/comics-downloader/releases/tag/v0.26.1) - 30 Oct 2020
+# What's new
+
+* Added range in GUI #74
+
+# Changes
+
+* url parameter is now required
+
 [Changes][v0.26.0]
 <a name="v0.26.0"></a>
 # [0.26.0 (v0.26.0)](https://github.com/Girbons/comics-downloader/releases/tag/v0.26.0) - 26 Oct 2020

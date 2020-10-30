@@ -11,6 +11,6 @@ type Options struct {
 	OutputFolder string
 	Url          string
 	Source       string
-	IssuesRage   string
+	IssuesRange  string
 	Timeout      int
 }

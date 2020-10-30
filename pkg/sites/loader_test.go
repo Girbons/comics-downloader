@@ -130,7 +130,7 @@ func TestIssuesRange(t *testing.T) {
 		Format:       "pdf",
 		ImagesFormat: "png",
 		OutputFolder: outputFolder,
-		IssuesRage:   "5-7",
+		IssuesRange:  "5-7",
 	}
 	collection, err := LoadComicFromSource(options)
 
