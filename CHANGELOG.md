@@ -1,3 +1,10 @@
+[Changes][v0.26.2]
+<a name="v0.26.2"></a>
+# [0.26.2 (v0.26.2)](https://github.com/Girbons/comics-downloader/releases/tag/v0.26.2) - 2 Nov 2020
+# Changes
+
+* range can be used without the `all` flag.
+
 [Changes][v0.26.1]
 <a name="v0.26.1"></a>
 # [0.26.1 (v0.26.1)](https://github.com/Girbons/comics-downloader/releases/tag/v0.26.1) - 30 Oct 2020

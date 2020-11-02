@@ -45,6 +45,16 @@ func checkErr(err error, bindLogsToChannel bool, comic *core.Comic) {
 }
 
 func download(options *config.Options, bindLogsToChannel bool) {
+	if options.All && options.Last {
+		options.Last = false
+		log.Warning("all and last are selected, all parameter will be used")
+	}
+
+	// enforce `all` flag when `range` is used.
+	if options.IssuesRange != "" && !options.All {
+		options.All = true
+	}
+
 	if options.OutputFolder == "" {
 		options.OutputFolder = filepath.Dir(os.Args[0])
 	}
@@ -134,11 +144,6 @@ func GuiRun(options *config.Options) {
 
 // Run will start the CLI app
 func Run(options *config.Options) {
-	if options.All && options.Last {
-		options.Last = false
-		log.Warning("all and last are selected, all parameter will be used")
-	}
-
 	// link is required
 	if options.Url == "" {
 		log.Fatal("url parameter is required")
