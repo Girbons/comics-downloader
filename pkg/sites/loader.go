@@ -92,21 +92,21 @@ func LoadComicFromSource(options *config.Options) ([]*core.Comic, error) {
 
 	switch options.Source {
 	case "readcomiconline.to":
-		base = &ReadComicOnline{}
+		base = NewReadComiconline(options)
 	case "www.comicextra.com":
-		base = &Comicextra{}
+		base = NewComicextra(options)
 	case "www.mangareader.net":
-		base = &Mangareader{}
+		base = NewMangareader(options)
 	case "www.mangatown.com":
-		base = &Mangatown{}
+		base = NewMangatown(options)
 	case "mangadex.cc", "mangadex.org":
-		base = NewMangadex(options.Country, options.Source)
+		base = NewMangadex(options)
 	default:
 		err = fmt.Errorf("source unknown")
 		return collection, err
 	}
 
-	issues, err = base.RetrieveIssueLinks(options.Url, options.All, options.Last)
+	issues, err = base.RetrieveIssueLinks()
 	if err != nil {
 		return collection, err
 	}

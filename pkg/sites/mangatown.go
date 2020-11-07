@@ -4,12 +4,21 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/Girbons/comics-downloader/pkg/config"
 	"github.com/Girbons/comics-downloader/pkg/core"
 	"github.com/Girbons/comics-downloader/pkg/util"
 	"github.com/anaskhan96/soup"
 )
 
-type Mangatown struct{}
+type Mangatown struct {
+	options *config.Options
+}
+
+func NewMangatown(options *config.Options) *Mangatown {
+	return &Mangatown{
+		options: options,
+	}
+}
 
 func (m *Mangatown) findPages(document *soup.Root) []string {
 	var pages []string
@@ -51,6 +60,10 @@ func (m *Mangatown) retrieveImageLinks(comic *core.Comic) ([]string, error) {
 		links = append(links, fmt.Sprintf("https:%s", img.Attrs()["src"]))
 	}
 
+	if m.options.Debug {
+		m.options.Logger.Debug(fmt.Sprintf("Image Links found: %s", strings.Join(links, " ")))
+	}
+
 	return links, err
 }
 
@@ -76,13 +89,15 @@ func (m *Mangatown) retrieveLastIssue(url string) (string, error) {
 }
 
 // RetrieveIssueLinks gets a slice of urls for all issues in a comic
-func (m *Mangatown) RetrieveIssueLinks(url string, all, last bool) ([]string, error) {
-	if last {
+func (m *Mangatown) RetrieveIssueLinks() ([]string, error) {
+	url := m.options.Url
+
+	if m.options.Last {
 		lastIssue, err := m.retrieveLastIssue(url)
 		return []string{lastIssue}, err
 	}
 
-	if all && m.isSingleIssue(url) {
+	if m.options.All && m.isSingleIssue(url) {
 		url = strings.Join(util.TrimAndSplitURL(url)[:5], "/")
 	} else if m.isSingleIssue(url) {
 		return []string{url}, nil
@@ -103,6 +118,10 @@ func (m *Mangatown) RetrieveIssueLinks(url string, all, last bool) ([]string, er
 		if util.IsURLValid(url) {
 			links = append(links, url)
 		}
+	}
+
+	if m.options.Debug {
+		m.options.Logger.Debug(fmt.Sprintf("Issue Links found: %s", strings.Join(links, " ")))
 	}
 
 	return links, err

@@ -11,6 +11,8 @@ import (
 )
 
 var (
+	// shows debug log
+	debug bool
 	// download mode options
 	all  bool
 	last bool
@@ -35,6 +37,7 @@ var (
 )
 
 func init() {
+	flag.BoolVar(&debug, "debug", false, "Shows Debug log")
 	flag.BoolVar(&all, "all", false, "Download all issues of the Comic or Comics")
 	flag.BoolVar(&daemon, "daemon", false, "Run the download as daemon")
 	flag.BoolVar(&imagesOnly, "images-only", false, "Download comic/manga images")
@@ -60,6 +63,7 @@ func main() {
 	}
 
 	options := &config.Options{
+		Debug:        debug,
 		All:          all,
 		Last:         last,
 		Country:      country,

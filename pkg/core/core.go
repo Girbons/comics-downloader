@@ -9,12 +9,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Girbons/comics-downloader/pkg/config"
 	"github.com/Girbons/comics-downloader/pkg/util"
 	epub "github.com/bmaupin/go-epub"
 	"github.com/jung-kurt/gofpdf"
 	"github.com/mholt/archiver"
 	"github.com/schollz/progressbar/v2"
-	log "github.com/sirupsen/logrus"
 )
 
 // DEFAULT_MESSAGE for correctly saved file
@@ -41,7 +41,7 @@ type Comic struct {
 }
 
 // makeEPUB create the epub file
-func (comic *Comic) makeEPUB(outputFolder string) error {
+func (comic *Comic) makeEPUB(options *config.Options) error {
 	var err error
 
 	currentDir, err := util.CurrentDir()
@@ -61,7 +61,7 @@ func (comic *Comic) makeEPUB(outputFolder string) error {
 		e.SetAuthor(comic.Author)
 	}
 
-	imagesPath, err := comic.DownloadImages(outputFolder)
+	imagesPath, err := comic.DownloadImages(options)
 	if err != nil {
 		return err
 	}
@@ -76,7 +76,7 @@ func (comic *Comic) makeEPUB(outputFolder string) error {
 		// add the image to the epub will return a path
 		imgpath, err := e.AddImage(fmt.Sprintf("%s/%s", imagesPath, file.Name()), "")
 		if err != nil {
-			log.Error(err)
+			options.Logger.Error(err.Error())
 		}
 		// if the cover is not set we'll use the first image
 		// otherwise the image will be added as a section
@@ -86,7 +86,7 @@ func (comic *Comic) makeEPUB(outputFolder string) error {
 		} else {
 			_, err = e.AddSection(fmt.Sprintf(imgTag, imgpath), "", "", "")
 			if err != nil {
-				log.Error(err)
+				options.Logger.Error(err.Error())
 			}
 		}
 	}
@@ -97,7 +97,7 @@ func (comic *Comic) makeEPUB(outputFolder string) error {
 
 	// get the PathSetup where the file should be saved
 	// e.g. /www.mangarock.com/comic-name/
-	dir, err := util.PathSetup(outputFolder, comic.Source, comic.Name)
+	dir, err := util.PathSetup(options.OutputFolder, comic.Source, comic.Name)
 	if err != nil {
 		return err
 	}
@@ -106,17 +106,17 @@ func (comic *Comic) makeEPUB(outputFolder string) error {
 		return err
 	}
 
-	log.Info(fmt.Sprintf("%s %s", strings.ToUpper(comic.Format), DEFAULT_MESSAGE))
+	options.Logger.Info(fmt.Sprintf("%s %s", strings.ToUpper(comic.Format), DEFAULT_MESSAGE))
 	return err
 }
 
 // makePDF create the pdf file
-func (comic *Comic) makePDF(outputFolder string) error {
+func (comic *Comic) makePDF(options *config.Options) error {
 	var err error
 	// setup the pdf
 	pdf := gofpdf.New("P", "mm", "A4", "")
 
-	imagesPath, err := comic.DownloadImages(outputFolder)
+	imagesPath, err := comic.DownloadImages(options)
 	if err != nil {
 		return err
 	}
@@ -145,7 +145,7 @@ func (comic *Comic) makePDF(outputFolder string) error {
 	}
 	// get the PathSetup where the file should be saved
 	// e.g. /www.mangarock.com/comic-name/
-	dir, err := util.PathSetup(outputFolder, comic.Source, comic.Name)
+	dir, err := util.PathSetup(options.OutputFolder, comic.Source, comic.Name)
 	if err != nil {
 		return err
 	}
@@ -155,19 +155,19 @@ func (comic *Comic) makePDF(outputFolder string) error {
 		return err
 	}
 
-	log.Info(fmt.Sprintf("%s %s", strings.ToUpper(comic.Format), DEFAULT_MESSAGE))
+	options.Logger.Info(fmt.Sprintf("%s %s", strings.ToUpper(comic.Format), DEFAULT_MESSAGE))
 	return err
 }
 
 // makeCBRZ will create the CBR/CBZ
-func (comic *Comic) makeCBRZ(outputFolder string) error {
+func (comic *Comic) makeCBRZ(options *config.Options) error {
 	var filesToAdd []string
 	var err error
 
 	// setup a new Epub instance
 	archive := archiver.NewZip()
 
-	imagesPath, err := comic.DownloadImages(outputFolder)
+	imagesPath, err := comic.DownloadImages(options)
 	if err != nil {
 		return err
 	}
@@ -183,7 +183,7 @@ func (comic *Comic) makeCBRZ(outputFolder string) error {
 	}
 
 	// e.g. /www.mangarock.com/comic-name/
-	dir, err := util.PathSetup(outputFolder, comic.Source, comic.Name)
+	dir, err := util.PathSetup(options.OutputFolder, comic.Source, comic.Name)
 	if err != nil {
 		return err
 	}
@@ -200,16 +200,16 @@ func (comic *Comic) makeCBRZ(outputFolder string) error {
 		return err
 	}
 
-	log.Info(fmt.Sprintf("%s %s", strings.ToUpper(comic.Format), DEFAULT_MESSAGE))
+	options.Logger.Info(fmt.Sprintf("%s %s", strings.ToUpper(comic.Format), DEFAULT_MESSAGE))
 	return err
 }
 
 // DownloadImages will download the comic/manga images
-func (comic *Comic) DownloadImages(outputFolder string) (string, error) {
+func (comic *Comic) DownloadImages(options *config.Options) (string, error) {
 	var dir string
 	var err error
 
-	dir, err = util.ImagesPathSetup(outputFolder, comic.Source, comic.Name, comic.IssueNumber)
+	dir, err = util.ImagesPathSetup(options.OutputFolder, comic.Source, comic.Name, comic.IssueNumber)
 	if err != nil {
 		return dir, err
 	}
@@ -266,7 +266,7 @@ func (comic *Comic) DownloadImages(outputFolder string) (string, error) {
 		}
 
 		if barErr := bar.Add(1); barErr != nil {
-			log.Error(barErr)
+			options.Logger.Error(barErr.Error())
 		}
 	}
 
@@ -279,16 +279,16 @@ func (comic *Comic) DownloadImages(outputFolder string) (string, error) {
 }
 
 // MakeComic will create the file based on the output format selected.
-func (comic *Comic) MakeComic(outputFolder string) error {
+func (comic *Comic) MakeComic(options *config.Options) error {
 	var err error
 
 	switch comic.Format {
 	case EPUB:
-		err = comic.makeEPUB(outputFolder)
+		err = comic.makeEPUB(options)
 	case CBR, CBZ:
-		err = comic.makeCBRZ(outputFolder)
+		err = comic.makeCBRZ(options)
 	default:
-		err = comic.makePDF(outputFolder)
+		err = comic.makePDF(options)
 	}
 
 	return err

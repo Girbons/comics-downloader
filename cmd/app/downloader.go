@@ -2,18 +2,17 @@ package app
 
 import (
 	"fmt"
-	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 
+	"github.com/Girbons/comics-downloader/internal/logger"
 	"github.com/Girbons/comics-downloader/internal/version"
 	"github.com/Girbons/comics-downloader/pkg/config"
-	"github.com/Girbons/comics-downloader/pkg/core"
 	"github.com/Girbons/comics-downloader/pkg/detector"
 	"github.com/Girbons/comics-downloader/pkg/sites"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 )
 
 var (
@@ -23,31 +22,16 @@ var (
 	Messages = make(chan string)
 )
 
-func init() {
-	// use log INFO Level
-	log.SetLevel(log.InfoLevel)
-}
+func download(options *config.Options, bindLogToChannel bool) {
+	options.Logger = logger.NewLogger(bindLogToChannel, Messages)
 
-func sendToChannel(enabled bool, message string) {
-	if enabled {
-		Messages <- message
+	if options.Debug {
+		options.Logger.SetLevel(logrus.DebugLevel)
 	}
-}
 
-func checkErr(err error, bindLogsToChannel bool, comic *core.Comic) {
-	if err != nil {
-		log.Error(err)
-		sendToChannel(bindLogsToChannel, fmt.Sprintf("ERROR: %s", err))
-	} else {
-		name := fmt.Sprintf("%s %s.%s", comic.Name, comic.IssueNumber, comic.Format)
-		sendToChannel(bindLogsToChannel, fmt.Sprintf("%s, Succesfully Downloaded", name))
-	}
-}
-
-func download(options *config.Options, bindLogsToChannel bool) {
 	if options.All && options.Last {
 		options.Last = false
-		log.Warning("all and last are selected, all parameter will be used")
+		options.Logger.Warning("all and last are selected, all parameter will be used")
 	}
 
 	// enforce `all` flag when `range` is used.
@@ -62,14 +46,12 @@ func download(options *config.Options, bindLogsToChannel bool) {
 	isNewVersionAvailable, newVersionLink, err := version.IsNewAvailable()
 	if err != nil {
 		msg := "There was an error while checking for a new comics-downloader version"
-		log.Error(msg)
-		sendToChannel(bindLogsToChannel, msg)
+		options.Logger.Error(msg)
 	}
 
 	if isNewVersionAvailable {
 		msg := fmt.Sprintf("A new comics-downloader version is available at %s", newVersionLink)
-		log.Info(msg)
-		sendToChannel(bindLogsToChannel, msg)
+		options.Logger.Info(msg)
 	}
 
 	urls := options.Url
@@ -83,53 +65,34 @@ func download(options *config.Options, bindLogsToChannel bool) {
 			options.Url = u
 
 			if !check {
-				msg := "This site is not supported :("
-				log.WithFields(log.Fields{"site": u}).Error(msg)
-				sendToChannel(bindLogsToChannel, msg)
+				options.Logger.Error("This site is not supported")
 				continue
 			}
 
 			if isDisabled {
-				msg := "Site currently disabled, please check https://github.com/Girbons/comics-downloader/issues/"
-				log.WithFields(log.Fields{"site": u}).Warning(msg)
-				sendToChannel(bindLogsToChannel, msg)
+				options.Logger.Warning("Site currently disabled, please check https://github.com/Girbons/comics-downloader/issues/")
 				continue
 			}
 
-			res, err := http.Get(u)
-			if err != nil {
-				msg := "Invalid URL"
-				log.Error(msg)
-				sendToChannel(bindLogsToChannel, msg)
+			ok, healthCheckMessage := sites.Healthcheck(u)
+			if !ok {
+				options.Logger.Warning(healthCheckMessage)
 				continue
 			}
 
-			if res.StatusCode == 404 {
-				msg := "404: URL not found"
-				log.Error(msg)
-				sendToChannel(bindLogsToChannel, msg)
-				continue
-			}
-
-			msg := "Downloading..."
-			log.WithFields(log.Fields{"url": u}).Info(msg)
-			sendToChannel(bindLogsToChannel, msg)
-			// in case the link is supported
-			// setup the right strategy to parse a comic
+			options.Logger.Info("Downloading...")
 			collection, err := sites.LoadComicFromSource(options)
 			if err != nil {
-				log.Error(err)
-				sendToChannel(bindLogsToChannel, fmt.Sprintf("ERROR: %s", err))
+				options.Logger.Error(err.Error())
 				continue
 			}
 
 			for _, comic := range collection {
 				if options.ImagesOnly {
-					_, err = comic.DownloadImages(options.OutputFolder)
+					_, err = comic.DownloadImages(options)
 				} else {
-					err = comic.MakeComic(options.OutputFolder)
+					err = comic.MakeComic(options)
 				}
-				checkErr(err, bindLogsToChannel, comic)
 			}
 		}
 	}
@@ -146,7 +109,7 @@ func GuiRun(options *config.Options) {
 func Run(options *config.Options) {
 	// link is required
 	if options.Url == "" {
-		log.Fatal("url parameter is required")
+		options.Logger.Error("url parameter is required")
 	}
 
 	// daemon is started only if `all` or `last` flags are used

@@ -2,15 +2,25 @@ package sites
 
 import (
 	"encoding/json"
+	"fmt"
 	"reflect"
 	"strings"
 
+	"github.com/Girbons/comics-downloader/pkg/config"
 	"github.com/Girbons/comics-downloader/pkg/core"
 	"github.com/Girbons/comics-downloader/pkg/util"
 	"github.com/anaskhan96/soup"
 )
 
-type Mangareader struct{}
+type Mangareader struct {
+	options *config.Options
+}
+
+func NewMangareader(options *config.Options) *Mangareader {
+	return &Mangareader{
+		options: options,
+	}
+}
 
 func (m *Mangareader) retrieveImageLinks(comic *core.Comic) ([]string, error) {
 	var links []string
@@ -46,6 +56,10 @@ func (m *Mangareader) retrieveImageLinks(comic *core.Comic) ([]string, error) {
 		}
 	}
 
+	if m.options.Debug {
+		m.options.Logger.Debug(fmt.Sprintf("Image Links found: %s", strings.Join(links, " ")))
+	}
+
 	return links, err
 }
 
@@ -69,13 +83,15 @@ func (m *Mangareader) retrieveLastIssue(url string) (string, error) {
 }
 
 // RetrieveIssueLinks gets a slice of urls for all issues in a comic
-func (m *Mangareader) RetrieveIssueLinks(url string, all, last bool) ([]string, error) {
-	if last {
+func (m *Mangareader) RetrieveIssueLinks() ([]string, error) {
+	url := m.options.Url
+
+	if m.options.Last {
 		lastIssue, err := m.retrieveLastIssue(url)
 		return []string{lastIssue}, err
 	}
 
-	if all && m.isSingleIssue(url) {
+	if m.options.All && m.isSingleIssue(url) {
 		url = strings.Join(util.TrimAndSplitURL(url)[:4], "/")
 	} else if m.isSingleIssue(url) {
 		return []string{url}, nil
@@ -98,6 +114,10 @@ func (m *Mangareader) RetrieveIssueLinks(url string, all, last bool) ([]string, 
 				links = append(links, url)
 			}
 		}
+	}
+
+	if m.options.Debug {
+		m.options.Logger.Debug(fmt.Sprintf("Issues Links found: %s", strings.Join(links, " ")))
 	}
 
 	return links, err

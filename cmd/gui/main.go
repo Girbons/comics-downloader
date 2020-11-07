@@ -50,6 +50,7 @@ func main() {
 	allChaptersCheck := widget.NewCheck("", nil)
 	lastChapterCheck := widget.NewCheck("", nil)
 	imagesOnlyCheck := widget.NewCheck("", nil)
+	debugCheck := widget.NewCheck("", nil)
 
 	outputFolderEntry := widget.NewEntry()
 	outputFolderEntry.SetPlaceHolder("Folder where the comics will be saved")
@@ -67,6 +68,7 @@ func main() {
 		ImagesFormat: imagesFormatChoices,
 		OutputFolder: outputFolderEntry,
 		IssuesRange:  issuesRange,
+		Debug:        debugCheck,
 	}
 
 	form := widget.NewForm()
@@ -75,6 +77,7 @@ func main() {
 	form.Append("Output", d.Format)
 	form.Append("All chapters", d.AllChapters)
 	form.Append("Last chapter", d.LastChapter)
+	form.Append("Debug Mode", d.Debug)
 	form.Append("Issues Range", d.IssuesRange)
 	form.Append("Images Only", d.ImagesOnly)
 	form.Append("Images Format", d.ImagesFormat)

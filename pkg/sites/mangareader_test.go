@@ -3,6 +3,8 @@ package sites
 import (
 	"testing"
 
+	"github.com/Girbons/comics-downloader/internal/logger"
+	"github.com/Girbons/comics-downloader/pkg/config"
 	"github.com/Girbons/comics-downloader/pkg/core"
 	"github.com/stretchr/testify/assert"
 )
@@ -21,7 +23,16 @@ func TestMangareaderGetInfo(t *testing.T) {
 }
 
 func TestRetrieveMangareaderImageLinks(t *testing.T) {
-	mr := new(Mangareader)
+	opt :=
+		&config.Options{
+			Url:    URL,
+			Source: SOURCE,
+			All:    false,
+			Last:   false,
+			Debug:  false,
+			Logger: logger.NewLogger(false, make(chan string)),
+		}
+	mr := NewMangareader(opt)
 
 	comic := new(core.Comic)
 	comic.URLSource = URL
@@ -36,7 +47,16 @@ func TestRetrieveMangareaderImageLinks(t *testing.T) {
 }
 
 func TestSetupMangareader(t *testing.T) {
-	mr := new(Mangareader)
+	opt :=
+		&config.Options{
+			Url:    URL,
+			Source: SOURCE,
+			All:    false,
+			Last:   false,
+			Debug:  false,
+			Logger: logger.NewLogger(false, make(chan string)),
+		}
+	mr := NewMangareader(opt)
 
 	comic := new(core.Comic)
 	comic.Name = "naruto"
@@ -51,23 +71,31 @@ func TestSetupMangareader(t *testing.T) {
 }
 
 func TestMangareaderRetrieveIssueLinks(t *testing.T) {
-	mr := new(Mangareader)
-	issues, err := mr.RetrieveIssueLinks("https://www.mangareader.net/naruto", false, false)
+	opt :=
+		&config.Options{
+			Url:    "https://www.mangareader.net/naruto",
+			All:    false,
+			Last:   false,
+			Debug:  false,
+			Logger: logger.NewLogger(false, make(chan string)),
+		}
+	mr := NewMangareader(opt)
+	issues, err := mr.RetrieveIssueLinks()
 
 	assert.Nil(t, err)
 	assert.Equal(t, 700, len(issues))
 }
 
-func TestMangareaderRetrieveIssueLinksLast(t *testing.T) {
-	mr := new(Mangareader)
-	issues, err := mr.RetrieveIssueLinks("https://www.mangareader.net/naruto", false, true)
-
-	assert.Nil(t, err)
-	assert.Equal(t, 1, len(issues))
-}
-
 func TestMangareaderRetrieveLastIssueLink(t *testing.T) {
-	mr := new(Mangareader)
+	opt :=
+		&config.Options{
+			Url:    "https://www.mangareader.net/naruto",
+			All:    false,
+			Last:   true,
+			Debug:  false,
+			Logger: logger.NewLogger(false, make(chan string)),
+		}
+	mr := NewMangareader(opt)
 	issue, err := mr.retrieveLastIssue("https://www.mangareader.net/naruto")
 
 	assert.Nil(t, err)

@@ -1,15 +1,25 @@
 package sites
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
 
+	"github.com/Girbons/comics-downloader/pkg/config"
 	"github.com/Girbons/comics-downloader/pkg/core"
 	"github.com/Girbons/comics-downloader/pkg/util"
 	"github.com/anaskhan96/soup"
 )
 
-type ReadComicOnline struct{}
+type ReadComicOnline struct {
+	options *config.Options
+}
+
+func NewReadComiconline(options *config.Options) *ReadComicOnline {
+	return &ReadComicOnline{
+		options: options,
+	}
+}
 
 func (c *ReadComicOnline) retrieveImageLinks(comic *core.Comic) ([]string, error) {
 	var links []string
@@ -29,6 +39,10 @@ func (c *ReadComicOnline) retrieveImageLinks(comic *core.Comic) ([]string, error
 		if util.IsURLValid(url) {
 			links = append(links, url)
 		}
+	}
+
+	if c.options.Debug {
+		c.options.Logger.Debug(fmt.Sprintf("Image Links found: %s", strings.Join(links, " ")))
 	}
 
 	return links, err
@@ -56,13 +70,15 @@ func (c *ReadComicOnline) retrieveLastIssue(url string) (string, error) {
 }
 
 // RetrieveIssueLinks gets a slice of urls for all issues in a comic
-func (c *ReadComicOnline) RetrieveIssueLinks(url string, all, last bool) ([]string, error) {
-	if last {
+func (c *ReadComicOnline) RetrieveIssueLinks() ([]string, error) {
+	url := c.options.Url
+
+	if c.options.Last {
 		issue, err := c.retrieveLastIssue(url)
 		return []string{issue}, err
 	}
 
-	if all && c.isSingleIssue(url) {
+	if c.options.All && c.isSingleIssue(url) {
 		url = "https://readcomiconline.to/Comic/" + util.TrimAndSplitURL(url)[3]
 	} else if c.isSingleIssue(url) {
 		return []string{url}, nil
@@ -91,6 +107,10 @@ func (c *ReadComicOnline) RetrieveIssueLinks(url string, all, last bool) ([]stri
 				links = append(links, url)
 			}
 		}
+	}
+
+	if c.options.Debug {
+		c.options.Logger.Debug(fmt.Sprintf("Issues Links retrieved: %s", strings.Join(links, " ")))
 	}
 
 	return links, err

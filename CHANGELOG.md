@@ -1,3 +1,10 @@
+[Changes][v0.27.0]
+<a name="v0.27.0"></a>
+# [0.27.0 (v0.27.0)](https://github.com/Girbons/comics-downloader/releases/tag/v0.27.0) - 21 Nov 2020
+# What's new
+
+* introduce debug flag.
+
 [Changes][v0.26.2]
 <a name="v0.26.2"></a>
 # [0.26.2 (v0.26.2)](https://github.com/Girbons/comics-downloader/releases/tag/v0.26.2) - 2 Nov 2020

@@ -3,12 +3,22 @@ package sites
 import (
 	"testing"
 
+	"github.com/Girbons/comics-downloader/internal/logger"
+	"github.com/Girbons/comics-downloader/pkg/config"
 	"github.com/Girbons/comics-downloader/pkg/core"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestMangatownGetInfo(t *testing.T) {
-	mt := new(Mangatown)
+	opt :=
+		&config.Options{
+			Url:    "http://www.mangatown.com/manga/naruto/v63/c684/",
+			All:    false,
+			Last:   false,
+			Debug:  false,
+			Logger: logger.NewLogger(false, make(chan string)),
+		}
+	mt := NewMangatown(opt)
 	name, issueNumber := mt.GetInfo("http://www.mangatown.com/manga/naruto/v63/c684/")
 
 	assert.Equal(t, "naruto", name)
@@ -16,7 +26,15 @@ func TestMangatownGetInfo(t *testing.T) {
 }
 
 func TestMangatownSetup(t *testing.T) {
-	mt := new(Mangatown)
+	opt :=
+		&config.Options{
+			Url:    "http://www.mangatown.com/manga/naruto/v63/c684/",
+			All:    false,
+			Last:   false,
+			Debug:  false,
+			Logger: logger.NewLogger(false, make(chan string)),
+		}
+	mt := NewMangatown(opt)
 	comic := new(core.Comic)
 	comic.URLSource = "http://www.mangatown.com/manga/naruto/v63/c684/"
 
@@ -27,25 +45,33 @@ func TestMangatownSetup(t *testing.T) {
 }
 
 func TestMangatownRetrieveIssueLinks(t *testing.T) {
-	mt := new(Mangatown)
-	issues, err := mt.RetrieveIssueLinks("https://www.mangatown.com/manga/naruto/", false, false)
+	opt :=
+		&config.Options{
+			Url:    "http://www.mangatown.com/manga/naruto/v63/c684/",
+			All:    true,
+			Last:   false,
+			Debug:  false,
+			Logger: logger.NewLogger(false, make(chan string)),
+		}
+	mt := NewMangatown(opt)
+	issues, err := mt.RetrieveIssueLinks()
 
 	assert.Nil(t, err)
 	assert.Equal(t, 752, len(issues))
 }
 
 func TestMangatownRetrieveIssueLinksLastChapter(t *testing.T) {
-	mt := new(Mangatown)
-	issues, err := mt.RetrieveIssueLinks("https://www.mangatown.com/manga/naruto/", false, true)
+	opt :=
+		&config.Options{
+			Url:    "http://www.mangatown.com/manga/naruto/",
+			All:    false,
+			Last:   true,
+			Debug:  false,
+			Logger: logger.NewLogger(false, make(chan string)),
+		}
+	mt := NewMangatown(opt)
+	issues, err := mt.RetrieveIssueLinks()
 
 	assert.Nil(t, err)
 	assert.Equal(t, 1, len(issues))
-}
-
-func TestMangatownRetrieveLastIssueLink(t *testing.T) {
-	mt := new(Mangatown)
-	issue, err := mt.retrieveLastIssue("https://www.mangatown.com/manga/naruto/")
-
-	assert.Nil(t, err)
-	assert.Equal(t, "https://www.mangatown.com/manga/naruto/v72/c700.6/", issue)
 }

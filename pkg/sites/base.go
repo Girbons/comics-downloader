@@ -12,5 +12,5 @@ type BaseSite interface {
 	GetInfo(url string) (string, string)
 
 	// RetrieveIssueLinks will return the images links of a comic
-	RetrieveIssueLinks(url string, all, last bool) ([]string, error)
+	RetrieveIssueLinks() ([]string, error)
 }

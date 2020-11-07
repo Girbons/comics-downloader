@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/Girbons/comics-downloader/pkg/config"
 	"github.com/Girbons/comics-downloader/pkg/core"
 	"github.com/Girbons/comics-downloader/pkg/util"
 	"github.com/bake/mangadex"
@@ -14,14 +15,16 @@ type Mangadex struct {
 	country string
 	baseURL string
 	Client  *mangadex.Client
+	options *config.Options
 }
 
 // NewMangadex returns a Mangadex instance
-func NewMangadex(country, source string) *Mangadex {
-	mangadexBase := "https://" + source + "/"
+func NewMangadex(options *config.Options) *Mangadex {
+	mangadexBase := "https://" + options.Source + "/"
 	return &Mangadex{
-		country: strings.ToLower(country),
+		country: strings.ToLower(options.Country),
 		baseURL: mangadexBase,
+		options: options,
 		Client: mangadex.New(
 			mangadex.WithBase(mangadexBase),
 		),
@@ -41,17 +44,21 @@ func (m *Mangadex) getLinks(url string) ([]string, error) {
 
 	links = res.Images()
 
+	if m.options.Debug {
+		m.options.Logger.Debug(fmt.Sprintf("Image Links found: %s", strings.Join(links, " ")))
+	}
+
 	return links, nil
 }
 
-func (m *Mangadex) RetrieveIssueLinks(url string, all, last bool) ([]string, error) {
-	parts := util.TrimAndSplitURL(url)
+func (m *Mangadex) RetrieveIssueLinks() ([]string, error) {
+	parts := util.TrimAndSplitURL(m.options.Url)
 	if len(parts) < 5 {
 		return nil, errors.New("URL not supported")
 	}
 	switch parts[3] {
 	case "chapter":
-		return []string{url}, nil
+		return []string{m.options.Url}, nil
 	case "title":
 		_, cs, err := m.Client.Manga(parts[4])
 		if err != nil {
@@ -67,7 +74,7 @@ func (m *Mangadex) RetrieveIssueLinks(url string, all, last bool) ([]string, err
 		if len(urls) == 0 {
 			return nil, errors.New("no chapters found")
 		}
-		if last {
+		if m.options.Last {
 			urls = urls[len(urls)-1:]
 		}
 		return urls, nil
