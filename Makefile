@@ -17,14 +17,14 @@ linux-arm-build: # Creates Linux ARM
 linux-arm64-build: # Creates Linux ARM64
 	@GOOS=linux GOARCH=arm64 go build -o build/comics-downloader-linux-arm64 ./cmd/downloader
 
-osx-gui-build: # Creates OSX GUI
+osx-gui-build: # Creates osx GUI
 	@GOOS=darwin GOARCH=amd64 go build -o build/comics-downloader-gui-osx ./cmd/gui
 
 windows-gui-build: # Creates Window GUI executable
 	@CGO_ENABLED=1 GOOS=windows CC=x86_64-w64-mingw32-gcc go build -o build/comics-downloader-gui-windows.exe ./cmd/gui
 
-linux-gui-build: # Creates LINUX GUI executable
-	@fyne-cross --output=comics-downloader-gui --targets=linux/amd64 ./cmd/gui
+linux-gui-build: # Creates Linux Gui executable
+	@fyne-cross linux -output comics-downloader-gui ./cmd/gui
 
 builds: # Creates executables for OSX/Windows/Linux
 	@make osx-build

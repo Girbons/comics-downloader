@@ -1,3 +1,10 @@
+[Changes][v0.27.1]
+<a name="v0.27.1"></a>
+# [0.27.1 (v0.27.1)](https://github.com/Girbons/comics-downloader/releases/tag/v0.27.1) - 14 Dec 2020
+# Changes
+
+* Updated mangadex api to v2. - (thanks @bake)
+
 [Changes][v0.27.0]
 <a name="v0.27.0"></a>
 # [0.27.0 (v0.27.0)](https://github.com/Girbons/comics-downloader/releases/tag/v0.27.0) - 21 Nov 2020
