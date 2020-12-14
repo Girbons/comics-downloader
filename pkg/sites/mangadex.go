@@ -1,14 +1,16 @@
 package sites
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/Girbons/comics-downloader/pkg/config"
 	"github.com/Girbons/comics-downloader/pkg/core"
 	"github.com/Girbons/comics-downloader/pkg/util"
-	"github.com/bake/mangadex"
+	"github.com/bake/mangadex/v2"
 )
 
 type Mangadex struct {
@@ -35,9 +37,12 @@ func (m *Mangadex) getLinks(url string) ([]string, error) {
 	var links []string
 
 	parts := util.TrimAndSplitURL(url)
-	chapterID := parts[4]
+	chapterID, err := strconv.Atoi(parts[4])
+	if err != nil {
+		return nil, err
+	}
 
-	res, err := m.Client.Chapter(chapterID)
+	res, err := m.Client.Chapter(context.Background(), chapterID, nil)
 	if err != nil {
 		return links, err
 	}
@@ -56,26 +61,30 @@ func (m *Mangadex) RetrieveIssueLinks() ([]string, error) {
 	if len(parts) < 5 {
 		return nil, errors.New("URL not supported")
 	}
+	mangaID, err := strconv.Atoi(parts[4])
+	if err != nil {
+		return nil, err
+	}
 	switch parts[3] {
 	case "chapter":
 		return []string{m.options.Url}, nil
 	case "title":
-		_, cs, err := m.Client.Manga(parts[4])
+		cs, err := m.Client.MangaChapters(context.Background(), mangaID, nil)
 		if err != nil {
 			return nil, err
 		}
 		var urls []string
 		for _, c := range cs {
-			if m.country != "" && c.LangCode != m.country {
+			if m.country != "" && c.Language != m.country {
 				continue
 			}
-			urls = append(urls, m.baseURL+"chapter/"+c.ID.String())
+			urls = append(urls, fmt.Sprintf("%schapter/%d", m.baseURL, c.ID))
 		}
 		if len(urls) == 0 {
 			return nil, errors.New("no chapters found")
 		}
 		if m.options.Last {
-			urls = urls[len(urls)-1:]
+			urls = urls[:1]
 		}
 		return urls, nil
 	default:
@@ -85,15 +94,18 @@ func (m *Mangadex) RetrieveIssueLinks() ([]string, error) {
 
 func (m *Mangadex) GetInfo(url string) (string, string) {
 	parts := util.TrimAndSplitURL(url)
-	chapterID := parts[4]
-
-	chapterInfo, err := m.Client.Chapter(chapterID)
+	chapterID, err := strconv.Atoi(parts[4])
 	if err != nil {
 		return "", ""
 	}
 
-	mangaID := chapterInfo.MangaID.Number
-	mangaInfo, _, err := m.Client.Manga(string(mangaID))
+	chapterInfo, err := m.Client.Chapter(context.Background(), chapterID, nil)
+	if err != nil {
+		return "", ""
+	}
+
+	mangaID := chapterInfo.MangaID
+	mangaInfo, err := m.Client.Manga(context.Background(), mangaID, nil)
 	if err != nil {
 		return "", ""
 	}
