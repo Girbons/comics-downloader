@@ -9,6 +9,7 @@ require (
 	github.com/bmaupin/go-epub v0.5.3
 	github.com/dsnet/compress v0.0.1 // indirect
 	github.com/frankban/quicktest v1.11.2 // indirect
+	github.com/fyne-io/fyne-cross v1.0.0 // indirect
 	github.com/golang/snappy v0.0.2 // indirect
 	github.com/google/go-github v17.0.0+incompatible
 	github.com/jung-kurt/gofpdf v1.16.2

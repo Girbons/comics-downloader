@@ -1,3 +1,10 @@
+[Changes][v0.27.2]
+<a name="v0.27.2"></a>
+# [0.27.2 (v0.27.2)](https://github.com/Girbons/comics-downloader/releases/tag/v0.27.2) - 16 Apr 2021
+# Changes
+
+* Updated readcomiconline domain. - (Thanks @kavishgr)
+
 [Changes][v0.27.1]
 <a name="v0.27.1"></a>
 # [0.27.1 (v0.27.1)](https://github.com/Girbons/comics-downloader/releases/tag/v0.27.1) - 14 Dec 2020

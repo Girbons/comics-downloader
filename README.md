@@ -12,7 +12,7 @@
 ## Supported Sites
 
 - https://www.comicextra.com/
-- https://readcomiconline.to/
+- https://readcomiconline.li/
 - https://www.mangareader.net/
 - https://www.mangatown.com/
 - https://mangadex.cc/
@@ -23,17 +23,17 @@
 
 Download the latest release:
 
-- [Linux](https://github.com/Girbons/comics-downloader/releases/download/v0.27.1/comics-downloader)
-- [Mac OSX](https://github.com/Girbons/comics-downloader/releases/download/v0.27.1/comics-downloader-osx)
-- [Windows](https://github.com/Girbons/comics-downloader/releases/download/v0.27.1/comics-downloader.exe)
-- [Linux ARM](https://github.com/Girbons/comics-downloader/releases/download/v0.27.1/comics-downloader-linux-arm)
-- [Linux ARM64](https://github.com/Girbons/comics-downloader/releases/download/v0.27.1/comics-downloader-linux-arm64)
+- [Linux](https://github.com/Girbons/comics-downloader/releases/download/v0.27.2/comics-downloader)
+- [Mac OSX](https://github.com/Girbons/comics-downloader/releases/download/v0.27.2/comics-downloader-osx)
+- [Windows](https://github.com/Girbons/comics-downloader/releases/download/v0.27.2/comics-downloader.exe)
+- [Linux ARM](https://github.com/Girbons/comics-downloader/releases/download/v0.27.2/comics-downloader-linux-arm)
+- [Linux ARM64](https://github.com/Girbons/comics-downloader/releases/download/v0.27.2/comics-downloader-linux-arm64)
 
 Download the latest GUI release:
 
-- [Linux](https://github.com/Girbons/comics-downloader/releases/download/v0.27.1/comics-downloader-gui)
-- [Mac OSX](https://github.com/Girbons/comics-downloader/releases/download/v0.27.1/comics-downloader-gui-osx)
-- [Windows](https://github.com/Girbons/comics-downloader/releases/download/v0.27.1/comics-downloader-gui-windows.exe)
+- [Linux](https://github.com/Girbons/comics-downloader/releases/download/v0.27.2/comics-downloader-gui)
+- [Mac OSX](https://github.com/Girbons/comics-downloader/releases/download/v0.27.2/comics-downloader-gui-osx)
+- [Windows](https://github.com/Girbons/comics-downloader/releases/download/v0.27.2/comics-downloader-gui-windows.exe)
 
 Put the script under a folder.
 
@@ -78,7 +78,7 @@ Usage:
 | Source                      | all    | country| last   |
 |-----------------------------|--------|--------|--------|
 |http://www.comicextra.com/   |&#x2713;|&#x2717;|&#x2713;|
-|https://readcomiconline.to/  |&#x2713;|&#x2717;|&#x2713;|
+|https://readcomiconline.li/  |&#x2713;|&#x2717;|&#x2713;|
 |https://www.mangareader.net/ |&#x2713;|&#x2717;|&#x2713;|
 |http://www.mangatown.com/    |&#x2713;|&#x2717;|&#x2713;|
 |https://mangadex.cc/         |&#x2713;|&#x2713;|&#x2713;|
