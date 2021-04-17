@@ -91,7 +91,7 @@ func LoadComicFromSource(options *config.Options) ([]*core.Comic, error) {
 	)
 
 	switch options.Source {
-	case "readcomiconline.to":
+	case "readcomiconline.li":
 		base = NewReadComiconline(options)
 	case "www.comicextra.com":
 		base = NewComicextra(options)
