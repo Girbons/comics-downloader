@@ -7,13 +7,14 @@ import (
 
 // SupportedSites are the supported sites.
 var SupportedSites = map[string]map[string]bool{
-	"www.comicextra.com":  {"isDisabled": false},
+	"mangadex.cc":         {"isDisabled": true},
+	"mangadex.org":        {"isDisabled": true},
+	"readallcomics.com":   {"isDisabled": false},
 	"readcomiconline.li":  {"isDisabled": false},
+	"www.comicextra.com":  {"isDisabled": false},
+	"www.mangahere.cc":    {"isDisabled": false},
 	"www.mangareader.net": {"isDisabled": false},
 	"www.mangatown.com":   {"isDisabled": false},
-	"www.mangahere.cc":    {"isDisabled": false},
-	"mangadex.cc":         {"isDisabled": false},
-	"mangadex.org":        {"isDisabled": false},
 }
 
 // DetectComic will look for the url source to check if a source is supported.

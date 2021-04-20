@@ -21,7 +21,7 @@ osx-gui-build: # Creates osx GUI
 	@GOOS=darwin GOARCH=amd64 go build -o build/comics-downloader-gui-osx ./cmd/gui
 
 windows-gui-build: # Creates Window GUI executable
-	@CGO_ENABLED=1 GOOS=windows CC=x86_64-w64-mingw32-gcc go build -o build/comics-downloader-gui-windows.exe ./cmd/gui
+	@fyne-cross windows -output comics-downloader-gui-windows.exe ./cmd/gui
 
 linux-gui-build: # Creates Linux Gui executable
 	@fyne-cross linux -output comics-downloader-gui ./cmd/gui
@@ -30,11 +30,11 @@ builds: # Creates executables for OSX/Windows/Linux
 	@make osx-build
 	@make windows-build
 	@make linux-build
-	@make windows-gui-build
-	@make osx-gui-build
-	@make linux-gui-build
 	@make linux-arm-build
 	@make linux-arm64-build
+	@make osx-gui-build
+	@make windows-gui-build
+	@make linux-gui-build
 
 remove-builds: # Remove executables
 	@rm -rf build/

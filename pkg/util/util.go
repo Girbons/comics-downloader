@@ -36,11 +36,19 @@ func URLSource(u string) (string, error) {
 }
 
 // IsURLValid will exclude those url containing `.gif` and `logo`.
-func IsURLValid(value string) bool {
-	check := value != "" && !strings.Contains(value, ".gif") && !strings.Contains(value, "logo") && !strings.Contains(value, "mobilebanner")
+func IsURLValid(url string) bool {
+	invalidValues := []string{".gif", "logo", "mobilebanner", "wp-content"}
+	check := true
+
+	for _, v := range invalidValues {
+		if strings.Contains(url, v) {
+			check = false
+			break
+		}
+	}
 
 	if check {
-		return strings.HasPrefix(value, "http") || strings.HasPrefix(value, "https")
+		return strings.HasPrefix(url, "http") || strings.HasPrefix(url, "https")
 	}
 
 	return check

@@ -1,3 +1,14 @@
+[Changes][v0.28.0]
+<a name="v0.28.0"></a>
+# [0.28.0 (v0.28.0)](https://github.com/Girbons/comics-downloader/releases/tag/v0.28.0) - 20 Apr 2021
+#What's new
+
+* added support to http://readallcomics.com
+
+# Changes
+
+* Disabled mangadex, please check https://mangadex.org/index.html
+
 [Changes][v0.27.3]
 <a name="v0.27.3"></a>
 # [0.27.3 (v0.27.3)](https://github.com/Girbons/comics-downloader/releases/tag/v0.27.3) - 17 Apr 2021
