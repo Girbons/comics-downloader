@@ -1,7 +1,7 @@
 [Changes][v0.28.0]
 <a name="v0.28.0"></a>
 # [0.28.0 (v0.28.0)](https://github.com/Girbons/comics-downloader/releases/tag/v0.28.0) - 20 Apr 2021
-#What's new
+# What's new
 
 * added support to http://readallcomics.com
 
