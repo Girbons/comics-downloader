@@ -22,9 +22,7 @@ var (
 	Messages = make(chan string)
 )
 
-func download(options *config.Options, bindLogToChannel bool) {
-	options.Logger = logger.NewLogger(bindLogToChannel, Messages)
-
+func download(options *config.Options) {
 	if options.Debug {
 		options.Logger.SetLevel(logrus.DebugLevel)
 	}
@@ -45,13 +43,11 @@ func download(options *config.Options, bindLogToChannel bool) {
 
 	isNewVersionAvailable, newVersionLink, err := version.IsNewAvailable()
 	if err != nil {
-		msg := "There was an error while checking for a new comics-downloader version"
-		options.Logger.Error(msg)
+		options.Logger.Error("There was an error while checking for a new comics-downloader version")
 	}
 
 	if isNewVersionAvailable {
-		msg := fmt.Sprintf("A new comics-downloader version is available at %s", newVersionLink)
-		options.Logger.Info(msg)
+		options.Logger.Info(fmt.Sprintf("A new comics-downloader version is available at %s", newVersionLink))
 	}
 
 	urls := options.Url
@@ -101,24 +97,28 @@ func download(options *config.Options, bindLogToChannel bool) {
 // GuiRun will start the GUI app
 func GuiRun(options *config.Options) {
 	AppStatus <- true
-	download(options, true)
+	options.Logger = logger.NewLogger(true, Messages)
+	download(options)
 	AppStatus <- false
 }
 
 // Run will start the CLI app
 func Run(options *config.Options) {
+	options.Logger = logger.NewLogger(false, Messages)
+
 	// link is required
 	if options.Url == "" {
 		options.Logger.Error("url parameter is required")
+		return
 	}
 
 	// daemon is started only if `all` or `last` flags are used
 	if options.Daemon && (options.All || options.Last) {
 		for {
-			download(options, false)
+			download(options)
 			time.Sleep(time.Duration(options.Timeout) * time.Second)
 		}
 	}
 
-	download(options, false)
+	download(options)
 }
