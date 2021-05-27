@@ -8,7 +8,7 @@ import (
 // SupportedSites are the supported sites.
 var SupportedSites = map[string]map[string]bool{
 	"mangadex.org":       {"isDisabled": true},
-	"mangareader.tv":     {"isDisabled": false},
+	"mangareader.tv":     {"isDisabled": true},
 	"readallcomics.com":  {"isDisabled": false},
 	"readcomiconline.li": {"isDisabled": false},
 	"www.comicextra.com": {"isDisabled": false},
