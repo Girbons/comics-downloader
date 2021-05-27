@@ -11,10 +11,12 @@ import (
 	"github.com/anaskhan96/soup"
 )
 
+// ReadComicOnline represents a readcomiconline instance.
 type ReadComicOnline struct {
 	options *config.Options
 }
 
+// NewReadComiconline returns a readcomiconline instance.
 func NewReadComiconline(options *config.Options) *ReadComicOnline {
 	return &ReadComicOnline{
 		options: options,
@@ -71,7 +73,7 @@ func (c *ReadComicOnline) retrieveLastIssue(url string) (string, error) {
 
 // RetrieveIssueLinks gets a slice of urls for all issues in a comic
 func (c *ReadComicOnline) RetrieveIssueLinks() ([]string, error) {
-	url := c.options.Url
+	url := c.options.URL
 
 	if c.options.Last {
 		issue, err := c.retrieveLastIssue(url)
@@ -116,6 +118,7 @@ func (c *ReadComicOnline) RetrieveIssueLinks() ([]string, error) {
 	return links, err
 }
 
+// GetInfo extracts the basic info from the given url.
 func (c *ReadComicOnline) GetInfo(url string) (string, string) {
 	parts := util.TrimAndSplitURL(url)
 	name := parts[4]

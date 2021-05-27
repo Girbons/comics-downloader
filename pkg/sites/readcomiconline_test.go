@@ -16,7 +16,7 @@ func TestReadComicOnlineSetup(t *testing.T) {
 
 	opt :=
 		&config.Options{
-			Url:    "https://readcomiconline.to/Comic/Batman-2016/Issue-58?id=143175",
+			URL:    "https://readcomiconline.to/Comic/Batman-2016/Issue-58?id=143175",
 			All:    false,
 			Last:   false,
 			Debug:  false,
@@ -32,7 +32,7 @@ func TestReadComicOnlineSetup(t *testing.T) {
 func TestReadComicOnlineGetInfo(t *testing.T) {
 	opt :=
 		&config.Options{
-			Url:    "https://readcomiconline.to/Comic/Batman-2016/Issue-58?id=143175",
+			URL:    "https://readcomiconline.to/Comic/Batman-2016/Issue-58?id=143175",
 			All:    false,
 			Last:   false,
 			Debug:  false,
@@ -48,7 +48,7 @@ func TestReadComicOnlineGetInfo(t *testing.T) {
 func TestReadComicOnlineRetrieveIssueLinks(t *testing.T) {
 	opt :=
 		&config.Options{
-			Url:    "https://readcomiconline.to/Comic/100-Bullets",
+			URL:    "https://readcomiconline.to/Comic/100-Bullets",
 			All:    false,
 			Last:   false,
 			Debug:  false,
@@ -64,7 +64,7 @@ func TestReadComicOnlineRetrieveIssueLinks(t *testing.T) {
 func TestReadComicOnlineRetrieveIssueLinksLastChapter(t *testing.T) {
 	opt :=
 		&config.Options{
-			Url:    "https://readcomiconline.to/Comic/100-Bullets",
+			URL:    "https://readcomiconline.to/Comic/100-Bullets",
 			All:    false,
 			Last:   true,
 			Debug:  false,
@@ -80,7 +80,7 @@ func TestReadComicOnlineRetrieveIssueLinksLastChapter(t *testing.T) {
 func TestReadComicOnlineRetrieveLastIssueLink(t *testing.T) {
 	opt :=
 		&config.Options{
-			Url:    "https://readcomiconline.to/Comic/100-Bullets",
+			URL:    "https://readcomiconline.to/Comic/100-Bullets",
 			All:    false,
 			Last:   true,
 			Debug:  false,

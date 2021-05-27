@@ -9,6 +9,8 @@ import (
 	"strings"
 	"time"
 
+	"golang.org/x/sync/errgroup"
+
 	"github.com/Girbons/comics-downloader/pkg/config"
 	"github.com/Girbons/comics-downloader/pkg/util"
 	epub "github.com/bmaupin/go-epub"
@@ -17,8 +19,8 @@ import (
 	"github.com/schollz/progressbar/v2"
 )
 
-// DEFAULT_MESSAGE for correctly saved file
-const DEFAULT_MESSAGE = "file correctly saved"
+// DefaultMessage for correctly saved file
+const DefaultMessage = "file correctly saved"
 
 // manga output format supported
 const (
@@ -78,7 +80,7 @@ func (comic *Comic) makeEPUB(options *config.Options) error {
 		if err != nil {
 			options.Logger.Error(err.Error())
 		}
-		// if the cover is not set we'll use the first image
+		// if the cover is not set use the first image
 		// otherwise the image will be added as a section
 		if !isCoverSet {
 			isCoverSet = true
@@ -106,14 +108,14 @@ func (comic *Comic) makeEPUB(options *config.Options) error {
 		return err
 	}
 
-	options.Logger.Info(fmt.Sprintf("%s %s", strings.ToUpper(comic.Format), DEFAULT_MESSAGE))
+	options.Logger.Info(fmt.Sprintf("%s %s", strings.ToUpper(comic.Format), DefaultMessage))
 	return err
 }
 
 // makePDF create the pdf file
 func (comic *Comic) makePDF(options *config.Options) error {
 	var err error
-	// setup the pdf
+
 	pdf := gofpdf.New("P", "mm", "A4", "")
 
 	imagesPath, err := comic.DownloadImages(options)
@@ -128,9 +130,7 @@ func (comic *Comic) makePDF(options *config.Options) error {
 		return err
 	}
 
-	// for each link get the image to add to the pdf file
 	for _, file := range files {
-		// add a new PDF page
 		pdf.AddPage()
 		imageOptions := gofpdf.ImageOptions{ImageType: util.ImageType(comic.ImagesFormat), ReadDpi: true, AllowNegativePosition: false}
 		fileName := fmt.Sprintf("%s/%s", imagesPath, file.Name())
@@ -140,11 +140,9 @@ func (comic *Comic) makePDF(options *config.Options) error {
 		}
 		content := bytes.NewReader(data)
 		pdf.RegisterImageOptionsReader(file.Name(), imageOptions, content)
-		// set the image position on the pdf page
 		pdf.Image(file.Name(), 0, 0, 210, 297, false, comic.ImagesFormat, 0, "")
 	}
-	// get the PathSetup where the file should be saved
-	// e.g. /www.mangarock.com/comic-name/
+
 	dir, err := util.PathSetup(options.OutputFolder, comic.Source, comic.Name)
 	if err != nil {
 		return err
@@ -155,7 +153,7 @@ func (comic *Comic) makePDF(options *config.Options) error {
 		return err
 	}
 
-	options.Logger.Info(fmt.Sprintf("%s %s", strings.ToUpper(comic.Format), DEFAULT_MESSAGE))
+	options.Logger.Info(fmt.Sprintf("%s %s", strings.ToUpper(comic.Format), DefaultMessage))
 	return err
 }
 
@@ -200,7 +198,7 @@ func (comic *Comic) makeCBRZ(options *config.Options) error {
 		return err
 	}
 
-	options.Logger.Info(fmt.Sprintf("%s %s", strings.ToUpper(comic.Format), DEFAULT_MESSAGE))
+	options.Logger.Info(fmt.Sprintf("%s %s", strings.ToUpper(comic.Format), DefaultMessage))
 	return err
 }
 
@@ -245,29 +243,41 @@ func (comic *Comic) DownloadImages(options *config.Options) (string, error) {
 		},
 	}
 
+	g := new(errgroup.Group)
+
 	for i, link := range comic.Links {
-		if link != "" {
-			rsp, err := client.Get(link)
-			if err != nil {
-				return dir, err
-			}
-			defer rsp.Body.Close()
+		link := link
+		i := i
+		g.Go(func() error {
+			if link != "" {
+				rsp, err := client.Get(link)
+				if err != nil {
+					return err
+				}
+				defer rsp.Body.Close()
 
-			imgFile, err := os.Create(fmt.Sprintf("%04d-image.%s", i, format))
-			if err != nil {
-				return dir, err
-			}
-			defer imgFile.Close()
+				imgFile, err := os.Create(fmt.Sprintf("%04d-image.%s", i, format))
+				if err != nil {
+					return err
+				}
+				defer imgFile.Close()
 
-			err = util.SaveImage(imgFile, rsp.Body, format)
-			if err != nil {
-				return dir, err
+				err = util.SaveImage(imgFile, rsp.Body, format)
+				if err != nil {
+					return err
+				}
 			}
-		}
 
-		if barErr := bar.Add(1); barErr != nil {
-			options.Logger.Error(barErr.Error())
-		}
+			if barErr := bar.Add(1); barErr != nil {
+				options.Logger.Error(barErr.Error())
+			}
+			return nil
+
+		})
+	}
+
+	if err := g.Wait(); err != nil {
+		return dir, err
 	}
 
 	err = os.Chdir(currentDir)

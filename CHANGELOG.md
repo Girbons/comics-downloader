@@ -445,7 +445,7 @@ mangadex does not support `all` and `last` parameters.
 <a name="v0.9.1"></a>
 # [0.9.1 (v0.9.1)](https://github.com/Girbons/comics-downloader/releases/tag/v0.9.1) - 10 Apr 2019
 
-# Improvments
+# Improvements
 
 * improved error handling by removing `log.Fatal` in the middle of the code
 
@@ -460,7 +460,7 @@ mangadex does not support `all` and `last` parameters.
 
 * It's now possible to create a `config.yaml` to specify the default output format
 
-# Improvments
+# Improvements
 
 * It's now possible to omit the `url` parameter
 
@@ -480,7 +480,7 @@ mangadex does not support `all` and `last` parameters.
 <a name="v0.7.1"></a>
 # [0.7.1 (v0.7.1)](https://github.com/Girbons/comics-downloader/releases/tag/v0.7.1) - 04 Apr 2019
 
-# Improvments
+# Improvements
 
 - Improved error handling
 - fixed progress bar

@@ -17,7 +17,7 @@ func initializeCollection(issues []string, options *config.Options, base BaseSit
 	var err error
 
 	if len(issues) == 0 {
-		return collection, errors.New("No issues found.")
+		return collection, errors.New("No issues found")
 	}
 
 	var startRange, endRange int
@@ -95,11 +95,11 @@ func LoadComicFromSource(options *config.Options) ([]*core.Comic, error) {
 		base = NewReadComiconline(options)
 	case "www.comicextra.com":
 		base = NewComicextra(options)
-	case "www.mangareader.net":
+	case "mangareader.tv":
 		base = NewMangareader(options)
 	case "www.mangatown.com":
 		base = NewMangatown(options)
-	case "mangadex.cc", "mangadex.org":
+	case "mangadex.org":
 		base = NewMangadex(options)
 	case "readallcomics.com":
 		base = NewReadallcomics(options)

@@ -11,10 +11,12 @@ import (
 	"github.com/anaskhan96/soup"
 )
 
+// Comicextra represents comicextra instance.
 type Comicextra struct {
 	options *config.Options
 }
 
+// NewComicextra returs a comicextra instance.
 func NewComicextra(options *config.Options) *Comicextra {
 	return &Comicextra{
 		options: options,
@@ -76,7 +78,7 @@ func (c *Comicextra) retrieveLastIssue(url string) (string, error) {
 
 // RetrieveIssueLinks gets a slice of urls for all issues in a comic
 func (c *Comicextra) RetrieveIssueLinks() ([]string, error) {
-	url := c.options.Url
+	url := c.options.URL
 
 	if c.options.Last {
 		issue, err := c.retrieveLastIssue(url)
@@ -155,6 +157,7 @@ func (c *Comicextra) RetrieveIssueLinks() ([]string, error) {
 	return links, err
 }
 
+// GetInfo extracts the basic info from the given url.
 func (c *Comicextra) GetInfo(url string) (string, string) {
 	parts := util.TrimAndSplitURL(url)
 	name := parts[3]

@@ -25,7 +25,7 @@ func TestMangareaderGetInfo(t *testing.T) {
 func TestRetrieveMangareaderImageLinks(t *testing.T) {
 	opt :=
 		&config.Options{
-			Url:    URL,
+			URL:    URL,
 			Source: SOURCE,
 			All:    false,
 			Last:   false,
@@ -49,7 +49,7 @@ func TestRetrieveMangareaderImageLinks(t *testing.T) {
 func TestSetupMangareader(t *testing.T) {
 	opt :=
 		&config.Options{
-			Url:    URL,
+			URL:    URL,
 			Source: SOURCE,
 			All:    false,
 			Last:   false,
@@ -73,7 +73,7 @@ func TestSetupMangareader(t *testing.T) {
 func TestMangareaderRetrieveIssueLinks(t *testing.T) {
 	opt :=
 		&config.Options{
-			Url:    "https://www.mangareader.net/naruto",
+			URL:    "https://www.mangareader.net/naruto",
 			All:    false,
 			Last:   false,
 			Debug:  false,
@@ -89,7 +89,7 @@ func TestMangareaderRetrieveIssueLinks(t *testing.T) {
 func TestMangareaderRetrieveLastIssueLink(t *testing.T) {
 	opt :=
 		&config.Options{
-			Url:    "https://www.mangareader.net/naruto",
+			URL:    "https://www.mangareader.net/naruto",
 			All:    false,
 			Last:   true,
 			Debug:  false,

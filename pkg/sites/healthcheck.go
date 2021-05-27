@@ -5,6 +5,7 @@ import (
 	"net/http"
 )
 
+// Healthcheck checks that a site is available.
 func Healthcheck(url string) (bool, string) {
 	res, err := http.Get(url)
 

@@ -13,6 +13,7 @@ import (
 	"github.com/bake/mangadex/v2"
 )
 
+// Mangadex represents a mangadex instance.
 type Mangadex struct {
 	country string
 	baseURL string
@@ -56,8 +57,9 @@ func (m *Mangadex) getLinks(url string) ([]string, error) {
 	return links, nil
 }
 
+// RetrieveIssueLinks retrieve the issue links for the given comic.
 func (m *Mangadex) RetrieveIssueLinks() ([]string, error) {
-	parts := util.TrimAndSplitURL(m.options.Url)
+	parts := util.TrimAndSplitURL(m.options.URL)
 	if len(parts) < 5 {
 		return nil, errors.New("URL not supported")
 	}
@@ -67,7 +69,7 @@ func (m *Mangadex) RetrieveIssueLinks() ([]string, error) {
 	}
 	switch parts[3] {
 	case "chapter":
-		return []string{m.options.Url}, nil
+		return []string{m.options.URL}, nil
 	case "title":
 		cs, err := m.Client.MangaChapters(context.Background(), mangaID, nil)
 		if err != nil {
@@ -92,6 +94,7 @@ func (m *Mangadex) RetrieveIssueLinks() ([]string, error) {
 	}
 }
 
+// GetInfo extracts the basic info from the given url.
 func (m *Mangadex) GetInfo(url string) (string, string) {
 	parts := util.TrimAndSplitURL(url)
 	chapterID, err := strconv.Atoi(parts[4])

@@ -15,7 +15,7 @@ func TestComicExtraSetup(t *testing.T) {
 
 	opt :=
 		&config.Options{
-			Url:    "https://www.comicextra.com/batman-2016/chapter-58/full",
+			URL:    "https://www.comicextra.com/batman-2016/chapter-58/full",
 			All:    false,
 			Last:   false,
 			Debug:  false,
@@ -32,7 +32,7 @@ func TestComicExtraSetup(t *testing.T) {
 func TestComicExtraGetInfo(t *testing.T) {
 	opt :=
 		&config.Options{
-			Url:    "https://www.comicextra.com/comic/100-bullets",
+			URL:    "https://www.comicextra.com/comic/100-bullets",
 			All:    false,
 			Last:   false,
 			Debug:  false,
@@ -49,7 +49,7 @@ func TestComicExtraGetInfo(t *testing.T) {
 func TestComicextraRetrieveIssueLinks(t *testing.T) {
 	opt :=
 		&config.Options{
-			Url:    "https://www.comicextra.com/comic/100-bullets",
+			URL:    "https://www.comicextra.com/comic/100-bullets",
 			All:    false,
 			Last:   false,
 			Debug:  false,
@@ -66,7 +66,7 @@ func TestComicextraRetrieveIssueLinks(t *testing.T) {
 func TestComicextraRetrieveIssueLinksURLWithPage(t *testing.T) {
 	opt :=
 		&config.Options{
-			Url:    "https://www.comicextra.com/comic/100-bullets/2",
+			URL:    "https://www.comicextra.com/comic/100-bullets/2",
 			All:    false,
 			Last:   false,
 			Debug:  false,
@@ -83,7 +83,7 @@ func TestComicextraRetrieveIssueLinksURLWithPage(t *testing.T) {
 func TestComicextraRetrieveIssueLinksInASinglePage(t *testing.T) {
 	opt :=
 		&config.Options{
-			Url:    "https://www.comicextra.com/comic/captain-marvel-2016",
+			URL:    "https://www.comicextra.com/comic/captain-marvel-2016",
 			All:    false,
 			Last:   false,
 			Debug:  false,
@@ -100,7 +100,7 @@ func TestComicextraRetrieveIssueLinksInASinglePage(t *testing.T) {
 func TestComicextraRetrieveIssueLinksLastChapter(t *testing.T) {
 	opt :=
 		&config.Options{
-			Url:    "https://www.comicextra.com/comic/100-bullets",
+			URL:    "https://www.comicextra.com/comic/100-bullets",
 			All:    false,
 			Last:   true,
 			Debug:  false,

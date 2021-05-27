@@ -10,10 +10,12 @@ import (
 	"github.com/anaskhan96/soup"
 )
 
+// Readallcomics  represents a Readallcomics instance.
 type Readallcomics struct {
 	options *config.Options
 }
 
+// NewReadallcomics returns a new Readallcomics instance.
 func NewReadallcomics(options *config.Options) *Readallcomics {
 	return &Readallcomics{
 		options: options,
@@ -64,8 +66,9 @@ func (r *Readallcomics) retrieveLastIssue(url string) (string, error) {
 	return chapters[0].Attrs()["value"], err
 }
 
+// RetrieveIssueLinks retrieves the links to all the issue.
 func (r *Readallcomics) RetrieveIssueLinks() ([]string, error) {
-	url := r.options.Url
+	url := r.options.URL
 
 	if r.options.Last {
 		lastIssue, err := r.retrieveLastIssue(url)
@@ -96,6 +99,7 @@ func (r *Readallcomics) RetrieveIssueLinks() ([]string, error) {
 	return links, err
 }
 
+// GetInfo extracts the comic info from the given URL.
 func (r *Readallcomics) GetInfo(url string) (string, string) {
 	parts := util.TrimAndSplitURL(url)
 
@@ -108,6 +112,7 @@ func (r *Readallcomics) GetInfo(url string) (string, string) {
 	return name, issueNumber
 }
 
+// Initialize prepare the comic instance with links and images.
 func (r *Readallcomics) Initialize(comic *core.Comic) error {
 	links, err := r.retrieveImageLinks(comic)
 	comic.Links = links

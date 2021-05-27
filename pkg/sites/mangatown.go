@@ -10,10 +10,12 @@ import (
 	"github.com/anaskhan96/soup"
 )
 
+// Mangatown represents a Mangatown instance.
 type Mangatown struct {
 	options *config.Options
 }
 
+// NewMangatown returns a new mangatown instance.
 func NewMangatown(options *config.Options) *Mangatown {
 	return &Mangatown{
 		options: options,
@@ -90,7 +92,7 @@ func (m *Mangatown) retrieveLastIssue(url string) (string, error) {
 
 // RetrieveIssueLinks gets a slice of urls for all issues in a comic
 func (m *Mangatown) RetrieveIssueLinks() ([]string, error) {
-	url := m.options.Url
+	url := m.options.URL
 
 	if m.options.Last {
 		lastIssue, err := m.retrieveLastIssue(url)
@@ -127,6 +129,7 @@ func (m *Mangatown) RetrieveIssueLinks() ([]string, error) {
 	return links, err
 }
 
+// GetInfo extracts the basic info from the given URL.
 func (m *Mangatown) GetInfo(url string) (string, string) {
 	parts := util.TrimAndSplitURL(url)
 	name := parts[4]

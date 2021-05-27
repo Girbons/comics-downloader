@@ -12,7 +12,7 @@ import (
 func TestMangatownGetInfo(t *testing.T) {
 	opt :=
 		&config.Options{
-			Url:    "http://www.mangatown.com/manga/naruto/v63/c684/",
+			URL:    "http://www.mangatown.com/manga/naruto/v63/c684/",
 			All:    false,
 			Last:   false,
 			Debug:  false,
@@ -28,7 +28,7 @@ func TestMangatownGetInfo(t *testing.T) {
 func TestMangatownSetup(t *testing.T) {
 	opt :=
 		&config.Options{
-			Url:    "http://www.mangatown.com/manga/naruto/v63/c684/",
+			URL:    "http://www.mangatown.com/manga/naruto/v63/c684/",
 			All:    false,
 			Last:   false,
 			Debug:  false,
@@ -47,7 +47,7 @@ func TestMangatownSetup(t *testing.T) {
 func TestMangatownRetrieveIssueLinks(t *testing.T) {
 	opt :=
 		&config.Options{
-			Url:    "http://www.mangatown.com/manga/naruto/v63/c684/",
+			URL:    "http://www.mangatown.com/manga/naruto/v63/c684/",
 			All:    true,
 			Last:   false,
 			Debug:  false,
@@ -63,7 +63,7 @@ func TestMangatownRetrieveIssueLinks(t *testing.T) {
 func TestMangatownRetrieveIssueLinksLastChapter(t *testing.T) {
 	opt :=
 		&config.Options{
-			Url:    "http://www.mangatown.com/manga/naruto/",
+			URL:    "http://www.mangatown.com/manga/naruto/",
 			All:    false,
 			Last:   true,
 			Debug:  false,

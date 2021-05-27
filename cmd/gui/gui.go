@@ -7,6 +7,7 @@ import (
 	"github.com/Girbons/comics-downloader/pkg/config"
 )
 
+// Downloader represents a downloader instance.
 type Downloader struct {
 	URL          *widget.Entry
 	Country      *widget.Entry
@@ -20,24 +21,28 @@ type Downloader struct {
 	Debug        *widget.Check
 }
 
+// ClearURLField resets the url text field.
 func (d *Downloader) ClearURLField() {
 	d.URL.SetText("")
 }
 
+// ClearCountryField resets the country text field.
 func (d *Downloader) ClearCountryField() {
 	d.Country.SetText("")
 }
 
+// ClearOutputFolderField resets the output text field.
 func (d *Downloader) ClearOutputFolderField() {
 	d.OutputFolder.SetText("")
 }
 
+// Submit calls the downloader api with the given options.
 func (d *Downloader) Submit() {
 	opts := &config.Options{
 		Debug:        d.Debug.Checked,
 		All:          d.AllChapters.Checked,
 		Last:         d.LastChapter.Checked,
-		Url:          d.URL.Text,
+		URL:          d.URL.Text,
 		Format:       d.Format.Selected,
 		Country:      d.Country.Text,
 		ImagesFormat: d.ImagesFormat.Selected,

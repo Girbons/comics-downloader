@@ -33,7 +33,7 @@ var (
 	// app version
 	versionFlag bool
 	// range of issues to download
-	IssuesRange string
+	issuesRange string
 )
 
 func init() {
@@ -49,7 +49,7 @@ func init() {
 	flag.StringVar(&imagesFormat, "images-format", "jpg", "To use with `images-only` flag, choose the image format, available png,jpeg,img")
 	flag.StringVar(&url, "url", "", "Comic URL or Comic URLS by separating each site with a comma without the use of spaces")
 	flag.StringVar(&outputFolder, "output", "", "Folder where the comics will be saved")
-	flag.StringVar(&IssuesRange, "range", "", "Range of issues to download, example 3-9")
+	flag.StringVar(&issuesRange, "range", "", "Range of issues to download, example 3-9")
 
 	flag.IntVar(&timeout, "timeout", 600, "Timeout (seconds), specifies how often the downloader runs")
 }
@@ -69,12 +69,12 @@ func main() {
 		Country:      country,
 		ImagesOnly:   imagesOnly,
 		ImagesFormat: imagesFormat,
-		Url:          url,
+		URL:          url,
 		Format:       format,
 		Daemon:       daemon,
 		Timeout:      timeout,
 		OutputFolder: outputFolder,
-		IssuesRange:  IssuesRange,
+		IssuesRange:  issuesRange,
 	}
 
 	app.Run(options)

@@ -26,13 +26,13 @@ func TrimAndSplitURL(u string) []string {
 
 // URLSource will retrieve the url hostname.
 func URLSource(u string) (string, error) {
-	parsedUrl, err := url.Parse(u)
+	parsedURL, err := url.Parse(u)
 
 	if err != nil {
 		return "", err
 	}
 
-	return parsedUrl.Hostname(), nil
+	return parsedURL.Hostname(), nil
 }
 
 // IsURLValid will exclude those url containing `.gif` and `logo`.
@@ -113,6 +113,7 @@ func PathSetup(outputFolder, source, name string) (string, error) {
 	return dir, err
 }
 
+// ImagesPathSetup setup the folders for the images to be saved.
 func ImagesPathSetup(outputFolder, source, name, issueNumber string) (string, error) {
 	var dir string
 	var err error

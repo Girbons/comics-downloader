@@ -2,6 +2,7 @@ package config
 
 import "github.com/Girbons/comics-downloader/internal/logger"
 
+// Options represents the comics downloader options.
 type Options struct {
 	Debug        bool
 	All          bool
@@ -12,7 +13,7 @@ type Options struct {
 	Country      string
 	Format       string
 	OutputFolder string
-	Url          string
+	URL          string
 	Source       string
 	IssuesRange  string
 	Timeout      int

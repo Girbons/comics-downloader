@@ -1,9 +1,7 @@
 package sites
 
 import (
-	"encoding/json"
 	"fmt"
-	"reflect"
 	"strings"
 
 	"github.com/Girbons/comics-downloader/pkg/config"
@@ -12,10 +10,12 @@ import (
 	"github.com/anaskhan96/soup"
 )
 
+// Mangareader represents a Mangareader instance
 type Mangareader struct {
 	options *config.Options
 }
 
+// NewMangareader returns a mangareader instance.
 func NewMangareader(options *config.Options) *Mangareader {
 	return &Mangareader{
 		options: options,
@@ -32,27 +32,10 @@ func (m *Mangareader) retrieveImageLinks(comic *core.Comic) ([]string, error) {
 	}
 
 	doc := soup.HTMLParse(response)
-	// to retrieve the comic images: in the html there's a piece of javascript
-	// accessible through `document["mj"]`:
-	// document["mj"]["im"] --> contains the comic images.
-
-	// retrieve js code in script tag
-	script := doc.FindAll("script")[1]
-	data := map[string]interface{}{}
-	// slice to`15` to cut `document["mj"] =`
-	err = json.Unmarshal([]byte(script.Text()[15:]), &data)
-	if err != nil {
-		return links, err
-	}
-
-	images := reflect.ValueOf(data["im"])
-	for i := 0; i < images.Len(); i++ {
-		element := images.Index(i).Elem()
-		for _, key := range element.MapKeys() {
-			if key.String() == "u" {
-				value := element.MapIndex(key)
-				links = append(links, "https:"+value.Elem().String())
-			}
+	for _, t := range doc.FindAll("img") {
+		imageURL := t.Attrs()["data-src"]
+		if util.IsURLValid(imageURL) {
+			links = append(links, imageURL)
 		}
 	}
 
@@ -77,14 +60,14 @@ func (m *Mangareader) retrieveLastIssue(url string) (string, error) {
 
 	doc := soup.HTMLParse(response)
 	lastIssue := doc.Find("ul", "class", "d44").FindAll("li")[0].Find("a").Attrs()["href"]
-	lastIssueUrl := "https://www.mangareader.net" + lastIssue
+	lastIssueURL := "https://mangareader.tv" + lastIssue
 
-	return lastIssueUrl, nil
+	return lastIssueURL, nil
 }
 
 // RetrieveIssueLinks gets a slice of urls for all issues in a comic
 func (m *Mangareader) RetrieveIssueLinks() ([]string, error) {
-	url := m.options.Url
+	url := m.options.URL
 
 	if m.options.Last {
 		lastIssue, err := m.retrieveLastIssue(url)
@@ -109,7 +92,7 @@ func (m *Mangareader) RetrieveIssueLinks() ([]string, error) {
 	for _, node := range nodes {
 		element := node.Find("a")
 		if !strings.Contains(element.NodeValue, "not found") && element.Pointer != nil {
-			url := "https://www.mangareader.net" + element.Attrs()["href"]
+			url := "https://mangareader.tv" + element.Attrs()["href"]
 			if util.IsURLValid(url) {
 				links = append(links, url)
 			}
@@ -123,6 +106,7 @@ func (m *Mangareader) RetrieveIssueLinks() ([]string, error) {
 	return links, err
 }
 
+// GetInfo extracts the basic info from the given URL.
 func (m *Mangareader) GetInfo(url string) (string, string) {
 	parts := util.TrimAndSplitURL(url)
 	name := parts[3]

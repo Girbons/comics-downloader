@@ -28,13 +28,13 @@ func TestIsValueInSlice(t *testing.T) {
 }
 
 func TestIsUrlValid(t *testing.T) {
-	validUrl := IsURLValid("http://example.com")
-	gifUrl := IsURLValid("http://foo.gif")
-	logoUrl := IsURLValid("http://foo.logo")
+	validURL := IsURLValid("http://example.com")
+	gifURL := IsURLValid("http://foo.gif")
+	logoURL := IsURLValid("http://foo.logo")
 
-	assert.True(t, validUrl)
-	assert.False(t, gifUrl)
-	assert.False(t, logoUrl)
+	assert.True(t, validURL)
+	assert.False(t, gifURL)
+	assert.False(t, logoURL)
 }
 
 func TestImageType(t *testing.T) {

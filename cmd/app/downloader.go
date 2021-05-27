@@ -50,7 +50,7 @@ func download(options *config.Options) {
 		options.Logger.Info(fmt.Sprintf("A new comics-downloader version is available at %s", newVersionLink))
 	}
 
-	urls := options.Url
+	urls := options.URL
 
 	for _, u := range strings.Split(urls, ",") {
 		if u != "" {
@@ -58,7 +58,7 @@ func download(options *config.Options) {
 			source, check, isDisabled := detector.DetectComic(u)
 
 			options.Source = source
-			options.Url = u
+			options.URL = u
 
 			if !check {
 				options.Logger.Error("This site is not supported")
@@ -107,7 +107,7 @@ func Run(options *config.Options) {
 	options.Logger = logger.NewLogger(false, Messages)
 
 	// link is required
-	if options.Url == "" {
+	if options.URL == "" {
 		options.Logger.Error("url parameter is required")
 		return
 	}
