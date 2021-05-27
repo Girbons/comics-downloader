@@ -1,3 +1,15 @@
+[Changes][v0.28.2]
+<a name="v0.28.2"></a>
+# [0.28.2 (v0.28.2)](https://github.com/Girbons/comics-downloader/releases/tag/v0.28.2) - 27 May 2021
+# Changes
+
+* Disabled Mangareader.
+
+# Improvements
+
+* Improved images download.
+* golint fixes.
+
 [Changes][v0.28.1]
 <a name="v0.28.1"></a>
 # [0.28.1 (v0.28.1)](https://github.com/Girbons/comics-downloader/releases/tag/v0.28.1) - 27 Apr 2021

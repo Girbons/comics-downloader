@@ -11,7 +11,7 @@
 
 - https://www.comicextra.com/
 - https://readcomiconline.li/
-- https://www.mangareader.net/
+- https://www.mangareader.tv/
 - https://www.mangatown.com/
 - https://mangadex.org/
 
@@ -21,17 +21,17 @@
 
 Download the latest release:
 
-- [Linux](https://github.com/Girbons/comics-downloader/releases/download/v0.28.1/comics-downloader)
-- [Mac OSX](https://github.com/Girbons/comics-downloader/releases/download/v0.28.1/comics-downloader-osx)
-- [Windows](https://github.com/Girbons/comics-downloader/releases/download/v0.28.1/comics-downloader.exe)
-- [Linux ARM](https://github.com/Girbons/comics-downloader/releases/download/v0.28.1/comics-downloader-linux-arm)
-- [Linux ARM64](https://github.com/Girbons/comics-downloader/releases/download/v0.28.1/comics-downloader-linux-arm64)
+- [Linux](https://github.com/Girbons/comics-downloader/releases/download/v0.28.2/comics-downloader)
+- [Mac OSX](https://github.com/Girbons/comics-downloader/releases/download/v0.28.2/comics-downloader-osx)
+- [Windows](https://github.com/Girbons/comics-downloader/releases/download/v0.28.2/comics-downloader.exe)
+- [Linux ARM](https://github.com/Girbons/comics-downloader/releases/download/v0.28.2/comics-downloader-linux-arm)
+- [Linux ARM64](https://github.com/Girbons/comics-downloader/releases/download/v0.28.2/comics-downloader-linux-arm64)
 
 Download the latest GUI release:
 
-- [Linux](https://github.com/Girbons/comics-downloader/releases/download/v0.28.1/comics-downloader-gui)
-- [Mac OSX](https://github.com/Girbons/comics-downloader/releases/download/v0.28.1/comics-downloader-gui-osx)
-- [Windows](https://github.com/Girbons/comics-downloader/releases/download/v0.28.1/comics-downloader-gui-windows.exe)
+- [Linux](https://github.com/Girbons/comics-downloader/releases/download/v0.28.2/comics-downloader-gui)
+- [Mac OSX](https://github.com/Girbons/comics-downloader/releases/download/v0.28.2/comics-downloader-gui-osx)
+- [Windows](https://github.com/Girbons/comics-downloader/releases/download/v0.28.2/comics-downloader-gui-windows.exe)
 
 ## Usage
 
@@ -78,7 +78,7 @@ Usage:
 |http://www.mangatown.com/    |&#x2713;|&#x2717;|&#x2713;|
 |https://mangadex.org/        |&#x2713;|&#x2713;|&#x2713;|
 |https://readcomiconline.li/  |&#x2713;|&#x2717;|&#x2713;|
-|https://www.mangareader.net/ |&#x2713;|&#x2717;|&#x2713;|
+|https://www.mangareader.tv/ |&#x2713;|&#x2717;|&#x2713;|
 
 ### Checking for mangas using a Raspberry Pi
 
