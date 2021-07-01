@@ -139,17 +139,20 @@ func (comic *Comic) makePDF(options *config.Options) error {
 		mmHt = 297.0
 		fileName := fmt.Sprintf("%s%s%s", imagesPath, string(os.PathSeparator), file.Name())
 
-		img, err := os.Open(fileName)
-		if err == nil {
-			im, _, err := image.DecodeConfig(img)
-			if err != nil {
-				// DEBUG MESSAGE
-				// fmt.Fprintf(os.Stderr, "%s: %v\n", fileName, err)
-				continue
+		if !options.ForceAspect {
+			img, err := os.Open(fileName)
+			if err == nil {
+				im, _, err := image.DecodeConfig(img)
+				if err != nil {
+					options.Logger.Error(err.Error())
+					continue
+				}
+				mmWd = px2mm*float64(im.Width)
+				mmHt = px2mm*float64(im.Height)
+				img.Close()
+			} else {
+				options.Logger.Error(err.Error())
 			}
-			mmWd = px2mm*float64(im.Width)
-			mmHt = px2mm*float64(im.Height)
-			img.Close()
 		}
 		pdf.AddPageFormat("P", gofpdf.SizeType{Wd: mmWd, Ht: mmHt})
 
