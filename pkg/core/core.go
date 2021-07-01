@@ -145,10 +145,10 @@ func (comic *Comic) makePDF(options *config.Options) error {
 				im, _, err := image.DecodeConfig(img)
 				if err != nil {
 					options.Logger.Error(err.Error())
-					continue
+				} else {
+					mmWd = px2mm*float64(im.Width)
+					mmHt = px2mm*float64(im.Height)
 				}
-				mmWd = px2mm*float64(im.Width)
-				mmHt = px2mm*float64(im.Height)
 				img.Close()
 			} else {
 				options.Logger.Error(err.Error())
