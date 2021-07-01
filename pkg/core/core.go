@@ -141,17 +141,18 @@ func (comic *Comic) makePDF(options *config.Options) error {
 
 		if !options.ForceAspect {
 			img, err := os.Open(fileName)
-			if err == nil {
-				im, _, err := image.DecodeConfig(img)
-				if err != nil {
-					options.Logger.Error(err.Error())
-				} else {
-					mmWd = px2mm*float64(im.Width)
-					mmHt = px2mm*float64(im.Height)
-				}
-				img.Close()
-			} else {
+
+			defer img.Close()
+
+			if err != nil {
 				options.Logger.Error(err.Error())
+			}
+			im, _, err := image.DecodeConfig(img)
+			if err != nil {
+				options.Logger.Error(err.Error())
+			} else {
+				mmWd = px2mm*float64(im.Width)
+				mmHt = px2mm*float64(im.Height)
 			}
 		}
 		pdf.AddPageFormat("P", gofpdf.SizeType{Wd: mmWd, Ht: mmHt})
