@@ -21,17 +21,17 @@
 
 Download the latest release:
 
-- [Linux](https://github.com/Girbons/comics-downloader/releases/download/v0.28.2/comics-downloader)
-- [Mac OSX](https://github.com/Girbons/comics-downloader/releases/download/v0.28.2/comics-downloader-osx)
-- [Windows](https://github.com/Girbons/comics-downloader/releases/download/v0.28.2/comics-downloader.exe)
-- [Linux ARM](https://github.com/Girbons/comics-downloader/releases/download/v0.28.2/comics-downloader-linux-arm)
-- [Linux ARM64](https://github.com/Girbons/comics-downloader/releases/download/v0.28.2/comics-downloader-linux-arm64)
+- [Linux](https://github.com/Girbons/comics-downloader/releases/download/v0.29.0/comics-downloader)
+- [Mac OSX](https://github.com/Girbons/comics-downloader/releases/download/v0.29.0/comics-downloader-osx)
+- [Windows](https://github.com/Girbons/comics-downloader/releases/download/v0.29.0/comics-downloader.exe)
+- [Linux ARM](https://github.com/Girbons/comics-downloader/releases/download/v0.29.0/comics-downloader-linux-arm)
+- [Linux ARM64](https://github.com/Girbons/comics-downloader/releases/download/v0.29.0/comics-downloader-linux-arm64)
 
 Download the latest GUI release:
 
-- [Linux](https://github.com/Girbons/comics-downloader/releases/download/v0.28.2/comics-downloader-gui)
-- [Mac OSX](https://github.com/Girbons/comics-downloader/releases/download/v0.28.2/comics-downloader-gui-osx)
-- [Windows](https://github.com/Girbons/comics-downloader/releases/download/v0.28.2/comics-downloader-gui-windows.exe)
+- [Linux](https://github.com/Girbons/comics-downloader/releases/download/v0.29.0/comics-downloader-gui)
+- [Mac OSX](https://github.com/Girbons/comics-downloader/releases/download/v0.29.0/comics-downloader-gui-osx)
+- [Windows](https://github.com/Girbons/comics-downloader/releases/download/v0.29.0/comics-downloader-gui-windows.exe)
 
 ## Usage
 
@@ -51,6 +51,8 @@ Usage:
     	Shows Debug log
   -format string
         Comic format output, supported formats are pdf,epub,cbr,cbz (default "pdf")
+  -force-aspect
+        Force images to A4 Portrait aspect ratio
   -images-format
         To use with images-only flag, choose the image format, available png,jpeg,img (default "jpg")
   -images-only

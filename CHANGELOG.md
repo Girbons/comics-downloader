@@ -1,3 +1,12 @@
+[Changes][v0.29.0]
+<a name="v0.29.0"></a>
+# [0.29.0 (v0.29.0)](https://github.com/Girbons/comics-downloader/releases/tag/v0.29.0) - 2 Jul 2021
+# What's new
+
+* Now every image is adapted to PDF page based on its size, the previous behaviour was fitting the image in the A4. -- (Thanks @kshunterco)
+* Introduced new option `-force-aspect` which Force images to A4 Portrait aspect ratio, restore the previous behaviour explained above. -- (Thanks @kshunterco)
+
+
 [Changes][v0.28.2]
 <a name="v0.28.2"></a>
 # [0.28.2 (v0.28.2)](https://github.com/Girbons/comics-downloader/releases/tag/v0.28.2) - 27 May 2021
