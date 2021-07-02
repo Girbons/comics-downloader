@@ -3,6 +3,7 @@ package core
 import (
 	"bytes"
 	"fmt"
+	"image"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -115,6 +116,8 @@ func (comic *Comic) makeEPUB(options *config.Options) error {
 // makePDF create the pdf file
 func (comic *Comic) makePDF(options *config.Options) error {
 	var err error
+	var mmWd, mmHt float64
+	const px2mm = 0.2645833333
 
 	pdf := gofpdf.New("P", "mm", "A4", "")
 
@@ -130,17 +133,37 @@ func (comic *Comic) makePDF(options *config.Options) error {
 		return err
 	}
 
+	imageOptions := gofpdf.ImageOptions{ImageType: util.ImageType(comic.ImagesFormat), ReadDpi: true, AllowNegativePosition: false}
 	for _, file := range files {
-		pdf.AddPage()
-		imageOptions := gofpdf.ImageOptions{ImageType: util.ImageType(comic.ImagesFormat), ReadDpi: true, AllowNegativePosition: false}
-		fileName := fmt.Sprintf("%s/%s", imagesPath, file.Name())
+		mmWd = 210.0
+		mmHt = 297.0
+		fileName := fmt.Sprintf("%s%s%s", imagesPath, string(os.PathSeparator), file.Name())
+
+		if !options.ForceAspect {
+			img, err := os.Open(fileName)
+
+			defer img.Close()
+
+			if err != nil {
+				options.Logger.Error(err.Error())
+			}
+			im, _, err := image.DecodeConfig(img)
+			if err != nil {
+				options.Logger.Error(err.Error())
+			} else {
+				mmWd = px2mm*float64(im.Width)
+				mmHt = px2mm*float64(im.Height)
+			}
+		}
+		pdf.AddPageFormat("P", gofpdf.SizeType{Wd: mmWd, Ht: mmHt})
+
 		data, err := ioutil.ReadFile(fileName)
 		if err != nil {
 			return err
 		}
 		content := bytes.NewReader(data)
 		pdf.RegisterImageOptionsReader(file.Name(), imageOptions, content)
-		pdf.Image(file.Name(), 0, 0, 210, 297, false, comic.ImagesFormat, 0, "")
+		pdf.ImageOptions(file.Name(), 0, 0, mmWd, mmHt, false, imageOptions, 0, "")
 	}
 
 	dir, err := util.PathSetup(options.OutputFolder, comic.Source, comic.Name)

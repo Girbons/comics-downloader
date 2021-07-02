@@ -12,6 +12,7 @@ type Options struct {
 	ImagesFormat string
 	Country      string
 	Format       string
+	ForceAspect  bool
 	OutputFolder string
 	URL          string
 	Source       string

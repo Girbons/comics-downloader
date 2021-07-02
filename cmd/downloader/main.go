@@ -22,7 +22,8 @@ var (
 	// manga/comic language
 	country string
 	// manga/comic final output
-	format string
+	forceAspect bool
+	format      string
 	// url source
 	url string
 	// folder where the files will be saved
@@ -45,6 +46,7 @@ func init() {
 	flag.BoolVar(&versionFlag, "version", false, "Display release version")
 
 	flag.StringVar(&country, "country", "", "Set the country to retrieve a manga, Used by MangaDex which uses ISO 3166-1 codes")
+	flag.BoolVar(&forceAspect, "force-aspect", false, "Force images to A4 Portrait aspect ratio")
 	flag.StringVar(&format, "format", "pdf", "Comic format output, supported formats are pdf,epub,cbr,cbz")
 	flag.StringVar(&imagesFormat, "images-format", "jpg", "To use with `images-only` flag, choose the image format, available png,jpeg,img")
 	flag.StringVar(&url, "url", "", "Comic URL or Comic URLS by separating each site with a comma without the use of spaces")
@@ -70,6 +72,7 @@ func main() {
 		ImagesOnly:   imagesOnly,
 		ImagesFormat: imagesFormat,
 		URL:          url,
+		ForceAspect:  forceAspect,
 		Format:       format,
 		Daemon:       daemon,
 		Timeout:      timeout,
