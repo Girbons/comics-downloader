@@ -1,0 +1,13 @@
+language: go
+
+go:
+  - 1.17
+
+before_install:
+  - sudo apt-get update
+  - sudo apt install libgl1-mesa-dev xorg-dev
+  - go install github.com/mattn/goveralls@latest
+
+script: 
+  - go test -v ./...
+  - $GOPATH/bin/goveralls -service=travis-ci

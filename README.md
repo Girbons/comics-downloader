@@ -1,6 +1,6 @@
 # Comics Downloader
 
-[![CircleCI](https://circleci.com/gh/Girbons/comics-downloader/tree/master.svg?style=svg)](https://circleci.com/gh/Girbons/comics-downloader/tree/master)
+[![Build Status](https://app.travis-ci.com/Girbons/comics-downloader.svg?branch=master)](https://app.travis-ci.com/Girbons/comics-downloader)
 [![Coverage Status](https://img.shields.io/coveralls/github/Girbons/comics-downloader.svg?style=flat-square)](https://coveralls.io/github/Girbons/comics-downloader?branch=master)
 [![Go Report Card](https://goreportcard.com/badge/github.com/Girbons/comics-downloader)](https://goreportcard.com/report/github.com/Girbons/comics-downloader)
 [![Github All Releases](https://img.shields.io/github/downloads/Girbons/comics-downloader/total.svg?style=flat-square)]()
