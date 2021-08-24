@@ -66,7 +66,7 @@ func (c *ReadComicOnline) retrieveLastIssue(url string) (string, error) {
 	name := util.TrimAndSplitURL(url)[4]
 	re := regexp.MustCompile("<a[^>]+href=\"([^\">]+" + "/" + name + "/.+)\"")
 	match := re.FindAllStringSubmatch(response, -1)
-	lastIssue = "https://readcomiconline.to" + strings.Split(match[0][1], "?")[0]
+	lastIssue = "https://readcomiconline.li" + strings.Split(match[0][1], "?")[0]
 
 	return lastIssue, nil
 }
@@ -81,7 +81,7 @@ func (c *ReadComicOnline) RetrieveIssueLinks() ([]string, error) {
 	}
 
 	if c.options.All && c.isSingleIssue(url) {
-		url = "https://readcomiconline.to/Comic/" + util.TrimAndSplitURL(url)[3]
+		url = "https://readcomiconline.li/Comic/" + util.TrimAndSplitURL(url)[3]
 	} else if c.isSingleIssue(url) {
 		return []string{url}, nil
 	}
@@ -104,7 +104,7 @@ func (c *ReadComicOnline) RetrieveIssueLinks() ([]string, error) {
 	for i := range match {
 		url := match[i][1]
 		if !util.IsValueInSlice(url, pages) {
-			url = "https://readcomiconline.to" + strings.Split(url, "?")[0]
+			url = "https://readcomiconline.li" + strings.Split(url, "?")[0]
 			if util.IsURLValid(url) && !util.IsValueInSlice(url, links) {
 				links = append(links, url)
 			}

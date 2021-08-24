@@ -8,15 +8,17 @@ jobs:
 
     environment:
       GOOS: linux
-      GOARCH: amd64
+      GOARCH: arm64
       GOPATH: /go
 
     steps:
       - checkout
       - run:
           name: Run tests
-          command: go test -v -coverprofile=$HOME/coverage.out ./...
+          command: | 
+            go test -v -coverprofile=$HOME/coverage.out ./...
 
       - run:
           name: Coveralls
-          command: goveralls -coverprofile=$HOME/coverage.out -service=circle-ci -repotoken=$COVERALLS_TOKEN
+          command: |
+            goveralls -coverprofile=$HOME/coverage.out -service=circle-ci -repotoken=$COVERALLS_TOKEN

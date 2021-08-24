@@ -53,42 +53,42 @@ func download(options *config.Options) {
 	urls := options.URL
 
 	for _, u := range strings.Split(urls, ",") {
-		if u != "" {
-			// check if the link is supported
-			source, check, isDisabled := detector.DetectComic(u)
+		if u == "" {
+			continue
+		}
 
-			options.Source = source
-			options.URL = u
+		// check if the link is supported
+		source, check, isDisabled := detector.DetectComic(u)
 
-			if !check {
-				options.Logger.Error("This site is not supported")
-				continue
+		options.Source = source
+		options.URL = u
+
+		if !check {
+			options.Logger.Error("This site is not supported")
+			continue
+		}
+
+		if isDisabled {
+			options.Logger.Warning("Site currently disabled, please check https://github.com/Girbons/comics-downloader/issues/")
+			continue
+		}
+
+		options.Logger.Info("Downloading...")
+		collection, err := sites.LoadComicFromSource(options)
+		if err != nil {
+			options.Logger.Error(err.Error())
+			continue
+		}
+
+		for _, comic := range collection {
+			if options.ImagesOnly {
+				_, err = comic.DownloadImages(options)
+			} else {
+				err = comic.MakeComic(options)
 			}
 
-			if isDisabled {
-				options.Logger.Warning("Site currently disabled, please check https://github.com/Girbons/comics-downloader/issues/")
-				continue
-			}
-
-			ok, healthCheckMessage := sites.Healthcheck(u)
-			if !ok {
-				options.Logger.Warning(healthCheckMessage)
-				continue
-			}
-
-			options.Logger.Info("Downloading...")
-			collection, err := sites.LoadComicFromSource(options)
 			if err != nil {
 				options.Logger.Error(err.Error())
-				continue
-			}
-
-			for _, comic := range collection {
-				if options.ImagesOnly {
-					_, err = comic.DownloadImages(options)
-				} else {
-					err = comic.MakeComic(options)
-				}
 			}
 		}
 	}

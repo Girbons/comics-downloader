@@ -142,17 +142,18 @@ func (comic *Comic) makePDF(options *config.Options) error {
 		if !options.ForceAspect {
 			img, err := os.Open(fileName)
 
-			defer img.Close()
-
 			if err != nil {
 				options.Logger.Error(err.Error())
 			}
+
+			defer img.Close()
+
 			im, _, err := image.DecodeConfig(img)
 			if err != nil {
 				options.Logger.Error(err.Error())
 			} else {
-				mmWd = px2mm*float64(im.Width)
-				mmHt = px2mm*float64(im.Height)
+				mmWd = px2mm * float64(im.Width)
+				mmHt = px2mm * float64(im.Height)
 			}
 		}
 		pdf.AddPageFormat("P", gofpdf.SizeType{Wd: mmWd, Ht: mmHt})
@@ -271,24 +272,27 @@ func (comic *Comic) DownloadImages(options *config.Options) (string, error) {
 	for i, link := range comic.Links {
 		link := link
 		i := i
+
+		if link == "" {
+			continue
+		}
+
 		g.Go(func() error {
-			if link != "" {
-				rsp, err := client.Get(link)
-				if err != nil {
-					return err
-				}
-				defer rsp.Body.Close()
+			rsp, err := client.Get(link)
+			if err != nil {
+				return err
+			}
+			defer rsp.Body.Close()
 
-				imgFile, err := os.Create(fmt.Sprintf("%04d-image.%s", i, format))
-				if err != nil {
-					return err
-				}
-				defer imgFile.Close()
+			imgFile, err := os.Create(fmt.Sprintf("%04d-image.%s", i, format))
+			if err != nil {
+				return err
+			}
+			defer imgFile.Close()
 
-				err = util.SaveImage(imgFile, rsp.Body, format)
-				if err != nil {
-					return err
-				}
+			err = util.SaveImage(imgFile, rsp.Body, format)
+			if err != nil {
+				return err
 			}
 
 			if barErr := bar.Add(1); barErr != nil {

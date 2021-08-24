@@ -12,11 +12,11 @@ import (
 func TestReadComicOnlineSetup(t *testing.T) {
 
 	comic := new(core.Comic)
-	comic.URLSource = "https://readcomiconline.to/Comic/Batman-2016/Issue-58?id=143175"
+	comic.URLSource = "https://readcomiconline.li/Comic/Batman-2016/Issue-58?id=143175"
 
 	opt :=
 		&config.Options{
-			URL:    "https://readcomiconline.to/Comic/Batman-2016/Issue-58?id=143175",
+			URL:    "https://readcomiconline.li/Comic/Batman-2016/Issue-58?id=143175",
 			All:    false,
 			Last:   false,
 			Debug:  false,
@@ -32,14 +32,14 @@ func TestReadComicOnlineSetup(t *testing.T) {
 func TestReadComicOnlineGetInfo(t *testing.T) {
 	opt :=
 		&config.Options{
-			URL:    "https://readcomiconline.to/Comic/Batman-2016/Issue-58?id=143175",
+			URL:    "https://readcomiconline.li/Comic/Batman-2016/Issue-58?id=143175",
 			All:    false,
 			Last:   false,
 			Debug:  false,
 			Logger: logger.NewLogger(false, make(chan string)),
 		}
 	readComicOnline := NewReadComiconline(opt)
-	name, issueNumber := readComicOnline.GetInfo("https://readcomiconline.to/Comic/Batman-2016/Issue-58?id=143175")
+	name, issueNumber := readComicOnline.GetInfo("https://readcomiconline.li/Comic/Batman-2016/Issue-58?id=143175")
 
 	assert.Equal(t, "Batman-2016", name)
 	assert.Equal(t, "58", issueNumber)
@@ -48,7 +48,7 @@ func TestReadComicOnlineGetInfo(t *testing.T) {
 func TestReadComicOnlineRetrieveIssueLinks(t *testing.T) {
 	opt :=
 		&config.Options{
-			URL:    "https://readcomiconline.to/Comic/100-Bullets",
+			URL:    "https://readcomiconline.li/Comic/100-Bullets",
 			All:    false,
 			Last:   false,
 			Debug:  false,
@@ -64,7 +64,7 @@ func TestReadComicOnlineRetrieveIssueLinks(t *testing.T) {
 func TestReadComicOnlineRetrieveIssueLinksLastChapter(t *testing.T) {
 	opt :=
 		&config.Options{
-			URL:    "https://readcomiconline.to/Comic/100-Bullets",
+			URL:    "https://readcomiconline.li/Comic/100-Bullets",
 			All:    false,
 			Last:   true,
 			Debug:  false,
@@ -80,15 +80,15 @@ func TestReadComicOnlineRetrieveIssueLinksLastChapter(t *testing.T) {
 func TestReadComicOnlineRetrieveLastIssueLink(t *testing.T) {
 	opt :=
 		&config.Options{
-			URL:    "https://readcomiconline.to/Comic/100-Bullets",
+			URL:    "https://readcomiconline.li/Comic/100-Bullets",
 			All:    false,
 			Last:   true,
 			Debug:  false,
 			Logger: logger.NewLogger(false, make(chan string)),
 		}
 	readComicOnline := NewReadComiconline(opt)
-	issue, err := readComicOnline.retrieveLastIssue("https://readcomiconline.to/Comic/100-Bullets")
+	issue, err := readComicOnline.retrieveLastIssue("https://readcomiconline.li/Comic/100-Bullets")
 
 	assert.Nil(t, err)
-	assert.Equal(t, "https://readcomiconline.to/Comic/100-Bullets/Issue-100-2", issue)
+	assert.Equal(t, "https://readcomiconline.li/Comic/100-Bullets/Issue-100-2", issue)
 }
