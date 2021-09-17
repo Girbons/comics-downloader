@@ -1,11 +1,6 @@
 package util
 
 import (
-	"bytes"
-	"image/png"
-	"net/http"
-	"os"
-	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -37,54 +32,8 @@ func TestIsUrlValid(t *testing.T) {
 	assert.False(t, logoURL)
 }
 
-func TestImageType(t *testing.T) {
-	assert.Equal(t, ImageType("image/jpg"), "jpg")
-	assert.Equal(t, ImageType("image/jpeg"), "jpg")
-	assert.Equal(t, ImageType("image/png"), "png")
-	assert.Equal(t, ImageType("image/gif"), "gif")
-	assert.Equal(t, ImageType("foo"), "unknown")
-}
-
-func TestConvertImage(t *testing.T) {
-	imgURL := "http://via.placeholder.com/150"
-
-	resp, err := http.Get(imgURL)
-	assert.Nil(t, err)
-
-	defer resp.Body.Close()
-
-	img, _ := png.Decode(resp.Body)
-	imgData := new(bytes.Buffer)
-	err = ConvertToJPG(img, imgData)
-
-	assert.Nil(t, err)
-}
-
-func TestPathSetup(t *testing.T) {
-	result, err := PathSetup(filepath.Dir(os.Args[0]), "example-source", "comic-name")
-
-	assert.Nil(t, err)
-	assert.Contains(t, result, "example-source")
-	assert.Contains(t, result, "comic-name")
-}
-
 func TestParse(t *testing.T) {
 	result := Parse("aaa/bbb/ccc")
 
 	assert.Equal(t, "aaa_bbb_ccc", result)
-}
-
-func TestGenerateFileName(t *testing.T) {
-	result := GenerateFileName("path/to/something", "comic-name", "invalid_character", "pdf")
-
-	assert.Equal(t, "path/to/something/comic-name-invalid_character.pdf", result)
-}
-
-func TestDirectoryOrFileDoesNotExist(t *testing.T) {
-	path, _ := ImagesPathSetup(filepath.Dir(os.Args[0]), "source", "name", "issueNumber")
-	defer os.RemoveAll(path)
-
-	result := DirectoryOrFileDoesNotExist(path)
-
-	assert.False(t, result)
 }

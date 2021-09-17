@@ -50,6 +50,10 @@ func main() {
 	allChaptersCheck := widget.NewCheck("", nil)
 	lastChapterCheck := widget.NewCheck("", nil)
 	imagesOnlyCheck := widget.NewCheck("", nil)
+
+	createDefaultPath := widget.NewCheck("", nil)
+        createDefaultPath.Checked = true
+
 	debugCheck := widget.NewCheck("", nil)
 
 	outputFolderEntry := widget.NewEntry()
@@ -59,16 +63,17 @@ func main() {
 	issuesRange.SetPlaceHolder("1-10")
 
 	d := &Downloader{
-		URL:          urlEntry,
-		Country:      countryEntry,
-		Format:       choices,
-		AllChapters:  allChaptersCheck,
-		LastChapter:  lastChapterCheck,
-		ImagesOnly:   imagesOnlyCheck,
-		ImagesFormat: imagesFormatChoices,
-		OutputFolder: outputFolderEntry,
-		IssuesRange:  issuesRange,
-		Debug:        debugCheck,
+		URL:               urlEntry,
+		Country:           countryEntry,
+		Format:            choices,
+		AllChapters:       allChaptersCheck,
+		LastChapter:       lastChapterCheck,
+		ImagesOnly:        imagesOnlyCheck,
+		ImagesFormat:      imagesFormatChoices,
+		CreateDefaultPath: createDefaultPath,
+		OutputFolder:      outputFolderEntry,
+		IssuesRange:       issuesRange,
+		Debug:             debugCheck,
 	}
 
 	form := widget.NewForm()
@@ -82,6 +87,7 @@ func main() {
 	form.Append("Images Only", d.ImagesOnly)
 	form.Append("Images Format", d.ImagesFormat)
 	form.Append("Output Folder", d.OutputFolder)
+	form.Append("Create Default Download Path", d.CreateDefaultPath)
 
 	box := widget.NewVBox()
 

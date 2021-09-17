@@ -48,9 +48,10 @@ func TestMakeComicPDF(t *testing.T) {
 	comic.ImagesFormat = "png"
 
 	opt := &config.Options{
-		OutputFolder: filepath.Dir(os.Args[0]),
-		Debug:        false,
-		Logger:       logger.NewLogger(false, make(chan string)),
+		OutputFolder:      filepath.Dir(os.Args[0]),
+		CreateDefaultPath: true,
+		Debug:             false,
+		Logger:            logger.NewLogger(false, make(chan string)),
 	}
 	err := comic.MakeComic(opt)
 	assert.Nil(t, err)
@@ -71,9 +72,10 @@ func TestMakeComicEPUB(t *testing.T) {
 	comic.Links = []string{"http://via.placeholder.com/150", "http://via.placeholder.com/150", "http://via.placeholder.com/150"}
 
 	opt := &config.Options{
-		OutputFolder: filepath.Dir(os.Args[0]),
-		Debug:        false,
-		Logger:       logger.NewLogger(false, make(chan string)),
+		OutputFolder:      filepath.Dir(os.Args[0]),
+		CreateDefaultPath: true,
+		Debug:             false,
+		Logger:            logger.NewLogger(false, make(chan string)),
 	}
 
 	err := comic.MakeComic(opt)
@@ -93,9 +95,10 @@ func TestDownloadImagesPNGFormat(t *testing.T) {
 	comic.ImagesFormat = "png"
 
 	opt := &config.Options{
-		OutputFolder: filepath.Dir(os.Args[0]),
-		Debug:        false,
-		Logger:       logger.NewLogger(false, make(chan string)),
+		OutputFolder:      filepath.Dir(os.Args[0]),
+		Debug:             false,
+		CreateDefaultPath: true,
+		Logger:            logger.NewLogger(false, make(chan string)),
 	}
 	dir, err := comic.DownloadImages(opt)
 	files, _ := ioutil.ReadDir(dir)
@@ -114,9 +117,10 @@ func TestDownloadImagesJPGFormat(t *testing.T) {
 	comic.ImagesFormat = "jpg"
 
 	opt := &config.Options{
-		OutputFolder: filepath.Dir(os.Args[0]),
-		Debug:        false,
-		Logger:       logger.NewLogger(false, make(chan string)),
+		OutputFolder:      filepath.Dir(os.Args[0]),
+		CreateDefaultPath: true,
+		Debug:             false,
+		Logger:            logger.NewLogger(false, make(chan string)),
 	}
 	dir, err := comic.DownloadImages(opt)
 	files, _ := ioutil.ReadDir(dir)
@@ -135,9 +139,10 @@ func TestDownloadImagesJPEGFormat(t *testing.T) {
 	comic.Links = []string{"http://via.placeholder.com/150", "http://via.placeholder.com/150", "http://via.placeholder.com/150"}
 
 	opt := &config.Options{
-		OutputFolder: filepath.Dir(os.Args[0]),
-		Debug:        false,
-		Logger:       logger.NewLogger(false, make(chan string)),
+		OutputFolder:      filepath.Dir(os.Args[0]),
+		CreateDefaultPath: true,
+		Debug:             false,
+		Logger:            logger.NewLogger(false, make(chan string)),
 	}
 	dir, err := comic.DownloadImages(opt)
 	files, _ := ioutil.ReadDir(dir)
@@ -156,9 +161,10 @@ func TestDownloadImagesIMGFormat(t *testing.T) {
 	comic.ImagesFormat = "img"
 
 	opt := &config.Options{
-		OutputFolder: filepath.Dir(os.Args[0]),
-		Debug:        false,
-		Logger:       logger.NewLogger(false, make(chan string)),
+		OutputFolder:      filepath.Dir(os.Args[0]),
+		CreateDefaultPath: true,
+		Debug:             false,
+		Logger:            logger.NewLogger(false, make(chan string)),
 	}
 	dir, err := comic.DownloadImages(opt)
 	files, _ := ioutil.ReadDir(dir)

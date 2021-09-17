@@ -9,16 +9,17 @@ import (
 
 // Downloader represents a downloader instance.
 type Downloader struct {
-	URL          *widget.Entry
-	Country      *widget.Entry
-	Format       *widget.Radio
-	AllChapters  *widget.Check
-	LastChapter  *widget.Check
-	ImagesOnly   *widget.Check
-	ImagesFormat *widget.Radio
-	OutputFolder *widget.Entry
-	IssuesRange  *widget.Entry
-	Debug        *widget.Check
+	URL               *widget.Entry
+	Country           *widget.Entry
+	Format            *widget.Radio
+	AllChapters       *widget.Check
+	LastChapter       *widget.Check
+	ImagesOnly        *widget.Check
+	ImagesFormat      *widget.Radio
+	OutputFolder      *widget.Entry
+	CreateDefaultPath *widget.Check
+	IssuesRange       *widget.Entry
+	Debug             *widget.Check
 }
 
 // ClearURLField resets the url text field.
@@ -39,16 +40,17 @@ func (d *Downloader) ClearOutputFolderField() {
 // Submit calls the downloader api with the given options.
 func (d *Downloader) Submit() {
 	opts := &config.Options{
-		Debug:        d.Debug.Checked,
-		All:          d.AllChapters.Checked,
-		Last:         d.LastChapter.Checked,
-		URL:          d.URL.Text,
-		Format:       d.Format.Selected,
-		Country:      d.Country.Text,
-		ImagesFormat: d.ImagesFormat.Selected,
-		ImagesOnly:   d.ImagesOnly.Checked,
-		OutputFolder: d.OutputFolder.Text,
-		IssuesRange:  d.IssuesRange.Text,
+		Debug:             d.Debug.Checked,
+		All:               d.AllChapters.Checked,
+		Last:              d.LastChapter.Checked,
+		URL:               d.URL.Text,
+		Format:            d.Format.Selected,
+		Country:           d.Country.Text,
+		ImagesFormat:      d.ImagesFormat.Selected,
+		ImagesOnly:        d.ImagesOnly.Checked,
+		OutputFolder:      d.OutputFolder.Text,
+		CreateDefaultPath: d.CreateDefaultPath.Checked,
+		IssuesRange:       d.IssuesRange.Text,
 	}
 
 	downloader.GuiRun(opts)

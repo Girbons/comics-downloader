@@ -100,12 +100,12 @@ func (comic *Comic) makeEPUB(options *config.Options) error {
 
 	// get the PathSetup where the file should be saved
 	// e.g. /www.mangarock.com/comic-name/
-	dir, err := util.PathSetup(options.OutputFolder, comic.Source, comic.Name)
+	dir, err := util.PathSetup(options.CreateDefaultPath, options.OutputFolder, comic.Source, comic.Name)
 	if err != nil {
 		return err
 	}
 
-	if err = e.Write(util.GenerateFileName(dir, comic.Name, comic.IssueNumber, comic.Format)); err != nil {
+	if err = e.Write(util.GetPathToFile(dir, comic.Name, comic.IssueNumber, comic.Format)); err != nil {
 		return err
 	}
 
@@ -137,7 +137,7 @@ func (comic *Comic) makePDF(options *config.Options) error {
 	for _, file := range files {
 		mmWd = 210.0
 		mmHt = 297.0
-		fileName := fmt.Sprintf("%s%s%s", imagesPath, string(os.PathSeparator), file.Name())
+		fileName := fmt.Sprintf("%s/%s", imagesPath, file.Name())
 
 		if !options.ForceAspect {
 			img, err := os.Open(fileName)
@@ -167,13 +167,14 @@ func (comic *Comic) makePDF(options *config.Options) error {
 		pdf.ImageOptions(file.Name(), 0, 0, mmWd, mmHt, false, imageOptions, 0, "")
 	}
 
-	dir, err := util.PathSetup(options.OutputFolder, comic.Source, comic.Name)
+	dir, err := util.PathSetup(options.CreateDefaultPath, options.OutputFolder, comic.Source, comic.Name)
 	if err != nil {
 		return err
 	}
 
 	// Save the pdf file
-	if err = pdf.OutputFileAndClose(util.GenerateFileName(dir, comic.Name, comic.IssueNumber, comic.Format)); err != nil {
+	filePath := util.GetPathToFile(dir, comic.Name, comic.IssueNumber, comic.Format)
+	if err = pdf.OutputFileAndClose(filePath); err != nil {
 		return err
 	}
 
@@ -205,14 +206,13 @@ func (comic *Comic) makeCBRZ(options *config.Options) error {
 	}
 
 	// e.g. /www.mangarock.com/comic-name/
-	dir, err := util.PathSetup(options.OutputFolder, comic.Source, comic.Name)
+	dir, err := util.PathSetup(options.CreateDefaultPath, options.OutputFolder, comic.Source, comic.Name)
 	if err != nil {
 		return err
 	}
-	// the archive must be created as .zip
-	// then we can change the extension to .cbr or .cbz
+	// the archive must be created as `.zip`then change the extension to `.cbr`or `.cbz`.
 	zipArchiveName := fmt.Sprintf("%s/%s.zip", dir, comic.IssueNumber)
-	newName := util.GenerateFileName(dir, comic.Name, comic.IssueNumber, comic.Format)
+	newName := util.GetPathToFile(dir, comic.Name, comic.IssueNumber, comic.Format)
 
 	if err = archive.Archive(filesToAdd, zipArchiveName); err != nil {
 		return err
@@ -231,7 +231,7 @@ func (comic *Comic) DownloadImages(options *config.Options) (string, error) {
 	var dir string
 	var err error
 
-	dir, err = util.ImagesPathSetup(options.OutputFolder, comic.Source, comic.Name, comic.IssueNumber)
+	dir, err = util.ImagesPathSetup(options.CreateDefaultPath, options.OutputFolder, comic.Source, comic.Name, comic.IssueNumber)
 	if err != nil {
 		return dir, err
 	}

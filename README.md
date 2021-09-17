@@ -21,17 +21,17 @@
 
 Download the latest release:
 
-- [Linux](https://github.com/Girbons/comics-downloader/releases/download/v0.29.0/comics-downloader)
-- [Mac OSX](https://github.com/Girbons/comics-downloader/releases/download/v0.29.0/comics-downloader-osx)
-- [Windows](https://github.com/Girbons/comics-downloader/releases/download/v0.29.0/comics-downloader.exe)
-- [Linux ARM](https://github.com/Girbons/comics-downloader/releases/download/v0.29.0/comics-downloader-linux-arm)
-- [Linux ARM64](https://github.com/Girbons/comics-downloader/releases/download/v0.29.0/comics-downloader-linux-arm64)
+- [Linux](https://github.com/Girbons/comics-downloader/releases/download/v0.30.0/comics-downloader)
+- [Mac OSX](https://github.com/Girbons/comics-downloader/releases/download/v0.30.0/comics-downloader-osx)
+- [Windows](https://github.com/Girbons/comics-downloader/releases/download/v0.30.0/comics-downloader.exe)
+- [Linux ARM](https://github.com/Girbons/comics-downloader/releases/download/v0.30.0/comics-downloader-linux-arm)
+- [Linux ARM64](https://github.com/Girbons/comics-downloader/releases/download/v0.30.0/comics-downloader-linux-arm64)
 
 Download the latest GUI release:
 
-- [Linux](https://github.com/Girbons/comics-downloader/releases/download/v0.29.0/comics-downloader-gui)
-- [Mac OSX](https://github.com/Girbons/comics-downloader/releases/download/v0.29.0/comics-downloader-gui-osx)
-- [Windows](https://github.com/Girbons/comics-downloader/releases/download/v0.29.0/comics-downloader-gui-windows.exe)
+- [Linux](https://github.com/Girbons/comics-downloader/releases/download/v0.30.0/comics-downloader-gui)
+- [Mac OSX](https://github.com/Girbons/comics-downloader/releases/download/v0.30.0/comics-downloader-gui-osx)
+- [Windows](https://github.com/Girbons/comics-downloader/releases/download/v0.30.0/comics-downloader-gui-windows.exe)
 
 ## Usage
 
@@ -45,6 +45,8 @@ Usage:
         Download all issues of the Comic or Comics
   -country string
         Set the country to retrieve a manga, Used by MangaDex which uses ISO 3166-1 codes
+  -create-default-path comics/[source]/[name]/
+        Using this flag your comics/issue will be downloaded without prepending the default folder structure, comics/[source]/[name]/ (default true)
   -daemon
         Run the download as daemon
   -debug
@@ -73,14 +75,14 @@ Usage:
 
 ## Options supported
 
-| Source                      | all    | country| last   |
-|-----------------------------|--------|--------|--------|
-|http://readallcomics.com     |&#x2713;|&#x2717;|&#x2713;|
-|http://www.comicextra.com/   |&#x2713;|&#x2717;|&#x2713;|
-|http://www.mangatown.com/    |&#x2713;|&#x2717;|&#x2713;|
-|https://mangadex.org/        |&#x2713;|&#x2713;|&#x2713;|
-|https://readcomiconline.li/  |&#x2713;|&#x2717;|&#x2713;|
-|https://www.mangareader.tv/ |&#x2713;|&#x2717;|&#x2713;|
+| Source                      | all      | country  | last     |
+| --------------------------- | -------- | -------- | -------- |
+| http://readallcomics.com    | &#x2713; | &#x2717; | &#x2713; |
+| http://www.comicextra.com/  | &#x2713; | &#x2717; | &#x2713; |
+| http://www.mangatown.com/   | &#x2713; | &#x2717; | &#x2713; |
+| https://mangadex.org/       | &#x2713; | &#x2713; | &#x2713; |
+| https://readcomiconline.li/ | &#x2713; | &#x2717; | &#x2713; |
+| https://www.mangareader.tv/ | &#x2713; | &#x2717; | &#x2713; |
 
 ### Checking for mangas using a Raspberry Pi
 
@@ -101,7 +103,7 @@ available formats:
 - cbr
 - cbz
 
-Default format is __pdf__.
+Default format is **pdf**.
 
 example:
 
@@ -154,6 +156,7 @@ works only if `-all` or `-last` flags are specified.
 ```bash
 ./comics-downloader -url=[your url] -daemon
 ```
+
 You can customize the daemon timeout using the `-timeout` flag.
 
 ```bash
@@ -170,14 +173,23 @@ You can download only the images using `-images-only` flag.
 
 To choose the format use `-images-format` flag, the available formats are:
 
-* img
-* png
-* jpg
+- img
+- png
+- jpg
 
-Default is __jpg__.
+Default is **jpg**.
 
 ```bash
 ./comics-downloader -url=[your url] -images-only -images-format=jpg
+```
+
+### Avoid Default Folder Structure
+
+The default folder structure that will be created is: `/comics/[source]/[name]/`.
+To avoid that use `-create-default-path` flag.
+
+```bash
+./comics-downloader -url=[your url] -create-default-path=false
 ```
 
 ## Built With

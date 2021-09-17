@@ -28,6 +28,8 @@ var (
 	url string
 	// folder where the files will be saved
 	outputFolder string
+	// enable/disable default folder structure
+	createDefaultPath bool
 	// daemon options
 	daemon  bool
 	timeout int
@@ -44,7 +46,7 @@ func init() {
 	flag.BoolVar(&imagesOnly, "images-only", false, "Download comic/manga images")
 	flag.BoolVar(&last, "last", false, "Download the last Comic issue")
 	flag.BoolVar(&versionFlag, "version", false, "Display release version")
-
+	flag.BoolVar(&createDefaultPath, "create-default-path", true, "Using this flag your comics/issue will be downloaded without prepending the default folder structure, `comics/[source]/[name]/`")
 	flag.StringVar(&country, "country", "", "Set the country to retrieve a manga, Used by MangaDex which uses ISO 3166-1 codes")
 	flag.BoolVar(&forceAspect, "force-aspect", false, "Force images to A4 Portrait aspect ratio")
 	flag.StringVar(&format, "format", "pdf", "Comic format output, supported formats are pdf,epub,cbr,cbz")
@@ -65,19 +67,20 @@ func main() {
 	}
 
 	options := &config.Options{
-		Debug:        debug,
-		All:          all,
-		Last:         last,
-		Country:      country,
-		ImagesOnly:   imagesOnly,
-		ImagesFormat: imagesFormat,
-		URL:          url,
-		ForceAspect:  forceAspect,
-		Format:       format,
-		Daemon:       daemon,
-		Timeout:      timeout,
-		OutputFolder: outputFolder,
-		IssuesRange:  issuesRange,
+		Debug:             debug,
+		All:               all,
+		Last:              last,
+		Country:           country,
+		ImagesOnly:        imagesOnly,
+		ImagesFormat:      imagesFormat,
+		URL:               url,
+		ForceAspect:       forceAspect,
+		Format:            format,
+		Daemon:            daemon,
+		Timeout:           timeout,
+		OutputFolder:      outputFolder,
+		CreateDefaultPath: createDefaultPath,
+		IssuesRange:       issuesRange,
 	}
 
 	app.Run(options)
