@@ -62,6 +62,9 @@ func DirectoryOrFileDoesNotExist(filePath string) bool {
 }
 
 // GetPathToFile returns the path where the file should be saved.
-func GetPathToFile(dir, name, issueNumber, format string) string {
+func GetPathToFile(dir, name, issueNumber, format string, issueNumberOnly bool) string {
+	if issueNumberOnly {
+		return fmt.Sprintf("%s/%s.%s", dir, issueNumber, format)
+	}
 	return fmt.Sprintf("%s/%s-%s.%s", dir, name, issueNumber, format)
 }

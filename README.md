@@ -59,6 +59,8 @@ Usage:
         To use with images-only flag, choose the image format, available png,jpeg,img (default "jpg")
   -images-only
         Download comic/manga images
+  -issue-number-only
+        Force only saving with issue number instead of chapter name + issue number.
   -last
         Download the last Comic issue
   -output string

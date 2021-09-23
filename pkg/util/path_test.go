@@ -17,9 +17,10 @@ func TestPathSetup(t *testing.T) {
 }
 
 func TestGenerateFileName(t *testing.T) {
-	result := GetPathToFile("path/to/something", "comic-name", "invalid_character", "pdf")
-
+	result := GetPathToFile("path/to/something", "comic-name", "invalid_character", "pdf", false)
 	assert.Equal(t, "path/to/something/comic-name-invalid_character.pdf", result)
+	result = GetPathToFile("path/to/something", "comic-name", "invalid_character", "pdf", true)
+	assert.Equal(t, "path/to/something/invalid_character.pdf", result)
 }
 
 func TestDirectoryOrFileDoesNotExist(t *testing.T) {

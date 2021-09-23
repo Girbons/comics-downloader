@@ -40,7 +40,7 @@ func initializeCollection(issues []string, options *config.Options, base BaseSit
 		}
 
 		dir, _ := util.PathSetup(options.CreateDefaultPath, options.OutputFolder, options.Source, name)
-		fileName := util.GetPathToFile(dir, name, issueNumber, options.Format)
+		fileName := util.GetPathToFile(dir, name, issueNumber, options.Format, options.IssueNumberNameOnly)
 
 		if util.DirectoryOrFileDoesNotExist(fileName) || options.ImagesOnly {
 			comic := &core.Comic{
