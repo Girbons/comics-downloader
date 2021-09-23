@@ -278,7 +278,13 @@ func (comic *Comic) DownloadImages(options *config.Options) (string, error) {
 		}
 
 		g.Go(func() error {
-			rsp, err := client.Get(link)
+			req, err := http.NewRequest("GET", link, nil)
+			if err != nil {
+				return err
+			}
+			// we need this so that MangaKakalot doesn't 403 forbid the request
+			req.Header.Add("Referer", link)
+			rsp, err := client.Do(req)
 			if err != nil {
 				return err
 			}

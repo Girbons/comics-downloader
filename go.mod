@@ -8,6 +8,7 @@ require (
 	github.com/bake/mangadex/v2 v2.0.0
 	github.com/bmaupin/go-epub v0.7.2
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/dlclark/regexp2 v1.4.0
 	github.com/dsnet/compress v0.0.1 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/fyne-io/mobile v0.1.2 // indirect
@@ -30,7 +31,7 @@ require (
 	github.com/sirupsen/logrus v1.8.1
 	github.com/srwiley/oksvg v0.0.0-20200311192757-870daf9aa564 // indirect
 	github.com/srwiley/rasterx v0.0.0-20200120212402-85cb7272f5e9 // indirect
-	github.com/stretchr/testify v1.6.1 // indirect
+	github.com/stretchr/testify v1.6.1
 	github.com/ulikunitz/xz v0.5.10 // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	golang.org/x/image v0.0.0-20200430140353-33d19683fad8 // indirect
@@ -40,4 +41,5 @@ require (
 	golang.org/x/sys v0.0.0-20200720211630-cb9d2d5c5666 // indirect
 	golang.org/x/text v0.3.2 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c // indirect
+	github.com/frankban/quicktest v1.13.1 // indirect
 )

@@ -14,6 +14,8 @@
 - https://www.mangareader.tv/
 - https://www.mangatown.com/
 - https://mangadex.org/
+- https://mangakakalot.com/
+- https://manganato.com/
 
 ## Getting Started
 
@@ -85,6 +87,8 @@ Usage:
 | https://mangadex.org/       | &#x2713; | &#x2713; | &#x2713; |
 | https://readcomiconline.li/ | &#x2713; | &#x2717; | &#x2713; |
 | https://www.mangareader.tv/ | &#x2713; | &#x2717; | &#x2713; |
+| https://www.mangakalot.com/ | &#x2713; | &#x2717; | &#x2713; |
+| https://www.manganato.com/  | &#x2713; | &#x2717; | &#x2713; |
 
 ### Checking for mangas using a Raspberry Pi
 
@@ -204,6 +208,7 @@ To avoid that use `-create-default-path` flag.
 - [logrus](https://github.com/sirupsen/logrus)
 - [mangadex](https://github.com/bake/mangadex)
 - [archiver](https://github.com/mholt/archiver)
+- [regexp2](https://github.com/dlclark/regexp2)
 
 ## Contributing
 

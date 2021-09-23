@@ -14,6 +14,9 @@ var SupportedSites = map[string]map[string]bool{
 	"www.comicextra.com": {"isDisabled": false},
 	"www.mangahere.cc":   {"isDisabled": false},
 	"www.mangatown.com":  {"isDisabled": false},
+	"mangakakalot.com":   {"isDisabled": false},
+	"manganato.com":      {"isDisabled": false},
+	"readmanganato.com":  {"isDisabled": false},
 }
 
 // DetectComic will look for the url source to check if a source is supported.
