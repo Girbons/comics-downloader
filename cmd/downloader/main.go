@@ -24,6 +24,8 @@ var (
 	// manga/comic final output
 	forceAspect bool
 	format      string
+	// force only issue number filenames
+	issueNumberNameOnly bool
 	// url source
 	url string
 	// folder where the files will be saved
@@ -51,6 +53,7 @@ func init() {
 	flag.BoolVar(&forceAspect, "force-aspect", false, "Force images to A4 Portrait aspect ratio")
 	flag.StringVar(&format, "format", "pdf", "Comic format output, supported formats are pdf,epub,cbr,cbz")
 	flag.StringVar(&imagesFormat, "images-format", "jpg", "To use with `images-only` flag, choose the image format, available png,jpeg,img")
+	flag.BoolVar(&issueNumberNameOnly, "issue-number-only", false, "Force only saving with issue number instead of chapter name + issue number.")
 	flag.StringVar(&url, "url", "", "Comic URL or Comic URLS by separating each site with a comma without the use of spaces")
 	flag.StringVar(&outputFolder, "output", "", "Folder where the comics will be saved")
 	flag.StringVar(&issuesRange, "range", "", "Range of issues to download, example 3-9")
@@ -67,20 +70,21 @@ func main() {
 	}
 
 	options := &config.Options{
-		Debug:             debug,
-		All:               all,
-		Last:              last,
-		Country:           country,
-		ImagesOnly:        imagesOnly,
-		ImagesFormat:      imagesFormat,
-		URL:               url,
-		ForceAspect:       forceAspect,
-		Format:            format,
-		Daemon:            daemon,
-		Timeout:           timeout,
-		OutputFolder:      outputFolder,
-		CreateDefaultPath: createDefaultPath,
-		IssuesRange:       issuesRange,
+		Debug:               debug,
+		All:                 all,
+		Last:                last,
+		Country:             country,
+		ImagesOnly:          imagesOnly,
+		ImagesFormat:        imagesFormat,
+		IssueNumberNameOnly: issueNumberNameOnly,
+		URL:                 url,
+		ForceAspect:         forceAspect,
+		Format:              format,
+		Daemon:              daemon,
+		Timeout:             timeout,
+		OutputFolder:        outputFolder,
+		CreateDefaultPath:   createDefaultPath,
+		IssuesRange:         issuesRange,
 	}
 
 	app.Run(options)

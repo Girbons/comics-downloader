@@ -105,7 +105,7 @@ func (comic *Comic) makeEPUB(options *config.Options) error {
 		return err
 	}
 
-	if err = e.Write(util.GetPathToFile(dir, comic.Name, comic.IssueNumber, comic.Format)); err != nil {
+	if err = e.Write(util.GetPathToFile(dir, comic.Name, comic.IssueNumber, comic.Format, options.IssueNumberNameOnly)); err != nil {
 		return err
 	}
 
@@ -173,7 +173,7 @@ func (comic *Comic) makePDF(options *config.Options) error {
 	}
 
 	// Save the pdf file
-	filePath := util.GetPathToFile(dir, comic.Name, comic.IssueNumber, comic.Format)
+	filePath := util.GetPathToFile(dir, comic.Name, comic.IssueNumber, comic.Format, options.IssueNumberNameOnly)
 	if err = pdf.OutputFileAndClose(filePath); err != nil {
 		return err
 	}
@@ -212,7 +212,7 @@ func (comic *Comic) makeCBRZ(options *config.Options) error {
 	}
 	// the archive must be created as `.zip`then change the extension to `.cbr`or `.cbz`.
 	zipArchiveName := fmt.Sprintf("%s/%s.zip", dir, comic.IssueNumber)
-	newName := util.GetPathToFile(dir, comic.Name, comic.IssueNumber, comic.Format)
+	newName := util.GetPathToFile(dir, comic.Name, comic.IssueNumber, comic.Format, options.IssueNumberNameOnly)
 
 	if err = archive.Archive(filesToAdd, zipArchiveName); err != nil {
 		return err
