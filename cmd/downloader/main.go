@@ -33,8 +33,8 @@ var (
 	// enable/disable default folder structure
 	createDefaultPath bool
 	// daemon options
-	daemon  bool
-	timeout int
+	daemon        bool
+	daemonTimeout int
 	// app version
 	versionFlag bool
 	// range of issues to download
@@ -58,7 +58,7 @@ func init() {
 	flag.StringVar(&outputFolder, "output", "", "Folder where the comics will be saved")
 	flag.StringVar(&issuesRange, "range", "", "Range of issues to download, example 3-9")
 
-	flag.IntVar(&timeout, "timeout", 600, "Timeout (seconds), specifies how often the downloader runs")
+	flag.IntVar(&daemonTimeout, "daemon-timeout", 600, "DaemonTimeout (seconds), specifies how often the downloader runs")
 }
 
 func main() {
@@ -81,7 +81,7 @@ func main() {
 		ForceAspect:         forceAspect,
 		Format:              format,
 		Daemon:              daemon,
-		Timeout:             timeout,
+		DaemonTimeout:             daemonTimeout,
 		OutputFolder:        outputFolder,
 		CreateDefaultPath:   createDefaultPath,
 		IssuesRange:         issuesRange,

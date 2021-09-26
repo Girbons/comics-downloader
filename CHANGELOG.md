@@ -1,3 +1,17 @@
+[Changes][v0.31.0]
+<a name="v0.31.0"></a>
+
+# [0.31.0 (v0.31.0)](https://github.com/Girbons/comics-downloader/releases/tag/v0.31.0) - 26 Sep 2021
+
+# What's new
+
+- Added support to MangaKakalot and Manganato -- (Thanks @Jan0660)
+- Introduced new flag `issue-number-only` to save a comic as issue number only instead of chapter name + issue number. -- (Thanks @Jan0660)
+
+# Changes
+
+- timeout flag renamed to `daemon-timeout`.
+
 [Changes][v0.30.0]
 <a name="v0.30.0"></a>
 

@@ -116,7 +116,7 @@ func Run(options *config.Options) {
 	if options.Daemon && (options.All || options.Last) {
 		for {
 			download(options)
-			time.Sleep(time.Duration(options.Timeout) * time.Second)
+			time.Sleep(time.Duration(options.DaemonTimeout) * time.Second)
 		}
 	}
 

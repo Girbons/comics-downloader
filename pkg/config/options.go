@@ -9,6 +9,7 @@ type Options struct {
 	Last                bool
 	ImagesOnly          bool
 	Daemon              bool
+	DaemonTimeout       int
 	ImagesFormat        string
 	Country             string
 	Format              string
@@ -19,7 +20,6 @@ type Options struct {
 	URL                 string
 	Source              string
 	IssuesRange         string
-	Timeout             int
 
 	Logger *logger.Logger
 }

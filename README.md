@@ -23,17 +23,17 @@
 
 Download the latest release:
 
-- [Linux](https://github.com/Girbons/comics-downloader/releases/download/v0.30.0/comics-downloader)
-- [Mac OSX](https://github.com/Girbons/comics-downloader/releases/download/v0.30.0/comics-downloader-osx)
-- [Windows](https://github.com/Girbons/comics-downloader/releases/download/v0.30.0/comics-downloader.exe)
-- [Linux ARM](https://github.com/Girbons/comics-downloader/releases/download/v0.30.0/comics-downloader-linux-arm)
-- [Linux ARM64](https://github.com/Girbons/comics-downloader/releases/download/v0.30.0/comics-downloader-linux-arm64)
+- [Linux](https://github.com/Girbons/comics-downloader/releases/download/v0.31.0/comics-downloader)
+- [Mac OSX](https://github.com/Girbons/comics-downloader/releases/download/v0.31.0/comics-downloader-osx)
+- [Windows](https://github.com/Girbons/comics-downloader/releases/download/v0.31.0/comics-downloader.exe)
+- [Linux ARM](https://github.com/Girbons/comics-downloader/releases/download/v0.31.0/comics-downloader-linux-arm)
+- [Linux ARM64](https://github.com/Girbons/comics-downloader/releases/download/v0.31.0/comics-downloader-linux-arm64)
 
 Download the latest GUI release:
 
-- [Linux](https://github.com/Girbons/comics-downloader/releases/download/v0.30.0/comics-downloader-gui)
-- [Mac OSX](https://github.com/Girbons/comics-downloader/releases/download/v0.30.0/comics-downloader-gui-osx)
-- [Windows](https://github.com/Girbons/comics-downloader/releases/download/v0.30.0/comics-downloader-gui-windows.exe)
+- [Linux](https://github.com/Girbons/comics-downloader/releases/download/v0.31.0/comics-downloader-gui)
+- [Mac OSX](https://github.com/Girbons/comics-downloader/releases/download/v0.31.0/comics-downloader-gui-osx)
+- [Windows](https://github.com/Girbons/comics-downloader/releases/download/v0.31.0/comics-downloader-gui-windows.exe)
 
 ## Usage
 
@@ -51,6 +51,8 @@ Usage:
         Using this flag your comics/issue will be downloaded without prepending the default folder structure, comics/[source]/[name]/ (default true)
   -daemon
         Run the download as daemon
+  -daemon-timeout int
+        DaemonTimeout (seconds), specifies how often the downloader runs (default 600)
   -debug
     	Shows Debug log
   -format string
@@ -69,8 +71,6 @@ Usage:
         Folder where the comics will be saved
   -range
         Range of issues to download, example 3-9
-  -timeout int
-        Timeout (seconds), specifies how often the downloader runs (default 600)
   -url string
         Comic URL or Comic URLS by separating each site with a comma without the use of spaces
   -version
@@ -163,10 +163,10 @@ works only if `-all` or `-last` flags are specified.
 ./comics-downloader -url=[your url] -daemon
 ```
 
-You can customize the daemon timeout using the `-timeout` flag.
+You can customize the daemon timeout using the `-daemon-timeout` flag.
 
 ```bash
-./comics-downloader -url=[your url] -daemon -timeout=300
+./comics-downloader -url=[your url] -daemon -daemon-timeout=300
 ```
 
 ### Download Only the Images
