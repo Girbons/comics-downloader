@@ -5,11 +5,11 @@ go 1.17
 require (
 	fyne.io/fyne v1.4.3
 	github.com/anaskhan96/soup v1.2.4
-	github.com/bake/mangadex/v2 v2.0.0
 	github.com/bmaupin/go-epub v0.7.2
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dlclark/regexp2 v1.4.0
 	github.com/dsnet/compress v0.0.1 // indirect
+	github.com/frankban/quicktest v1.13.1 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/fyne-io/mobile v0.1.2 // indirect
 	github.com/go-gl/gl v0.0.0-20190320180904-bf2b1f2f34d7 // indirect
@@ -25,7 +25,6 @@ require (
 	github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db // indirect
 	github.com/nwaples/rardecode v1.1.2 // indirect
 	github.com/pierrec/lz4 v2.6.1+incompatible // indirect
-	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/schollz/progressbar/v2 v2.15.0
 	github.com/sirupsen/logrus v1.8.1
@@ -41,5 +40,4 @@ require (
 	golang.org/x/sys v0.0.0-20200720211630-cb9d2d5c5666 // indirect
 	golang.org/x/text v0.3.2 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c // indirect
-	github.com/frankban/quicktest v1.13.1 // indirect
 )
