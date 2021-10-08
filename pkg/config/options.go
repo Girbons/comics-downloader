@@ -13,6 +13,7 @@ type Options struct {
 	ImagesFormat        string
 	Country             string
 	Format              string
+	CustomComicName     string
 	ForceAspect         bool
 	OutputFolder        string
 	CreateDefaultPath   bool
