@@ -5,6 +5,7 @@ import (
 	"github.com/Girbons/comics-downloader/pkg/util"
 	"github.com/anaskhan96/soup"
 	"github.com/dlclark/regexp2"
+	"strings"
 )
 
 // mangakakalot.com and manganato.com functions
@@ -69,6 +70,11 @@ func MangaKakalotRetrieveIssueLinks(domain string, url string) ([]string, error)
 	if err != nil {
 		panic(err)
 	}
+	// chapter page link
+	if strings.Contains(url, "/chapter") {
+		return []string{url}, nil
+	}
+	// manga page link
 	doc := soup.HTMLParse(res)
 	f := doc.Find("div", "class", chapterListClassName(domain))
 	var urls []string
