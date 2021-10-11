@@ -9,6 +9,7 @@ import (
 	"os"
 	"strings"
 	"time"
+	"runtime"
 
 	"golang.org/x/sync/errgroup"
 
@@ -308,6 +309,7 @@ func (comic *Comic) DownloadImages(options *config.Options) (string, error) {
 
 		})
 	}
+	runtime.GC()
 
 	if err := g.Wait(); err != nil {
 		return dir, err
