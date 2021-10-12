@@ -39,6 +39,37 @@ func TestSiteLoaderMangatown(t *testing.T) {
 	assert.Equal(t, 20, len(comic.Links))
 }
 
+func TestCustomComicName(t *testing.T) {
+	url := "https://www.mangatown.com/manga/naruto/v63/c693/"
+	outputFolder := filepath.Dir(os.Args[0])
+
+	options := &config.Options{
+		All:              false,
+		Last:             false,
+		ImagesOnly:       false,
+		Source:           "www.mangatown.com",
+		URL:              url,
+		Format:           "pdf",
+		ImagesFormat:     "png",
+		CustomComicName:  "Naruto",
+		OutputFolder: outputFolder,
+	}
+
+	collection, err := LoadComicFromSource(options)
+
+	assert.Nil(t, err)
+	assert.Equal(t, len(collection), 1)
+
+	comic := collection[0]
+
+	assert.Equal(t, "www.mangatown.com", comic.Source)
+	assert.Equal(t, url, comic.URLSource)
+	assert.Equal(t, "Naruto", comic.Name)
+	assert.Equal(t, "c693", comic.IssueNumber)
+	assert.Equal(t, 20, len(comic.Links))
+}
+
+
 //func TestSiteLoaderMangareader(t *testing.T) {
 //url := "https://www.mangareader.net/naruto/700"
 //outputFolder := filepath.Dir(os.Args[0])

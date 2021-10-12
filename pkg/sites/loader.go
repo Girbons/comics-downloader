@@ -33,6 +33,9 @@ func initializeCollection(issues []string, options *config.Options, base BaseSit
 	for _, url := range issues {
 		name, issueNumber := base.GetInfo(url)
 		name = util.Parse(name)
+		if len(options.CustomComicName) > 0 {
+			name = options.CustomComicName
+		}
 		issueNumber = util.Parse(issueNumber)
 
 		if notInIssuesRange(issueNumber, startRange, endRange) {

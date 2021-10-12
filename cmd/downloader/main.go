@@ -24,6 +24,7 @@ var (
 	// manga/comic final output
 	forceAspect bool
 	format      string
+	customComicName string
 	// force only issue number filenames
 	issueNumberNameOnly bool
 	// url source
@@ -52,6 +53,7 @@ func init() {
 	flag.StringVar(&country, "country", "", "Set the country to retrieve a manga, Used by MangaDex which uses ISO 3166-1 codes")
 	flag.BoolVar(&forceAspect, "force-aspect", false, "Force images to A4 Portrait aspect ratio")
 	flag.StringVar(&format, "format", "pdf", "Comic format output, supported formats are pdf,epub,cbr,cbz")
+	flag.StringVar(&customComicName, "custom-comic-name", "", "Use a custom name for the comic output.")
 	flag.StringVar(&imagesFormat, "images-format", "jpg", "To use with `images-only` flag, choose the image format, available png,jpeg,img")
 	flag.BoolVar(&issueNumberNameOnly, "issue-number-only", false, "Force only saving with issue number instead of chapter name + issue number.")
 	flag.StringVar(&url, "url", "", "Comic URL or Comic URLS by separating each site with a comma without the use of spaces")
@@ -80,8 +82,9 @@ func main() {
 		URL:                 url,
 		ForceAspect:         forceAspect,
 		Format:              format,
+		CustomComicName:     customComicName,
 		Daemon:              daemon,
-		DaemonTimeout:             daemonTimeout,
+		DaemonTimeout:       daemonTimeout,
 		OutputFolder:        outputFolder,
 		CreateDefaultPath:   createDefaultPath,
 		IssuesRange:         issuesRange,
