@@ -52,12 +52,15 @@ func main() {
 	imagesOnlyCheck := widget.NewCheck("", nil)
 
 	createDefaultPath := widget.NewCheck("", nil)
-        createDefaultPath.Checked = true
+	createDefaultPath.Checked = true
 
 	debugCheck := widget.NewCheck("", nil)
 
 	outputFolderEntry := widget.NewEntry()
 	outputFolderEntry.SetPlaceHolder("Folder where the comics will be saved")
+
+	customComicName := widget.NewEntry()
+	customComicName.SetPlaceHolder("Custom comic name")
 
 	issuesRange := widget.NewEntry()
 	issuesRange.SetPlaceHolder("1-10")
@@ -74,11 +77,13 @@ func main() {
 		OutputFolder:      outputFolderEntry,
 		IssuesRange:       issuesRange,
 		Debug:             debugCheck,
+		CustomComicName:   customComicName,
 	}
 
 	form := widget.NewForm()
 	form.Append("URL", d.URL)
 	form.Append("Country", d.Country)
+	form.Append("Custom comic name", d.CustomComicName)
 	form.Append("Output", d.Format)
 	form.Append("All chapters", d.AllChapters)
 	form.Append("Last chapter", d.LastChapter)

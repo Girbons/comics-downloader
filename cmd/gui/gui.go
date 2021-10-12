@@ -20,6 +20,7 @@ type Downloader struct {
 	CreateDefaultPath *widget.Check
 	IssuesRange       *widget.Entry
 	Debug             *widget.Check
+	CustomComicName   *widget.Entry
 }
 
 // ClearURLField resets the url text field.
@@ -51,6 +52,7 @@ func (d *Downloader) Submit() {
 		OutputFolder:      d.OutputFolder.Text,
 		CreateDefaultPath: d.CreateDefaultPath.Checked,
 		IssuesRange:       d.IssuesRange.Text,
+		CustomComicName:   d.CustomComicName.Text,
 	}
 
 	downloader.GuiRun(opts)

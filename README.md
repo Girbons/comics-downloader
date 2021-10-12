@@ -23,17 +23,17 @@
 
 Download the latest release:
 
-- [Linux](https://github.com/Girbons/comics-downloader/releases/download/v0.31.0/comics-downloader)
-- [Mac OSX](https://github.com/Girbons/comics-downloader/releases/download/v0.31.0/comics-downloader-osx)
-- [Windows](https://github.com/Girbons/comics-downloader/releases/download/v0.31.0/comics-downloader.exe)
-- [Linux ARM](https://github.com/Girbons/comics-downloader/releases/download/v0.31.0/comics-downloader-linux-arm)
-- [Linux ARM64](https://github.com/Girbons/comics-downloader/releases/download/v0.31.0/comics-downloader-linux-arm64)
+- [Linux](https://github.com/Girbons/comics-downloader/releases/download/v0.32.0/comics-downloader)
+- [Mac OSX](https://github.com/Girbons/comics-downloader/releases/download/v0.32.0/comics-downloader-osx)
+- [Windows](https://github.com/Girbons/comics-downloader/releases/download/v0.32.0/comics-downloader.exe)
+- [Linux ARM](https://github.com/Girbons/comics-downloader/releases/download/v0.32.0/comics-downloader-linux-arm)
+- [Linux ARM64](https://github.com/Girbons/comics-downloader/releases/download/v0.32.0/comics-downloader-linux-arm64)
 
 Download the latest GUI release:
 
-- [Linux](https://github.com/Girbons/comics-downloader/releases/download/v0.31.0/comics-downloader-gui)
-- [Mac OSX](https://github.com/Girbons/comics-downloader/releases/download/v0.31.0/comics-downloader-gui-osx)
-- [Windows](https://github.com/Girbons/comics-downloader/releases/download/v0.31.0/comics-downloader-gui-windows.exe)
+- [Linux](https://github.com/Girbons/comics-downloader/releases/download/v0.32.0/comics-downloader-gui)
+- [Mac OSX](https://github.com/Girbons/comics-downloader/releases/download/v0.32.0/comics-downloader-gui-osx)
+- [Windows](https://github.com/Girbons/comics-downloader/releases/download/v0.32.0/comics-downloader-gui-windows.exe)
 
 ## Usage
 
@@ -49,6 +49,8 @@ Usage:
         Set the country to retrieve a manga, Used by MangaDex which uses ISO 3166-1 codes
   -create-default-path comics/[source]/[name]/
         Using this flag your comics/issue will be downloaded without prepending the default folder structure, comics/[source]/[name]/ (default true)
+  -custom-comic-name string
+        Use a custom name for the comic output.
   -daemon
         Run the download as daemon
   -daemon-timeout int

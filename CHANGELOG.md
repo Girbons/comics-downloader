@@ -1,3 +1,20 @@
+[Changes][v0.32.0]
+<a name="v0.32.0"></a>
+
+# [0.32.0 (v0.32.0)](https://github.com/Girbons/comics-downloader/releases/tag/v0.32.0) - 12 Oct 2021
+
+# What's new
+
+- Introduced `custom-comic-name` option to support comic/manga renaming. -- (Thanks @ChristofferGreen)
+
+# Changes
+
+- Mangadex has been re-enabled. (Thanks @bake)
+
+# Fixes
+
+- #93: Downloading single issues with issue links does not work with the new sites mangakakalot.com/readmanganato.com. -- (Thanks @Jan0660)
+
 [Changes][v0.31.0]
 <a name="v0.31.0"></a>
 

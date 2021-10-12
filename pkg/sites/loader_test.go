@@ -44,15 +44,15 @@ func TestCustomComicName(t *testing.T) {
 	outputFolder := filepath.Dir(os.Args[0])
 
 	options := &config.Options{
-		All:              false,
-		Last:             false,
-		ImagesOnly:       false,
-		Source:           "www.mangatown.com",
-		URL:              url,
-		Format:           "pdf",
-		ImagesFormat:     "png",
-		CustomComicName:  "Naruto",
-		OutputFolder: outputFolder,
+		All:             false,
+		Last:            false,
+		ImagesOnly:      false,
+		Source:          "www.mangatown.com",
+		URL:             url,
+		Format:          "pdf",
+		ImagesFormat:    "png",
+		CustomComicName: "Naruto",
+		OutputFolder:    outputFolder,
 	}
 
 	collection, err := LoadComicFromSource(options)
@@ -68,7 +68,6 @@ func TestCustomComicName(t *testing.T) {
 	assert.Equal(t, "c693", comic.IssueNumber)
 	assert.Equal(t, 20, len(comic.Links))
 }
-
 
 //func TestSiteLoaderMangareader(t *testing.T) {
 //url := "https://www.mangareader.net/naruto/700"
@@ -100,7 +99,7 @@ func TestCustomComicName(t *testing.T) {
 //}
 
 func TestSiteLoaderComicExtra(t *testing.T) {
-	url := "https://www.comicextra.com/daredevil-2016/chapter-600/full"
+	url := "https://www.comicextra.com/daredevil/chapter-600/full"
 	outputFolder := filepath.Dir(os.Args[0])
 	options := &config.Options{
 		All:          false,
@@ -121,7 +120,7 @@ func TestSiteLoaderComicExtra(t *testing.T) {
 
 	assert.Equal(t, "www.comicextra.com", comic.Source)
 	assert.Equal(t, url, comic.URLSource)
-	assert.Equal(t, "daredevil-2016", comic.Name)
+	assert.Equal(t, "daredevil", comic.Name)
 	assert.Equal(t, "chapter-600", comic.IssueNumber)
 	assert.Equal(t, 43, len(comic.Links))
 }
@@ -150,7 +149,7 @@ func TestLoaderUnknownSource(t *testing.T) {
 }
 
 func TestIssuesRange(t *testing.T) {
-	url := "https://www.comicextra.com/daredevil-2016/chapter-600/full"
+	url := "https://www.comicextra.com/daredevil/chapter-600/full"
 	outputFolder := filepath.Dir(os.Args[0])
 	options := &config.Options{
 		All:          true,

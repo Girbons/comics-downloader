@@ -22,8 +22,8 @@ var (
 	// manga/comic language
 	country string
 	// manga/comic final output
-	forceAspect bool
-	format      string
+	forceAspect     bool
+	format          string
 	customComicName string
 	// force only issue number filenames
 	issueNumberNameOnly bool
