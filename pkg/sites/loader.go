@@ -20,7 +20,7 @@ func initializeCollection(issues []string, options *config.Options, base BaseSit
 		return collection, errors.New("No issues found")
 	}
 
-	var startRange, endRange int
+	var startRange, endRange float64
 	if options.All && options.IssuesRange != "" {
 		start, end, err := parser.ParseIssuesRange(options.IssuesRange)
 		if err != nil {
@@ -64,9 +64,9 @@ func initializeCollection(issues []string, options *config.Options, base BaseSit
 	return collection, nil
 }
 
-var onlyNumbers = regexp.MustCompile("[^0-9]+")
+var onlyNumbers = regexp.MustCompile("[^0-9]+[^.][^0-9]+")
 
-func notInIssuesRange(issueNumber string, start, end int) bool {
+func notInIssuesRange(issueNumber string, start, end float64) bool {
 	if start == 0 || end == 0 {
 		return false
 	}
@@ -76,7 +76,7 @@ func notInIssuesRange(issueNumber string, start, end int) bool {
 		return true
 	}
 
-	number, err := strconv.Atoi(normalizedNumber)
+	number, err := strconv.ParseFloat(normalizedNumber, 64)
 	if err != nil {
 		return true
 	}

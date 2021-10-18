@@ -54,7 +54,7 @@ func IsValueInSlice(valueToCheck string, values []string) bool {
 // Parse escapes characters
 func Parse(s string) string {
 	replacer := strings.NewReplacer(
-		".", " ",
+		"\"", "",
 		"/", "_",
 		"[", "",
 		"]", "",

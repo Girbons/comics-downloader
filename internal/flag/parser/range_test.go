@@ -9,13 +9,15 @@ import (
 func TestParseIssuesRange(t *testing.T) {
 	tt := []struct {
 		input         string
-		expectedStart int
-		expectedEnd   int
+		expectedStart float64
+		expectedEnd   float64
 		hasError      bool
 	}{
 		{"1-1", 1, 1, false},
 		{"1-5", 1, 5, false},
 		{"3-9", 3, 9, false},
+		{"3.1-9.5", 3.1, 9.5, false},
+		{"3.-9.5", 3, 9.5, false},
 		{"12-123", 12, 123, false},
 		{"0-0", 0, 0, true},
 		{"0-1", 0, 0, true},

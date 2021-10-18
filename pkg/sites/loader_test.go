@@ -176,3 +176,25 @@ func TestIssuesRange(t *testing.T) {
 	assert.Contains(t, issues, "chapter-6")
 	assert.Contains(t, issues, "chapter-7")
 }
+
+func TestFloatIssuesRange(t *testing.T) {
+	tt := []struct {
+		input       string
+		start       float64
+		end         float64
+		returnValue bool
+	}{
+		{"1", 1, 1, false},
+		{"19", 20, 21, true},
+		{"20", 20, 21, false},
+		{"20.5", 20, 21, false},
+		{"21", 20, 21, false},
+		{"22", 20, 21, true},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.input, func(t *testing.T) {
+			assert.Equal(t, notInIssuesRange(tc.input, tc.start, tc.end), tc.returnValue)
+		})
+	}
+}
