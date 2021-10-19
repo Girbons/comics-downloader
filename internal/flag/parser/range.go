@@ -9,13 +9,13 @@ import (
 
 // ParseIssuesRange the range of issues.
 // Format [start-end].
-func ParseIssuesRange(rng string) (int, int, error) {
+func ParseIssuesRange(rng string) (float64, float64, error) {
 	values := strings.Split(rng, "-")
 	if len(values) != 2 {
 		return 0, 0, errors.New("wrong range format")
 	}
 
-	startRange, err := strconv.Atoi(values[0])
+	startRange, err := strconv.ParseFloat(values[0], 64)
 	if err != nil {
 		return 0, 0, fmt.Errorf("wrong the start range value: %v", err)
 	}
@@ -24,7 +24,7 @@ func ParseIssuesRange(rng string) (int, int, error) {
 		return 0, 0, errors.New("the start range value must not be zero")
 	}
 
-	endRange, err := strconv.Atoi(values[1])
+	endRange, err := strconv.ParseFloat(values[1], 64)
 	if err != nil {
 		return 0, 0, fmt.Errorf("wrong the end range value: %v", err)
 	}
