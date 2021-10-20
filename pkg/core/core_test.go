@@ -9,6 +9,7 @@ import (
 
 	"github.com/Girbons/comics-downloader/internal/logger"
 	"github.com/Girbons/comics-downloader/pkg/config"
+	"github.com/Girbons/comics-downloader/pkg/http"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -52,6 +53,7 @@ func TestMakeComicPDF(t *testing.T) {
 		CreateDefaultPath: true,
 		Debug:             false,
 		Logger:            logger.NewLogger(false, make(chan string)),
+		Client:            http.NewComicClient(),
 	}
 	err := comic.MakeComic(opt)
 	assert.Nil(t, err)
@@ -76,6 +78,7 @@ func TestMakeComicEPUB(t *testing.T) {
 		CreateDefaultPath: true,
 		Debug:             false,
 		Logger:            logger.NewLogger(false, make(chan string)),
+		Client:            http.NewComicClient(),
 	}
 
 	err := comic.MakeComic(opt)
@@ -99,6 +102,7 @@ func TestDownloadImagesPNGFormat(t *testing.T) {
 		Debug:             false,
 		CreateDefaultPath: true,
 		Logger:            logger.NewLogger(false, make(chan string)),
+		Client:            http.NewComicClient(),
 	}
 	dir, err := comic.DownloadImages(opt)
 	files, _ := ioutil.ReadDir(dir)
@@ -121,6 +125,7 @@ func TestDownloadImagesJPGFormat(t *testing.T) {
 		CreateDefaultPath: true,
 		Debug:             false,
 		Logger:            logger.NewLogger(false, make(chan string)),
+		Client:            http.NewComicClient(),
 	}
 	dir, err := comic.DownloadImages(opt)
 	files, _ := ioutil.ReadDir(dir)
@@ -143,6 +148,7 @@ func TestDownloadImagesJPEGFormat(t *testing.T) {
 		CreateDefaultPath: true,
 		Debug:             false,
 		Logger:            logger.NewLogger(false, make(chan string)),
+		Client:            http.NewComicClient(),
 	}
 	dir, err := comic.DownloadImages(opt)
 	files, _ := ioutil.ReadDir(dir)
@@ -165,6 +171,7 @@ func TestDownloadImagesIMGFormat(t *testing.T) {
 		CreateDefaultPath: true,
 		Debug:             false,
 		Logger:            logger.NewLogger(false, make(chan string)),
+		Client:            http.NewComicClient(),
 	}
 	dir, err := comic.DownloadImages(opt)
 	files, _ := ioutil.ReadDir(dir)
