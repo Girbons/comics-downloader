@@ -11,6 +11,7 @@ import (
 	"github.com/Girbons/comics-downloader/internal/version"
 	"github.com/Girbons/comics-downloader/pkg/config"
 	"github.com/Girbons/comics-downloader/pkg/detector"
+	"github.com/Girbons/comics-downloader/pkg/http"
 	"github.com/Girbons/comics-downloader/pkg/sites"
 	"github.com/sirupsen/logrus"
 )
@@ -105,6 +106,7 @@ func GuiRun(options *config.Options) {
 // Run will start the CLI app
 func Run(options *config.Options) {
 	options.Logger = logger.NewLogger(false, Messages)
+	options.Client = http.NewComicClient()
 
 	// link is required
 	if options.URL == "" {

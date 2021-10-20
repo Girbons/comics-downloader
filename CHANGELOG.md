@@ -1,3 +1,12 @@
+[Changes][v0.32.1]
+<a name="v0.32.1"></a>
+
+# [0.32.1 (v0.32.1)](https://github.com/Girbons/comics-downloader/releases/tag/v0.32.1) - 20 Oct 2021
+
+# Fixes
+
+- #94: Range option ignores non integers. -- (Thanks @Jan0660)
+
 [Changes][v0.32.0]
 <a name="v0.32.0"></a>
 

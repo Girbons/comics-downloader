@@ -1,6 +1,9 @@
 package config
 
-import "github.com/Girbons/comics-downloader/internal/logger"
+import (
+	"github.com/Girbons/comics-downloader/internal/logger"
+	"github.com/Girbons/comics-downloader/pkg/http"
+)
 
 // Options represents the comics downloader options.
 type Options struct {
@@ -22,5 +25,6 @@ type Options struct {
 	Source              string
 	IssuesRange         string
 
+	Client *http.ComicClient
 	Logger *logger.Logger
 }

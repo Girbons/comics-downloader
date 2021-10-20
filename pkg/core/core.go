@@ -5,10 +5,8 @@ import (
 	"fmt"
 	"image"
 	"io/ioutil"
-	"net/http"
 	"os"
 	"strings"
-	"time"
 
 	"golang.org/x/sync/errgroup"
 
@@ -260,13 +258,6 @@ func (comic *Comic) DownloadImages(options *config.Options) (string, error) {
 		return dir, err
 	}
 
-	client := &http.Client{
-		Transport: &http.Transport{
-			MaxIdleConns:    11,
-			IdleConnTimeout: 30 * time.Second,
-		},
-	}
-
 	g := new(errgroup.Group)
 
 	for i, link := range comic.Links {
@@ -278,13 +269,7 @@ func (comic *Comic) DownloadImages(options *config.Options) (string, error) {
 		}
 
 		g.Go(func() error {
-			req, err := http.NewRequest("GET", link, nil)
-			if err != nil {
-				return err
-			}
-			// we need this so that MangaKakalot doesn't 403 forbid the request
-			req.Header.Add("Referer", link)
-			rsp, err := client.Do(req)
+			rsp, err := options.Client.Get(link)
 			if err != nil {
 				return err
 			}
