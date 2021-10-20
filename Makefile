@@ -8,8 +8,8 @@ osx-build: # Creates Mac OSX
 windows-build: # Creates Windows
 	@GOOS=windows GOARCH=amd64 go build -o build/comics-downloader.exe ./cmd/downloader
 
-linux-build: # Creates Linux
-	@GOOS=linux GOARCH=amd64 go build -o build/comics-downloader ./cmd/downloader
+linux-build: # Creates Linux to host architecture
+	@GOOS=linux go build -o build/comics-downloader ./cmd/downloader
 
 linux-arm-build: # Creates Linux ARM
 	@GOOS=linux GOARCH=arm go build -o build/comics-downloader-linux-arm ./cmd/downloader
