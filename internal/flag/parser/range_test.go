@@ -20,7 +20,7 @@ func TestParseIssuesRange(t *testing.T) {
 		{"3.-9.5", 3, 9.5, false},
 		{"12-123", 12, 123, false},
 		{"0-0", 0, 0, true},
-		{"0-1", 0, 0, true},
+		{"0-1", 0, 1, false},
 		{"1-0", 0, 0, true},
 		{"2-1", 0, 0, true},
 		{"1", 0, 0, true},

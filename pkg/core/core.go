@@ -2,13 +2,16 @@ package core
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"image"
 	"io/ioutil"
 	"os"
+	"runtime"
 	"strings"
 
 	"golang.org/x/sync/errgroup"
+	"golang.org/x/sync/semaphore"
 
 	"github.com/Girbons/comics-downloader/pkg/config"
 	"github.com/Girbons/comics-downloader/pkg/util"
@@ -260,15 +263,21 @@ func (comic *Comic) DownloadImages(options *config.Options) (string, error) {
 
 	g := new(errgroup.Group)
 
+	maxWorkers := int64(runtime.NumCPU())
+	sem := semaphore.NewWeighted(maxWorkers)
+	ctx := context.Background()
+
+	defer sem.Acquire(ctx, maxWorkers)
 	for i, link := range comic.Links {
-		link := link
-		i := i
+		link, i := link, i
+		sem.Acquire(ctx, 1)
 
 		if link == "" {
 			continue
 		}
 
 		g.Go(func() error {
+			defer sem.Release(1)
 			rsp, err := options.Client.Get(link)
 			if err != nil {
 				return err

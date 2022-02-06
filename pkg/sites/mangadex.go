@@ -120,16 +120,33 @@ func (m *Mangadex) getChapter(chapterID string) (mangaID, volume, chapter, title
 			} `json:"relationships"`
 		} `json:"data"`
 	}
+
 	if err := json.NewDecoder(res.Body).Decode(&chapterRes); err != nil {
 		return "", "", "", "", nil, err
 	}
 	if chapterRes.Result != "ok" {
 		return "", "", "", "", nil, fmt.Errorf("Unexpected response")
 	}
-	images = chapterRes.Data.Attributes.Data
-	for i, file := range images {
-		images[i] = fmt.Sprintf("https://uploads.mangadex.org/data/%s/%s", chapterRes.Data.Attributes.Hash, file)
+
+	var imagesRes struct {
+		Result  string `json:"result"`
+		Chapter struct {
+			Hash string   `json:"hash"`
+			Data []string `json:"data"`
+		} `json:"chapter`
 	}
+
+	res, err = http.Get(fmt.Sprintf("https://api.mangadex.org/at-home/server/%s", chapterID))
+
+	if err := json.NewDecoder(res.Body).Decode(&imagesRes); err != nil {
+		return "", "", "", "", nil, err
+	}
+
+	for _, file := range imagesRes.Chapter.Data {
+		imageUrl := fmt.Sprintf("https://uploads.mangadex.org/data/%s/%s", imagesRes.Chapter.Hash, file)
+		images = append(images, imageUrl)
+	}
+
 	if m.options.Debug {
 		m.options.Logger.Debug(fmt.Sprintf("Image Links found: %s", strings.Join(images, " ")))
 	}
@@ -139,6 +156,7 @@ func (m *Mangadex) getChapter(chapterID string) (mangaID, volume, chapter, title
 			break
 		}
 	}
+
 	return mangaID, chapterRes.Data.Attributes.Volume, chapterRes.Data.Attributes.Chapter, chapterRes.Data.Attributes.Title, images, nil
 }
 

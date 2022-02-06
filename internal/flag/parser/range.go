@@ -20,10 +20,6 @@ func ParseIssuesRange(rng string) (float64, float64, error) {
 		return 0, 0, fmt.Errorf("wrong the start range value: %v", err)
 	}
 
-	if startRange == 0 {
-		return 0, 0, errors.New("the start range value must not be zero")
-	}
-
 	endRange, err := strconv.ParseFloat(values[1], 64)
 	if err != nil {
 		return 0, 0, fmt.Errorf("wrong the end range value: %v", err)
