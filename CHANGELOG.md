@@ -1,3 +1,17 @@
+[Changes][v0.33.0]
+<a name="v0.33.0"></a>
+
+# [0.33.0 (v0.33.0)](https://github.com/Girbons/comics-downloader/releases/tag/v0.33.0) - 6 Feb 2022
+
+# Fixes
+
+- #106: Mangadex no longer works
+- #107: range option error when using 0 as start index
+
+# Improvements
+
+* Images download improved
+
 [Changes][v0.32.1]
 <a name="v0.32.1"></a>
 
