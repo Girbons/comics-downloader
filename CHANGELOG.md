@@ -1,3 +1,12 @@
+[Changes][v0.33.1]
+<a name="v0.33.1"></a>
+
+# [0.33.1 (v0.33.1)](https://github.com/Girbons/comics-downloader/releases/tag/v0.33.1) - 27 Apr 2022
+
+# Fixes
+
+- #111: Fixed HTTP client header that was preventing images download as pointed out by @Jan0660.
+
 [Changes][v0.33.0]
 <a name="v0.33.0"></a>
 
