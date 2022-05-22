@@ -1,3 +1,12 @@
+[Changes][v0.33.2]
+<a name="v0.33.2"></a>
+
+# [0.33.2 (v0.33.2)](https://github.com/Girbons/comics-downloader/releases/tag/v0.33.2) - 22 May 2022
+
+# Fixes
+
+- #112: Fixed issue when a broken image is downloaded.
+
 [Changes][v0.33.1]
 <a name="v0.33.1"></a>
 

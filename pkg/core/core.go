@@ -252,7 +252,6 @@ func (comic *Comic) DownloadImages(options *config.Options) (string, error) {
 	if err != nil {
 		return dir, err
 	}
-
 	// setup the progress bar
 	bar := progressbar.NewOptions(len(comic.Links), progressbar.OptionSetRenderBlankState(true))
 
@@ -284,7 +283,8 @@ func (comic *Comic) DownloadImages(options *config.Options) (string, error) {
 			}
 			defer rsp.Body.Close()
 
-			imgFile, err := os.Create(fmt.Sprintf("%04d-image.%s", i, format))
+			imgName := fmt.Sprintf("%04d-image.%s", i, format)
+			imgFile, err := os.Create(imgName)
 			if err != nil {
 				return err
 			}
@@ -292,7 +292,9 @@ func (comic *Comic) DownloadImages(options *config.Options) (string, error) {
 
 			err = util.SaveImage(imgFile, rsp.Body, format)
 			if err != nil {
-				return err
+				msgError := fmt.Sprintf("There was an error while downloading image number: %d - comic issue: %s", i, comic.IssueNumber)
+				options.Logger.Error(msgError)
+				os.Remove(imgName)
 			}
 
 			if barErr := bar.Add(1); barErr != nil {
