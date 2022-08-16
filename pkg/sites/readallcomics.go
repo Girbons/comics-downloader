@@ -48,55 +48,60 @@ func (r *Readallcomics) retrieveImageLinks(comic *core.Comic) ([]string, error) 
 	return links, err
 }
 
-func (r *Readallcomics) isSingleIssue(url string) bool {
-	response, _ := soup.Get(url)
-
-	doc := soup.HTMLParse(response)
-	chapters := doc.Find("select", "id", "selectbox").FindAll("option")
-
-	return len(chapters) == 1
-}
-
-func (r *Readallcomics) retrieveLastIssue(url string) (string, error) {
-	response, err := soup.Get(url)
-
-	doc := soup.HTMLParse(response)
-	chapters := doc.Find("select", "id", "selectbox").FindAll("option")
-
-	return chapters[0].Attrs()["value"], err
-}
-
-// RetrieveIssueLinks retrieves the links to all the issue.
-func (r *Readallcomics) RetrieveIssueLinks() ([]string, error) {
-	url := r.options.URL
-
-	if r.options.Last {
-		lastIssue, err := r.retrieveLastIssue(url)
-		return []string{lastIssue}, err
-	}
-
-	if r.options.All && r.isSingleIssue(url) {
-		return []string{url}, nil
-	}
+// Retrieve issues links from main comic page or from comic issue.
+func (r *Readallcomics) getIssues(url string) ([]string, error) {
+	var links []string
 
 	response, err := soup.Get(url)
 	if err != nil {
 		return nil, err
 	}
 
+	// html tag to be extracted.
+	tagToExtract := "a"
+	// html tag value to be extracted.
+	tagValueToExtract := "href"
+	// retrieve links from main comic page.
 	doc := soup.HTMLParse(response)
-	chapters := doc.Find("select", "id", "selectbox").FindAll("option")
+	// apply default strategy to get issues link
+	chapters := doc.Find("ul", "class", "list-story")
 
-	var links []string
+	if chapters.Error != nil {
+		// retrieve links from comic page.
+		chapters = doc.Find("select", "id", "selectbox")
+		tagToExtract = "option"
+		tagValueToExtract = "value"
+	}
 
-	for _, chapter := range chapters {
-		url := chapter.Attrs()["value"]
-		if util.IsURLValid(url) {
-			links = append(links, url)
+	for _, chapter := range chapters.FindAll(tagToExtract) {
+		issueUrl := chapter.Attrs()[tagValueToExtract]
+		if util.IsURLValid(issueUrl) {
+			links = append(links, issueUrl)
 		}
 	}
 
-	return links, err
+	return links, nil
+}
+
+// RetrieveIssueLinks retrieves the links to all the issue.
+func (r *Readallcomics) RetrieveIssueLinks() ([]string, error) {
+	url := r.options.URL
+
+	chapters, err := r.getIssues(url)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if r.options.Last {
+		return []string{chapters[len(chapters)-1]}, nil
+	}
+
+	if r.options.All && len(chapters) == 1 {
+		return []string{chapters[0]}, err
+	}
+
+	return chapters, err
 }
 
 // GetInfo extracts the comic info from the given URL.
@@ -108,7 +113,7 @@ func (r *Readallcomics) GetInfo(url string) (string, string) {
 	splittedTitle := strings.Split(title, " ")
 
 	name := strings.Join(splittedTitle[:len(splittedTitle)-2], " ")
-	issueNumber := splittedTitle[len(splittedTitle)-2] // get the issue number
+	issueNumber := splittedTitle[len(splittedTitle)-1] // get the issue number
 	return name, issueNumber
 }
 

@@ -1,7 +1,6 @@
 package util
 
 import (
-	"bytes"
 	"errors"
 	"image"
 	"image/gif"
@@ -13,16 +12,6 @@ import (
 
 // IMAGEREGEX to extract the image html tag
 const IMAGEREGEX = `<img[^>]+src="([^">]+)"`
-
-// ConvertToJPG converts an image to jpeg
-func ConvertToJPG(img image.Image, imgData *bytes.Buffer) error {
-	err := jpeg.Encode(imgData, img, nil)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
 
 // ImageType return the image type
 func ImageType(mimeStr string) (tp string) {
@@ -58,9 +47,10 @@ func SaveImage(w io.Writer, content io.Reader, format string) error {
 	case "gif":
 		return gif.Encode(w, img, nil)
 	case "jpg", "jpeg":
-		return jpeg.Encode(w, img, nil)
+		return jpeg.Encode(w, img, &jpeg.Options{Quality: 100})
 	case "png":
-		return png.Encode(w, img)
+		pngEncoder := png.Encoder{CompressionLevel: png.BestCompression}
+		return pngEncoder.Encode(w, img)
 	default:
 		return errors.New("format not found")
 	}
