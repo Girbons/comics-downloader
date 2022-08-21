@@ -12,6 +12,7 @@ import (
 )
 
 var baseUrl = "https://readcomiconline.li"
+var highQuality = "?quality=hd&readType=1"
 
 // ReadComicOnline represents a readcomiconline instance.
 type ReadComicOnline struct {
@@ -20,28 +21,63 @@ type ReadComicOnline struct {
 
 // NewReadComiconline returns a readcomiconline instance.
 func NewReadComiconline(options *config.Options) *ReadComicOnline {
-	return &ReadComicOnline{
-		options: options,
-	}
+	return &ReadComicOnline{options: options}
 }
 
 func (c *ReadComicOnline) retrieveImageLinks(comic *core.Comic) ([]string, error) {
-	var links []string
+	var (
+		links []string
+		pages []string
+	)
 
 	comic.URLSource = strings.Split(comic.URLSource, "?")[0]
 
-	response, err := soup.Get(comic.URLSource + "?quality=hd&readType=1")
+	response, err := soup.Get(comic.URLSource + highQuality)
 	if err != nil {
 		return nil, err
 	}
 
-	re := regexp.MustCompile(`push\(\"(.*?)\"\)`)
-	match := re.FindAllStringSubmatch(response, -1)
+	document := soup.HTMLParse(response)
 
-	for i := range match {
-		url := match[i][1]
-		if util.IsURLValid(url) {
-			links = append(links, url)
+	if strings.HasSuffix(c.options.Source, ".ru") {
+		results := document.Find("select", "id", "page-list")
+		// extract pages
+		for _, el := range results.FindAll("option") {
+			pages = append(pages, el.Attrs()["value"])
+		}
+
+		for _, page := range pages {
+			url := comic.URLSource
+
+			if !strings.HasSuffix(url, "/") {
+				url += "/"
+			}
+			url += page + highQuality
+
+			resp, _ := soup.Get(url)
+			inner_document := soup.HTMLParse(resp)
+
+			for _, l := range inner_document.FindAll("img") {
+				image_link := strings.Replace(l.Attrs()["src"], " ", "", -1)
+
+				if image_link != "" && strings.Contains(image_link, "chapters") {
+					links = append(links, image_link)
+				}
+			}
+
+		}
+	} else {
+		fmt.Println(response)
+		re := regexp.MustCompile(`push\(\'(.*?)\'\)`)
+		match := re.FindAllStringSubmatch(response, -1)
+
+		baseImageUrl := "https://2.bp.blogspot.com/"
+
+		for i := range match {
+			url := baseImageUrl + match[i][1]
+			if util.IsURLValid(url) {
+				links = append(links, url)
+			}
 		}
 	}
 
@@ -75,6 +111,8 @@ func (c *ReadComicOnline) retrieveLastIssue(url string) (string, error) {
 
 // RetrieveIssueLinks gets a slice of urls for all issues in a comic
 func (c *ReadComicOnline) RetrieveIssueLinks() ([]string, error) {
+	var links []string
+
 	url := c.options.URL
 
 	if c.options.Last {
@@ -82,34 +120,29 @@ func (c *ReadComicOnline) RetrieveIssueLinks() ([]string, error) {
 		return []string{issue}, err
 	}
 
-	if c.options.All && c.isSingleIssue(url) {
-		url = baseUrl + "/Comic/" + util.TrimAndSplitURL(url)[3]
-	} else if c.isSingleIssue(url) {
-		return []string{url}, nil
+	if c.options.All {
+		url = "https://" + c.options.Source + "/Comic/" + util.TrimAndSplitURL(url)[4]
 	}
-
-	name := util.TrimAndSplitURL(url)[4]
-	var (
-		pages []string
-		links []string
-	)
 
 	response, err := soup.Get(url)
 	if err != nil {
 		return nil, err
 	}
 
-	pages = append(pages, url)
+	name := util.TrimAndSplitURL(url)[4]
+
 	re := regexp.MustCompile("<a[^>]+href=\"([^\">]+" + "/" + name + "/.+)\"")
 	match := re.FindAllStringSubmatch(response, -1)
 
 	for i := range match {
 		url := match[i][1]
-		if !util.IsValueInSlice(url, pages) {
+
+		if !strings.HasPrefix(url, ".ru") {
 			url = baseUrl + strings.Split(url, "?")[0]
-			if util.IsURLValid(url) && !util.IsValueInSlice(url, links) {
-				links = append(links, url)
-			}
+		}
+
+		if util.IsURLValid(url) && !util.IsValueInSlice(url, links) {
+			links = append(links, url)
 		}
 	}
 
@@ -117,12 +150,13 @@ func (c *ReadComicOnline) RetrieveIssueLinks() ([]string, error) {
 		c.options.Logger.Debug(fmt.Sprintf("Issues Links retrieved: %s", strings.Join(links, " ")))
 	}
 
-	return links, err
+	return links, nil
 }
 
 // GetInfo extracts the basic info from the given url.
 func (c *ReadComicOnline) GetInfo(url string) (string, string) {
 	parts := util.TrimAndSplitURL(url)
+
 	name := parts[4]
 	issueNumber := strings.Split(strings.Replace(parts[5], "Issue-", "", -1), "?")[0]
 

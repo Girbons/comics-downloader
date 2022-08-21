@@ -20,7 +20,6 @@ func NewComicClient() *ComicClient {
 func (c *ComicClient) PrepareRequest(link string) (*http.Request, error) {
 	req, err := http.NewRequest("GET", link, nil)
 	req.Header.Add("Referer", link)
-
 	return req, err
 }
 
