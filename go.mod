@@ -1,6 +1,6 @@
 module github.com/Girbons/comics-downloader
 
-go 1.17
+go 1.18
 
 require (
 	fyne.io/fyne v1.4.3

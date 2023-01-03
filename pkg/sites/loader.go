@@ -10,6 +10,7 @@ import (
 	"github.com/Girbons/comics-downloader/pkg/config"
 	"github.com/Girbons/comics-downloader/pkg/core"
 	"github.com/Girbons/comics-downloader/pkg/util"
+	"golang.org/x/exp/slices"
 )
 
 func initializeCollection(issues []string, options *config.Options, base BaseSite) ([]*core.Comic, error) {
@@ -86,6 +87,8 @@ func notInIssuesRange(issueNumber string, start, end float64) bool {
 
 // LoadComicFromSource will return an `comic` instance initialized based on the source
 func LoadComicFromSource(options *config.Options) ([]*core.Comic, error) {
+	// this probably needs to land in the comicextra.go
+	const supportedComicExtra := []string{"ww1.comciextra.com", "www.comicextra.com"}
 	var (
 		base       BaseSite
 		issues     []string
@@ -93,10 +96,10 @@ func LoadComicFromSource(options *config.Options) ([]*core.Comic, error) {
 		err        error
 	)
 
-	switch options.Source {
+	switch sourceUrl := options.Source; sourceUrl {
 	case "readcomiconline.li":
 		base = NewReadComiconline(options)
-	case "www.comicextra.com":
+	case supportedComicExtra.contains(soureUrl):
 		base = NewComicextra(options)
 	case "mangareader.tv":
 		base = NewMangareader(options)
