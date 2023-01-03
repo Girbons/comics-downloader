@@ -1,3 +1,13 @@
+[Changes][v0.33.4]
+<a name="v0.33.4"></a>
+
+# [0.33.4 (v0.33.4)](https://github.com/Girbons/comics-downloader/releases/tag/v0.33.3) - 3 Jan 2023
+
+# Fixes
+
+- #125: Added new comicextra domain by @bhm.
+- #126: Fixed -all argument for readallcomics.
+
 [Changes][v0.33.3]
 <a name="v0.33.3"></a>
 

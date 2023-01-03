@@ -10,6 +10,8 @@ import (
 	"github.com/anaskhan96/soup"
 )
 
+const DefaultUrl string = "https://readallcomics.com"
+
 // Readallcomics  represents a Readallcomics instance.
 type Readallcomics struct {
 	options *config.Options
@@ -57,27 +59,29 @@ func (r *Readallcomics) getIssues(url string) ([]string, error) {
 		return nil, err
 	}
 
-	// html tag to be extracted.
-	tagToExtract := "a"
-	// html tag value to be extracted.
-	tagValueToExtract := "href"
-	// retrieve links from main comic page.
 	doc := soup.HTMLParse(response)
-	// apply default strategy to get issues link
-	chapters := doc.Find("ul", "class", "list-story")
 
-	if chapters.Error != nil {
-		// retrieve links from comic page.
-		chapters = doc.Find("select", "id", "selectbox")
-		tagToExtract = "option"
-		tagValueToExtract = "value"
+	if strings.Contains(url, "category") {
+		chapters := doc.Find("ul", "class", "list-story").FindAll("a")
+		for _, chapter := range chapters {
+			issueUrl := chapter.Attrs()["href"]
+			if util.IsURLValid(issueUrl) {
+				links = append(links, issueUrl)
+			}
+
+		}
+	} else {
+		chapters := doc.Find("select", "id", "selectbox").FindAll("option")
+		for _, chapter := range chapters {
+			issueUrl := chapter.Attrs()["value"]
+			if util.IsURLValid(issueUrl) {
+				links = append(links, issueUrl)
+			}
+		}
 	}
 
-	for _, chapter := range chapters.FindAll(tagToExtract) {
-		issueUrl := chapter.Attrs()[tagValueToExtract]
-		if util.IsURLValid(issueUrl) {
-			links = append(links, issueUrl)
-		}
+	if r.options.Debug {
+		r.options.Logger.Debug(fmt.Sprintf("Image Links found: %s", strings.Join(links, " ")))
 	}
 
 	return links, nil
@@ -87,21 +91,30 @@ func (r *Readallcomics) getIssues(url string) ([]string, error) {
 func (r *Readallcomics) RetrieveIssueLinks() ([]string, error) {
 	url := r.options.URL
 
-	chapters, err := r.getIssues(url)
+	if r.options.All || r.options.Last {
 
-	if err != nil {
-		return nil, err
+		if (r.options.All || r.options.Last) && !strings.Contains(url, "category") {
+			// override url to retrieve chapters
+			comicName := strings.Join(strings.Split(url, "/")[3:], "")
+			url = fmt.Sprintf("%s/category/%s", DefaultUrl, comicName)
+		}
+
+		chapters, err := r.getIssues(url)
+		if err != nil {
+			return nil, err
+		}
+
+		if r.options.Last {
+			return []string{chapters[len(chapters)-1]}, nil
+		}
+
+		if r.options.All && len(chapters) == 1 {
+			return []string{chapters[0]}, err
+		}
+		return chapters, err
 	}
 
-	if r.options.Last {
-		return []string{chapters[len(chapters)-1]}, nil
-	}
-
-	if r.options.All && len(chapters) == 1 {
-		return []string{chapters[0]}, err
-	}
-
-	return chapters, err
+	return []string{url}, nil
 }
 
 // GetInfo extracts the comic info from the given URL.
