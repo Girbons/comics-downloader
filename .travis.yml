@@ -1,7 +1,7 @@
 language: go
 
 go:
-  - 1.17
+  - 1.18
 
 before_install:
   - sudo apt-get update
