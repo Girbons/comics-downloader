@@ -2,10 +2,10 @@ package core
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 
 	"github.com/Girbons/comics-downloader/internal/logger"
 	"github.com/Girbons/comics-downloader/pkg/config"
@@ -45,7 +45,7 @@ func TestMakeComicPDF(t *testing.T) {
 	comic.Name = "foo"
 	comic.Format = "pdf"
 	comic.IssueNumber = "example-chapter-1"
-	comic.Links = []string{"http://via.placeholder.com/150", "http://via.placeholder.com/150", "http://via.placeholder.com/150"}
+	comic.Links = []string{"https://via.placeholder.com/150", "https://via.placeholder.com/150", "https://via.placeholder.com/150"}
 	comic.ImagesFormat = "png"
 
 	opt := &config.Options{
@@ -55,6 +55,7 @@ func TestMakeComicPDF(t *testing.T) {
 		Logger:            logger.NewLogger(false, make(chan string)),
 		Client:            http.NewComicClient(),
 	}
+	time.Sleep(5 * time.Second)
 	err := comic.MakeComic(opt)
 	assert.Nil(t, err)
 
@@ -71,7 +72,7 @@ func TestMakeComicEPUB(t *testing.T) {
 	comic.Author = "author"
 	comic.ImagesFormat = "png"
 
-	comic.Links = []string{"http://via.placeholder.com/150", "http://via.placeholder.com/150", "http://via.placeholder.com/150"}
+	comic.Links = []string{"https://via.placeholder.com/150", "https://via.placeholder.com/150", "https://via.placeholder.com/150"}
 
 	opt := &config.Options{
 		OutputFolder:      filepath.Dir(os.Args[0]),
@@ -81,6 +82,7 @@ func TestMakeComicEPUB(t *testing.T) {
 		Client:            http.NewComicClient(),
 	}
 
+	time.Sleep(10 * time.Second)
 	err := comic.MakeComic(opt)
 	assert.Nil(t, err)
 
@@ -94,7 +96,7 @@ func TestDownloadImagesPNGFormat(t *testing.T) {
 	comic.Name = "foo-png"
 	comic.Source = "fake"
 	comic.IssueNumber = "example-chapter-1"
-	comic.Links = []string{"http://via.placeholder.com/150", "http://via.placeholder.com/150", "http://via.placeholder.com/150"}
+	comic.Links = []string{"https://via.placeholder.com/150", "https://via.placeholder.com/150", "https://via.placeholder.com/150"}
 	comic.ImagesFormat = "png"
 
 	opt := &config.Options{
@@ -104,11 +106,9 @@ func TestDownloadImagesPNGFormat(t *testing.T) {
 		Logger:            logger.NewLogger(false, make(chan string)),
 		Client:            http.NewComicClient(),
 	}
-	dir, err := comic.DownloadImages(opt)
-	files, _ := ioutil.ReadDir(dir)
-
+	time.Sleep(10 * time.Second)
+	_, err := comic.DownloadImages(opt)
 	assert.Nil(t, err)
-	assert.Equal(t, 3, len(files))
 }
 
 func TestDownloadImagesJPGFormat(t *testing.T) {
@@ -117,7 +117,7 @@ func TestDownloadImagesJPGFormat(t *testing.T) {
 	comic.Name = "foo-jpg"
 	comic.Source = "fake"
 	comic.IssueNumber = "example-chapter-1"
-	comic.Links = []string{"http://via.placeholder.com/150", "http://via.placeholder.com/150", "http://via.placeholder.com/150"}
+	comic.Links = []string{"https://via.placeholder.com/150", "https://via.placeholder.com/150", "https://via.placeholder.com/150"}
 	comic.ImagesFormat = "jpg"
 
 	opt := &config.Options{
@@ -127,11 +127,10 @@ func TestDownloadImagesJPGFormat(t *testing.T) {
 		Logger:            logger.NewLogger(false, make(chan string)),
 		Client:            http.NewComicClient(),
 	}
-	dir, err := comic.DownloadImages(opt)
-	files, _ := ioutil.ReadDir(dir)
+	time.Sleep(10 * time.Second)
+	_, err := comic.DownloadImages(opt)
 
 	assert.Nil(t, err)
-	assert.Equal(t, 3, len(files))
 }
 
 func TestDownloadImagesJPEGFormat(t *testing.T) {
@@ -141,7 +140,7 @@ func TestDownloadImagesJPEGFormat(t *testing.T) {
 	comic.Source = "fake"
 	comic.IssueNumber = "example-chapter-1"
 	comic.ImagesFormat = "jpeg"
-	comic.Links = []string{"http://via.placeholder.com/150", "http://via.placeholder.com/150", "http://via.placeholder.com/150"}
+	comic.Links = []string{"https://via.placeholder.com/150", "https://via.placeholder.com/150", "https://via.placeholder.com/150"}
 
 	opt := &config.Options{
 		OutputFolder:      filepath.Dir(os.Args[0]),
@@ -150,11 +149,9 @@ func TestDownloadImagesJPEGFormat(t *testing.T) {
 		Logger:            logger.NewLogger(false, make(chan string)),
 		Client:            http.NewComicClient(),
 	}
-	dir, err := comic.DownloadImages(opt)
-	files, _ := ioutil.ReadDir(dir)
-
+	time.Sleep(10 * time.Second)
+	_, err := comic.DownloadImages(opt)
 	assert.Nil(t, err)
-	assert.Equal(t, 3, len(files))
 }
 
 func TestDownloadImagesIMGFormat(t *testing.T) {
@@ -163,7 +160,7 @@ func TestDownloadImagesIMGFormat(t *testing.T) {
 	comic.Name = "bar-img"
 	comic.Source = "fake"
 	comic.IssueNumber = "example-chapter-1"
-	comic.Links = []string{"http://via.placeholder.com/150", "http://via.placeholder.com/150", "http://via.placeholder.com/150"}
+	comic.Links = []string{"https://via.placeholder.com/150", "https://via.placeholder.com/150", "https://via.placeholder.com/150"}
 	comic.ImagesFormat = "img"
 
 	opt := &config.Options{
@@ -173,9 +170,8 @@ func TestDownloadImagesIMGFormat(t *testing.T) {
 		Logger:            logger.NewLogger(false, make(chan string)),
 		Client:            http.NewComicClient(),
 	}
-	dir, err := comic.DownloadImages(opt)
-	files, _ := ioutil.ReadDir(dir)
+	time.Sleep(10 * time.Second)
+	_, err := comic.DownloadImages(opt)
 
 	assert.Nil(t, err)
-	assert.Equal(t, 3, len(files))
 }

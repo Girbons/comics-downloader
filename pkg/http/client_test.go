@@ -9,7 +9,8 @@ import (
 func TestPrepareRequestMangakakalot(t *testing.T) {
 	cc := NewComicClient()
 	link := "http://mangakakalot.com"
-	req, err := cc.PrepareRequest(link)
+	source := "mangakakalot.com"
+	req, err := cc.PrepareRequest(link, source)
 
 	assert.Equal(t, req.Header["Referer"], []string{link})
 	assert.Nil(t, err)
@@ -18,7 +19,7 @@ func TestPrepareRequestMangakakalot(t *testing.T) {
 func TestPrepareRequest(t *testing.T) {
 	cc := NewComicClient()
 	link := "http://foo.com"
-	req, err := cc.PrepareRequest(link)
+	req, err := cc.PrepareRequest(link, "foo")
 
 	assert.Equal(t, len(req.Header["Referer"]), 0)
 	assert.Nil(t, err)

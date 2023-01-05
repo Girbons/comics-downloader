@@ -1,7 +1,17 @@
+[Changes][v0.33.5]
+<a name="v0.33.5"></a>
+
+# [0.33.5 (v0.33.5)](https://github.com/Girbons/comics-downloader/releases/tag/v0.33.5) - 5 Jan 2023
+
+# Fixes
+
+- #123: Fixed readcominline.li
+- Added new domain `chapmanganato` for `manganato`
+
 [Changes][v0.33.4]
 <a name="v0.33.4"></a>
 
-# [0.33.4 (v0.33.4)](https://github.com/Girbons/comics-downloader/releases/tag/v0.33.3) - 3 Jan 2023
+# [0.33.4 (v0.33.4)](https://github.com/Girbons/comics-downloader/releases/tag/v0.33.4) - 3 Jan 2023
 
 # Fixes
 

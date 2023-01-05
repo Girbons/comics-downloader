@@ -277,7 +277,7 @@ func (comic *Comic) DownloadImages(options *config.Options) (string, error) {
 
 		g.Go(func() error {
 			defer sem.Release(1)
-			rsp, err := options.Client.Get(link)
+			rsp, err := options.Client.Get(link, comic.Source)
 			if err != nil {
 				return err
 			}

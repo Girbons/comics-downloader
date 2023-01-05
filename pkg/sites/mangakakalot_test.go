@@ -1,8 +1,9 @@
 package sites
 
 import (
-	"github.com/Girbons/comics-downloader/pkg/core"
 	"testing"
+
+	"github.com/Girbons/comics-downloader/pkg/core"
 
 	"github.com/Girbons/comics-downloader/internal/logger"
 	"github.com/Girbons/comics-downloader/pkg/config"
@@ -54,5 +55,5 @@ func TestMangaKakalotRetrieveIssueLinks(t *testing.T) {
 	links, err := mk.RetrieveIssueLinks()
 
 	assert.Nil(t, err)
-	assert.Equal(t, 26, len(links))
+	assert.Equal(t, 46, len(links))
 }

@@ -1,11 +1,12 @@
 package sites
 
 import (
+	"strings"
+
 	"github.com/Girbons/comics-downloader/pkg/core"
 	"github.com/Girbons/comics-downloader/pkg/util"
 	"github.com/anaskhan96/soup"
 	"github.com/dlclark/regexp2"
-	"strings"
 )
 
 // mangakakalot.com and manganato.com functions
@@ -41,7 +42,7 @@ func MangaKakalotGetInfo(domain string, url string) (string, string) {
 	} else {
 		fillPart = parts[3]
 	}
-	exp := regexp2.MustCompile("(?<=https://(mangakakalot|manganato|readmanganato).com/"+fillPart+"/chapter(_|-))[0-9]{1,3}(_end)?(\\.[0-9])?", 0)
+	exp := regexp2.MustCompile("(?<=https://(mangakakalot|manganato|readmanganato|chapmanganato).com/"+fillPart+"/chapter(_|-))[0-9]{1,3}(_end)?(\\.[0-9])?", 0)
 	match, err := exp.FindStringMatch(url)
 	if match == nil || err != nil {
 		return "", ""

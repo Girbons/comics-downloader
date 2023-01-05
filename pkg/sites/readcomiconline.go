@@ -1,6 +1,7 @@
 package sites
 
 import (
+	"encoding/base64"
 	"fmt"
 	"regexp"
 	"strings"
@@ -25,6 +26,38 @@ func NewReadComiconline(options *config.Options) *ReadComicOnline {
 	}
 }
 
+func deobfuscateUrl(imageLink string) (string, error) {
+	imageLink = strings.Replace(imageLink, "_x236", "d", -1)
+	imageLink = strings.Replace(imageLink, "_x945", "g", -1)
+
+	var quality string
+
+	if strings.Contains(imageLink, "=s0?") {
+		imageLink = imageLink[:strings.Index(imageLink, "=s0?")]
+		quality = "=s0"
+
+	} else {
+		imageLink = imageLink[:strings.Index(imageLink, "=s1600?")]
+		quality = "=s1600"
+	}
+
+	imageLink = imageLink[4:22] + imageLink[25:]
+	imageLink = imageLink[0:len(imageLink)-6] + imageLink[len(imageLink)-2:]
+
+	sd, err := base64.StdEncoding.DecodeString(imageLink)
+	if err != nil {
+		return "", err
+	}
+
+	imageLink = string(sd)
+	imageLink = imageLink[0:13] + imageLink[17:]
+	imageLink = imageLink[0 : len(imageLink)-2]
+	imageLink = imageLink + quality
+
+	link := "https://2.bp.blogspot.com/" + imageLink
+	return link, nil
+}
+
 func (c *ReadComicOnline) retrieveImageLinks(comic *core.Comic) ([]string, error) {
 	var links []string
 
@@ -35,13 +68,19 @@ func (c *ReadComicOnline) retrieveImageLinks(comic *core.Comic) ([]string, error
 		return nil, err
 	}
 
-	re := regexp.MustCompile(`push\(\"(.*?)\"\)`)
+	re := regexp.MustCompile(`push\(\'(.*?)\'\)`)
 	match := re.FindAllStringSubmatch(response, -1)
 
 	for i := range match {
 		url := match[i][1]
-		if util.IsURLValid(url) {
-			links = append(links, url)
+
+		clearUrl, err := deobfuscateUrl(url)
+		if err != nil {
+			return links, err
+		}
+
+		if util.IsURLValid(clearUrl) {
+			links = append(links, clearUrl)
 		}
 	}
 

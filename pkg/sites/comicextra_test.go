@@ -11,11 +11,11 @@ import (
 
 func TestComicExtraSetup(t *testing.T) {
 	comic := new(core.Comic)
-	comic.URLSource = "https://www.comicextra.com/batman-2016/chapter-58/full"
+	comic.URLSource = "https://ww1.comicextra.com/injustice-gods-among-us-year-four/issue-24/full"
 
 	opt :=
 		&config.Options{
-			URL:    "https://www.comicextra.com/batman-2016/chapter-58/full",
+			URL:    "https://ww1.comicextra.com/injustice-gods-among-us-year-four/issue-24/full",
 			All:    false,
 			Last:   false,
 			Debug:  false,
@@ -26,13 +26,13 @@ func TestComicExtraSetup(t *testing.T) {
 	err := comicextra.Initialize(comic)
 
 	assert.Nil(t, err)
-	assert.Equal(t, 24, len(comic.Links))
+	assert.Equal(t, 25, len(comic.Links))
 }
 
 func TestComicExtraGetInfo(t *testing.T) {
 	opt :=
 		&config.Options{
-			URL:    "https://www.comicextra.com/comic/100-bullets",
+			URL:    "https://ww1.comicextra.com/injustice-gods-among-us-year-four/issue-24/full",
 			All:    false,
 			Last:   false,
 			Debug:  false,
@@ -40,16 +40,16 @@ func TestComicExtraGetInfo(t *testing.T) {
 		}
 
 	comicextra := NewComicextra(opt)
-	name, issueNumber := comicextra.GetInfo("https://www.comicextra.com/batman-2016/chapter-58/full")
+	name, issueNumber := comicextra.GetInfo("https://ww1.comicextra.com/injustice-gods-among-us-year-four/issue-24/full")
 
-	assert.Equal(t, "batman-2016", name)
-	assert.Equal(t, "chapter-58", issueNumber)
+	assert.Equal(t, "injustice-gods-among-us-year-four", name)
+	assert.Equal(t, "issue-24", issueNumber)
 }
 
 func TestComicextraRetrieveIssueLinks(t *testing.T) {
 	opt :=
 		&config.Options{
-			URL:    "https://www.comicextra.com/comic/100-bullets",
+			URL:    "https://ww1.comicextra.com/comic/injustice-gods-among-us-year-four",
 			All:    false,
 			Last:   false,
 			Debug:  false,
@@ -60,13 +60,13 @@ func TestComicextraRetrieveIssueLinks(t *testing.T) {
 	issues, err := comicextra.RetrieveIssueLinks()
 
 	assert.Nil(t, err)
-	assert.Equal(t, 100, len(issues))
+	assert.Equal(t, 25, len(issues))
 }
 
 func TestComicextraRetrieveIssueLinksURLWithPage(t *testing.T) {
 	opt :=
 		&config.Options{
-			URL:    "https://www.comicextra.com/comic/100-bullets/2",
+			URL:    "https://ww1.comicextra.com/comic/injustice-gods-among-us-year-four",
 			All:    false,
 			Last:   false,
 			Debug:  false,
@@ -77,13 +77,13 @@ func TestComicextraRetrieveIssueLinksURLWithPage(t *testing.T) {
 	issues, err := comicextra.RetrieveIssueLinks()
 
 	assert.Nil(t, err)
-	assert.Equal(t, 100, len(issues))
+	assert.Equal(t, 25, len(issues))
 }
 
 func TestComicextraRetrieveIssueLinksInASinglePage(t *testing.T) {
 	opt :=
 		&config.Options{
-			URL:    "https://www.comicextra.com/comic/captain-marvel-2016",
+			URL:    "https://ww1.comicextra.com/injustice-gods-among-us-year-four/issue-24/full",
 			All:    false,
 			Last:   false,
 			Debug:  false,
@@ -94,13 +94,13 @@ func TestComicextraRetrieveIssueLinksInASinglePage(t *testing.T) {
 	issues, err := comicextra.RetrieveIssueLinks()
 
 	assert.Nil(t, err)
-	assert.Equal(t, 10, len(issues))
+	assert.Equal(t, 1, len(issues))
 }
 
 func TestComicextraRetrieveIssueLinksLastChapter(t *testing.T) {
 	opt :=
 		&config.Options{
-			URL:    "https://www.comicextra.com/comic/100-bullets",
+			URL:    "https://ww1.comicextra.com/injustice-gods-among-us-year-four/issue-24/full",
 			All:    false,
 			Last:   true,
 			Debug:  false,
@@ -116,16 +116,16 @@ func TestComicextraRetrieveIssueLinksLastChapter(t *testing.T) {
 
 func TestComicExtraRetrieveLastIssueLink(t *testing.T) {
 	comicextra := new(Comicextra)
-	issue, err := comicextra.retrieveLastIssue("https://www.comicextra.com/comic/100-bullets")
+	issue, err := comicextra.retrieveLastIssue("https://ww1.comicextra.com/injustice-gods-among-us-year-four/issue-24/full")
 
 	assert.Nil(t, err)
-	assert.Equal(t, "https://www.comicextra.com/100-bullets/chapter-100", issue)
+	assert.Equal(t, "https://ww1.comicextra.com/injustice-gods-among-us-year-four/issue-annual-1/full", issue)
 }
 
 func TestComicExtraRetrieveLastIssueLinkNotDetail(t *testing.T) {
 	comicextra := new(Comicextra)
-	issue, err := comicextra.retrieveLastIssue("https://www.comicextra.com/comic/100-bullets")
+	issue, err := comicextra.retrieveLastIssue("https://ww1.comicextra.com/injustice-gods-among-us-year-four/issue-24/full")
 
 	assert.Nil(t, err)
-	assert.Equal(t, "https://www.comicextra.com/100-bullets/chapter-100", issue)
+	assert.Equal(t, "https://ww1.comicextra.com/injustice-gods-among-us-year-four/issue-annual-1/full", issue)
 }

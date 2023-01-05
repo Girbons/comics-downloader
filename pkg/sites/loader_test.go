@@ -99,13 +99,13 @@ func TestCustomComicName(t *testing.T) {
 //}
 
 func TestSiteLoaderComicExtra(t *testing.T) {
-	url := "https://www.comicextra.com/daredevil/chapter-600/full"
+	url := "https://ww1.comicextra.com/injustice-gods-among-us-year-four/issue-24/full"
 	outputFolder := filepath.Dir(os.Args[0])
 	options := &config.Options{
 		All:          false,
 		Last:         false,
 		ImagesOnly:   false,
-		Source:       "www.comicextra.com",
+		Source:       "ww1.comicextra.com",
 		URL:          url,
 		Format:       "pdf",
 		ImagesFormat: "png",
@@ -118,11 +118,11 @@ func TestSiteLoaderComicExtra(t *testing.T) {
 
 	comic := collection[0]
 
-	assert.Equal(t, "www.comicextra.com", comic.Source)
+	assert.Equal(t, "ww1.comicextra.com", comic.Source)
 	assert.Equal(t, url, comic.URLSource)
-	assert.Equal(t, "daredevil", comic.Name)
-	assert.Equal(t, "chapter-600", comic.IssueNumber)
-	assert.Equal(t, 43, len(comic.Links))
+	assert.Equal(t, "injustice-gods-among-us-year-four", comic.Name)
+	assert.Equal(t, "issue-24", comic.IssueNumber)
+	assert.Equal(t, 25, len(comic.Links))
 }
 
 func TestLoaderUnknownSource(t *testing.T) {
@@ -149,13 +149,13 @@ func TestLoaderUnknownSource(t *testing.T) {
 }
 
 func TestIssuesRange(t *testing.T) {
-	url := "https://www.comicextra.com/daredevil/chapter-600/full"
+	url := "https://ww1.comicextra.com/comic/injustice-gods-among-us-year-four"
 	outputFolder := filepath.Dir(os.Args[0])
 	options := &config.Options{
 		All:          true,
 		Last:         false,
 		ImagesOnly:   false,
-		Source:       "www.comicextra.com",
+		Source:       "ww1.comicextra.com",
 		URL:          url,
 		Format:       "pdf",
 		ImagesFormat: "png",
@@ -172,9 +172,9 @@ func TestIssuesRange(t *testing.T) {
 		issues = append(issues, c.IssueNumber)
 	}
 
-	assert.Contains(t, issues, "chapter-5")
-	assert.Contains(t, issues, "chapter-6")
-	assert.Contains(t, issues, "chapter-7")
+	assert.Contains(t, issues, "issue-5")
+	assert.Contains(t, issues, "issue-6")
+	assert.Contains(t, issues, "issue-7")
 }
 
 func TestFloatIssuesRange(t *testing.T) {

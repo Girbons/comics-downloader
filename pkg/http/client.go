@@ -2,6 +2,7 @@ package http
 
 import (
 	"net/http"
+	"strings"
 )
 
 // ComicClient is the custom client.
@@ -17,16 +18,19 @@ func NewComicClient() *ComicClient {
 }
 
 // PrepareRequest setup a `GET` request with customs headers.
-func (c *ComicClient) PrepareRequest(link string) (*http.Request, error) {
+func (c *ComicClient) PrepareRequest(link, hostname string) (*http.Request, error) {
 	req, err := http.NewRequest("GET", link, nil)
-	req.Header.Add("Referer", link)
+
+	if strings.Contains(hostname, "manganato") || strings.Contains(hostname, "mangakakalot") {
+		req.Header.Add("Referer", link)
+	}
 
 	return req, err
 }
 
 // GET Performs a Get request..
-func (c *ComicClient) Get(link string) (*http.Response, error) {
-	request, err := c.PrepareRequest(link)
+func (c *ComicClient) Get(link, hostname string) (*http.Response, error) {
+	request, err := c.PrepareRequest(link, hostname)
 
 	if err != nil {
 		return nil, err

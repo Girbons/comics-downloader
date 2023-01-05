@@ -108,7 +108,7 @@ func LoadComicFromSource(options *config.Options) ([]*core.Comic, error) {
 		base = NewReadallcomics(options)
 	case "mangakakalot.com":
 		base = NewMangaKakalot(options)
-	case "manganato.com", "readmanganato.com":
+	case "manganato.com", "readmanganato.com", "chapmanganato.com":
 		base = NewManganato(options)
 	default:
 		err = fmt.Errorf("source unknown")

@@ -12,7 +12,7 @@ import (
 
 func TestManganatoGetInfo(t *testing.T) {
 	opt := &config.Options{
-		URL:    "https://manganato.com/manga-ny955333",
+		URL:    "https://chapmanganato.com/manga-ng952689",
 		All:    false,
 		Last:   false,
 		Debug:  false,
@@ -20,20 +20,14 @@ func TestManganatoGetInfo(t *testing.T) {
 	}
 	mg := NewManganato(opt)
 	// readmanganato.com
-	name, issueNumber := mg.GetInfo("https://manganato.com/manga-ny955333/chapter-36")
-	assert.Equal(t, "To The Past", name)
-	assert.Equal(t, "36", issueNumber)
-
-	// manganato.com
-	opt.URL = "https://manganato.com/manga-gd983838"
-	name, issueNumber = mg.GetInfo("https://manganato.com/manga-gd983838/chapter-76")
-	assert.Equal(t, "Voice And Written Words", name)
-	assert.Equal(t, "76", issueNumber)
+	name, issueNumber := mg.GetInfo("https://chapmanganato.com/manga-ng952689/chapter-700.5")
+	assert.Equal(t, "Uzumaki Naruto", name)
+	assert.Equal(t, "700.5", issueNumber)
 }
 
 func TestManganatoSetup(t *testing.T) {
 	opt := &config.Options{
-		URL:    "https://manganato.com/manga-ny955333",
+		URL:    "https://chapmanganato.com/manga-ng952689",
 		All:    false,
 		Last:   false,
 		Debug:  false,
@@ -41,17 +35,17 @@ func TestManganatoSetup(t *testing.T) {
 	}
 	mk := NewManganato(opt)
 	comic := new(core.Comic)
-	comic.URLSource = "https://manganato.com/manga-ny955333/chapter-36"
+	comic.URLSource = "https://chapmanganato.com/manga-ng952689/chapter-700.5"
 
 	err := mk.Initialize(comic)
 
 	assert.Nil(t, err)
-	assert.Equal(t, 20, len(comic.Links))
+	assert.Equal(t, 18, len(comic.Links))
 }
 
 func TestManganatoRetrieveIssueLinks(t *testing.T) {
 	opt := &config.Options{
-		URL:    "https://manganato.com/manga-ny955333",
+		URL:    "https://chapmanganato.com/manga-ng952689",
 		All:    false,
 		Last:   false,
 		Debug:  false,
@@ -61,5 +55,5 @@ func TestManganatoRetrieveIssueLinks(t *testing.T) {
 	links, err := mk.RetrieveIssueLinks()
 
 	assert.Nil(t, err)
-	assert.Equal(t, 58, len(links))
+	assert.Equal(t, 748, len(links))
 }
