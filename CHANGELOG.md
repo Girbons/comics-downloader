@@ -1,3 +1,11 @@
+<a name="v0.33.6"></a>
+
+# [0.33.6 (v0.33.6)](https://github.com/Girbons/comics-downloader/releases/tag/v0.33.5) - 3 Jul 2023
+
+# Fixes
+
+- #133: Fixed comicextra url
+
 [Changes][v0.33.5]
 <a name="v0.33.5"></a>
 
