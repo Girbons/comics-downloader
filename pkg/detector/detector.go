@@ -14,6 +14,7 @@ var SupportedSites = map[string]map[string]bool{
 	"readcomicsonline.ru": {"isDisabled": false},
 	"www.comicextra.com":  {"isDisabled": false},
 	"www.comicextra.net":  {"isDisabled": false},
+  "comicextra.net": {"isDisabled": false},
 	"ww1.comicextra.com":  {"isDisabled": false},
 	"www.mangahere.cc":    {"isDisabled": false},
 	"www.mangatown.com":   {"isDisabled": false},

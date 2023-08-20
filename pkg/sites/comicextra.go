@@ -2,6 +2,7 @@ package sites
 
 import (
 	"fmt"
+  "sort"
 	"regexp"
 	"strings"
 
@@ -64,16 +65,21 @@ func (c *Comicextra) retrieveLastIssue(url string) (string, error) {
 	doc := soup.HTMLParse(response)
 
 	issues := doc.FindAll("option")
-	if len(issues) != 0 {
-		lastIssue = issues[len(issues)-1].Attrs()["value"]
 
-		return lastIssue, nil
-	}
+  var validLinks []string
 
-	issues = doc.Find("tbody", "id", "list").FindAll("a")
-	lastIssue = issues[0].Attrs()["href"]
+  for _, v := range issues {
+    tmpUrl := v.Attrs()["value"]
+    if util.IsURLValid(tmpUrl) {
+      validLinks = append(validLinks, tmpUrl)
+    }
+  }
 
-	return lastIssue, nil
+  sort.Strings(validLinks)
+
+	lastIssue = validLinks[len(validLinks)-1]
+
+  return lastIssue, nil
 }
 
 // RetrieveIssueLinks gets a slice of urls for all issues in a comic
@@ -86,7 +92,7 @@ func (c *Comicextra) RetrieveIssueLinks() ([]string, error) {
 	}
 
 	if c.options.All && c.isSingleIssue(url) {
-		url = "https://www.comicextra.com/comic/" + util.TrimAndSplitURL(url)[3]
+    url = "https://" + c.options.Source + "/comic" + util.TrimAndSplitURL(url)[3]
 	} else if c.isSingleIssue(url) {
 		return []string{url}, nil
 	}
@@ -160,8 +166,8 @@ func (c *Comicextra) RetrieveIssueLinks() ([]string, error) {
 // GetInfo extracts the basic info from the given url.
 func (c *Comicextra) GetInfo(url string) (string, string) {
 	parts := util.TrimAndSplitURL(url)
-	name := parts[3]
-	issueNumber := parts[4]
+	name := parts[4]
+	issueNumber := parts[5]
 
 	return name, issueNumber
 }

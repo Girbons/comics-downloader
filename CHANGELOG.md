@@ -1,3 +1,20 @@
+<a name="v0.33.7"></a>
+
+# Fixes
+
+- #131: added support to new comicextra domain, fixed error that was overwriting issues
+- #134: fixed error for readcomiconline image deobfuscateUrl
+
+## Dev
+
+- updated dependencies
+
+# [0.33.7 (v0.33.7)](https://github.com/Girbons/comics-downloader/releases/tag/v0.33.5) - 20 Aug 2023
+
+# Fixes
+
+- #131: Fixed comicextra url
+
 <a name="v0.33.6"></a>
 
 # [0.33.6 (v0.33.6)](https://github.com/Girbons/comics-downloader/releases/tag/v0.33.5) - 3 Jul 2023

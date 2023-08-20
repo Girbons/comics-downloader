@@ -30,12 +30,15 @@ func deobfuscateUrl(imageLink string) (string, error) {
 	imageLink = strings.Replace(imageLink, "_x236", "d", -1)
 	imageLink = strings.Replace(imageLink, "_x945", "g", -1)
 
+  if strings.HasPrefix(imageLink, "https://2.bp.blogspot.com") {
+    return imageLink, nil
+  }
+
 	var quality string
 
 	if strings.Contains(imageLink, "=s0?") {
 		imageLink = imageLink[:strings.Index(imageLink, "=s0?")]
 		quality = "=s0"
-
 	} else {
 		imageLink = imageLink[:strings.Index(imageLink, "=s1600?")]
 		quality = "=s1600"

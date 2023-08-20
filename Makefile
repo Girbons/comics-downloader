@@ -2,14 +2,20 @@ help: # this command
 	# [generating help from tasks header]
 	@egrep '^[A-Za-z0-9_-]+:' Makefile
 
-osx-build: # Creates Mac OSX
-	@GOOS=darwin go build -o build/comics-downloader-osx ./cmd/downloader
+osx-build-arm: # Creates Mac OSX
+	@GOOS=darwin go build -o build/comics-downloader-osx-arm ./cmd/downloader
+
+osx-build-x86-64: # Creates Mac OSX
+	@GOOS=darwin GOARCH=amd64 go build -o build/comics-downloader-osx-x86-64 ./cmd/downloader
 
 windows-build: # Creates Windows
 	@GOOS=windows go build -o build/comics-downloader.exe ./cmd/downloader
 
 linux-build: # Creates Linux
 	@GOOS=linux go build -o build/comics-downloader ./cmd/downloader
+
+linux-386-build:
+	@GOOS=linux GOARCH=386 go build -o build/comics-downloader-linux-386 ./cmd/downloader
 
 linux-arm-build: # Creates Linux ARM
 	@GOOS=linux GOARCH=arm go build -o build/comics-downloader-linux-arm ./cmd/downloader
@@ -27,14 +33,16 @@ linux-gui-build: # Creates Linux Gui executable
 	@fyne-cross linux -output comics-downloader-gui ./cmd/gui
 
 builds: # Creates executables for OSX/Windows/Linux
-	@make osx-build
-	@make windows-build
-	@make linux-build
+	@make linux-386-build
 	@make linux-arm-build
 	@make linux-arm64-build
-	@make osx-gui-build
-	@make windows-gui-build
+	@make linux-build
 	@make linux-gui-build
+	@make osx-build-arm
+	@make osx-build-x86-64
+	@make osx-gui-build
+	@make windows-build
+	@make windows-gui-build
 
 remove-builds: # Remove executables
 	@rm -rf build/

@@ -99,13 +99,13 @@ func TestCustomComicName(t *testing.T) {
 //}
 
 func TestSiteLoaderComicExtra(t *testing.T) {
-	url := "https://ww1.comicextra.com/injustice-gods-among-us-year-four/issue-24/full"
+  url := "https://comicextra.net/comic/batman-unseen/issue-5/full"
 	outputFolder := filepath.Dir(os.Args[0])
 	options := &config.Options{
 		All:          false,
 		Last:         false,
 		ImagesOnly:   false,
-		Source:       "ww1.comicextra.com",
+		Source:       "comicextra.net",
 		URL:          url,
 		Format:       "pdf",
 		ImagesFormat: "png",
@@ -114,15 +114,15 @@ func TestSiteLoaderComicExtra(t *testing.T) {
 	collection, err := LoadComicFromSource(options)
 
 	assert.Nil(t, err)
-	assert.Equal(t, len(collection), 1)
+	assert.Equal(t, 5, len(collection))
 
 	comic := collection[0]
 
-	assert.Equal(t, "ww1.comicextra.com", comic.Source)
+	assert.Equal(t, "comicextra.net", comic.Source)
 	assert.Equal(t, url, comic.URLSource)
-	assert.Equal(t, "injustice-gods-among-us-year-four", comic.Name)
-	assert.Equal(t, "issue-24", comic.IssueNumber)
-	assert.Equal(t, 25, len(comic.Links))
+	assert.Equal(t, "batman-unseen", comic.Name)
+	assert.Equal(t, "issue-5", comic.IssueNumber)
+	assert.Equal(t, 23, len(comic.Links))
 }
 
 func TestLoaderUnknownSource(t *testing.T) {
@@ -149,18 +149,18 @@ func TestLoaderUnknownSource(t *testing.T) {
 }
 
 func TestIssuesRange(t *testing.T) {
-	url := "https://ww1.comicextra.com/comic/injustice-gods-among-us-year-four"
+  url := "https://comicextra.net/comic/batman-unseen/issue-5/full"
 	outputFolder := filepath.Dir(os.Args[0])
 	options := &config.Options{
 		All:          true,
 		Last:         false,
 		ImagesOnly:   false,
-		Source:       "ww1.comicextra.com",
+		Source:       "comicextra.net",
 		URL:          url,
 		Format:       "pdf",
 		ImagesFormat: "png",
 		OutputFolder: outputFolder,
-		IssuesRange:  "5-7",
+		IssuesRange:  "1-3",
 	}
 	collection, err := LoadComicFromSource(options)
 
@@ -172,9 +172,9 @@ func TestIssuesRange(t *testing.T) {
 		issues = append(issues, c.IssueNumber)
 	}
 
-	assert.Contains(t, issues, "issue-5")
-	assert.Contains(t, issues, "issue-6")
-	assert.Contains(t, issues, "issue-7")
+	assert.Contains(t, issues, "issue-1")
+	assert.Contains(t, issues, "issue-2")
+	assert.Contains(t, issues, "issue-3")
 }
 
 func TestFloatIssuesRange(t *testing.T) {

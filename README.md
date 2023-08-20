@@ -9,7 +9,7 @@
 
 ## Supported Sites
 
-- https://www.comicextra.com/
+- https://comicextra.net/
 - https://readcomiconline.li/
 - https://www.mangareader.tv/
 - https://www.mangatown.com/
@@ -23,17 +23,19 @@
 
 Download the latest release:
 
-- [Linux](https://github.com/Girbons/comics-downloader/releases/download/v0.33.6/comics-downloader)
-- [Mac OSX](https://github.com/Girbons/comics-downloader/releases/download/v0.33.6/comics-downloader-osx)
-- [Windows](https://github.com/Girbons/comics-downloader/releases/download/v0.33.6/comics-downloader.exe)
-- [Linux ARM](https://github.com/Girbons/comics-downloader/releases/download/v0.33.6/comics-downloader-linux-arm)
-- [Linux ARM64](https://github.com/Girbons/comics-downloader/releases/download/v0.33.6/comics-downloader-linux-arm64)
+- [Linux](https://github.com/Girbons/comics-downloader/releases/download/v0.33.7/comics-downloader)
+- [Linux (386)](https://github.com/Girbons/comics-downloader/releases/download/v0.33.7/comics-downloader-linux-386)
+- [Mac OSX (Arm64)](https://github.com/Girbons/comics-downloader/releases/download/v0.33.7/comics-downloader-osx-arm)
+- [Mac OSX (x86-64)](https://github.com/Girbons/comics-downloader/releases/download/v0.33.7/comics-downloader-osx-x86-64)
+- [Windows](https://github.com/Girbons/comics-downloader/releases/download/v0.33.7/comics-downloader.exe)
+- [Linux ARM](https://github.com/Girbons/comics-downloader/releases/download/v0.33.7/comics-downloader-linux-arm)
+- [Linux ARM64](https://github.com/Girbons/comics-downloader/releases/download/v0.33.7/comics-downloader-linux-arm64)
 
 Download the latest GUI release:
 
-- [Linux](https://github.com/Girbons/comics-downloader/releases/download/v0.33.6/comics-downloader-gui)
-- [Mac OSX](https://github.com/Girbons/comics-downloader/releases/download/v0.33.6/comics-downloader-gui-osx)
-- [Windows](https://github.com/Girbons/comics-downloader/releases/download/v0.33.6/comics-downloader-gui-windows.exe)
+- [Linux](https://github.com/Girbons/comics-downloader/releases/download/v0.33.7/comics-downloader-gui)
+- [Mac OSX](https://github.com/Girbons/comics-downloader/releases/download/v0.33.7/comics-downloader-gui-osx)
+- [Windows](https://github.com/Girbons/comics-downloader/releases/download/v0.33.7/comics-downloader-gui-windows.exe)
 
 ## Usage
 
