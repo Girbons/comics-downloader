@@ -2,8 +2,8 @@ package sites
 
 import (
 	"fmt"
-  "sort"
 	"regexp"
+	"sort"
 	"strings"
 
 	"github.com/Girbons/comics-downloader/pkg/config"
@@ -66,20 +66,20 @@ func (c *Comicextra) retrieveLastIssue(url string) (string, error) {
 
 	issues := doc.FindAll("option")
 
-  var validLinks []string
+	var validLinks []string
 
-  for _, v := range issues {
-    tmpUrl := v.Attrs()["value"]
-    if util.IsURLValid(tmpUrl) {
-      validLinks = append(validLinks, tmpUrl)
-    }
-  }
+	for _, v := range issues {
+		tmpUrl := v.Attrs()["value"]
+		if util.IsURLValid(tmpUrl) {
+			validLinks = append(validLinks, tmpUrl)
+		}
+	}
 
-  sort.Strings(validLinks)
+	sort.Strings(validLinks)
 
 	lastIssue = validLinks[len(validLinks)-1]
 
-  return lastIssue, nil
+	return lastIssue, nil
 }
 
 // RetrieveIssueLinks gets a slice of urls for all issues in a comic
@@ -92,7 +92,7 @@ func (c *Comicextra) RetrieveIssueLinks() ([]string, error) {
 	}
 
 	if c.options.All && c.isSingleIssue(url) {
-    url = "https://" + c.options.Source + "/comic" + util.TrimAndSplitURL(url)[3]
+		url = "https://" + c.options.Source + "/comic" + util.TrimAndSplitURL(url)[3]
 	} else if c.isSingleIssue(url) {
 		return []string{url}, nil
 	}

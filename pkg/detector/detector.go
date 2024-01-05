@@ -1,27 +1,22 @@
 package detector
 
 import (
+	"strings"
+
 	"github.com/Girbons/comics-downloader/pkg/util"
 	log "github.com/sirupsen/logrus"
 )
 
 // SupportedSites are the supported sites.
 var SupportedSites = map[string]map[string]bool{
-	"mangadex.org":        {"isDisabled": false},
-	"mangareader.tv":      {"isDisabled": true},
-	"readallcomics.com":   {"isDisabled": false},
-	"readcomiconline.li":  {"isDisabled": false},
-	"readcomicsonline.ru": {"isDisabled": false},
-	"www.comicextra.com":  {"isDisabled": false},
-	"www.comicextra.net":  {"isDisabled": false},
-  "comicextra.net": {"isDisabled": false},
-	"ww1.comicextra.com":  {"isDisabled": false},
-	"www.mangahere.cc":    {"isDisabled": false},
-	"www.mangatown.com":   {"isDisabled": false},
-	"mangakakalot.com":    {"isDisabled": false},
-	"manganato.com":       {"isDisabled": false},
-	"readmanganato.com":   {"isDisabled": false},
-	"chapmanganato.com":   {"isDisabled": false},
+	"comicextra":      {"isDisabled": false},
+	"mangadex":        {"isDisabled": false},
+	"mangareader":     {"isDisabled": true},
+	"mangakakalot":    {"isDisabled": false},
+	"manganato":       {"isDisabled": false},
+	"mangatown":       {"isDisabled": false},
+	"readallcomics":   {"isDisabled": false},
+	"readcomiconline": {"isDisabled": false},
 }
 
 // DetectComic will look for the url source to check if a source is supported.
@@ -39,7 +34,7 @@ func DetectComic(url string) (string, bool, bool) {
 	}
 
 	for k, v := range SupportedSites {
-		if k != source {
+		if !strings.Contains(source, k) {
 			continue
 		}
 

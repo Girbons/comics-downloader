@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
+	"strings"
 
 	"github.com/Girbons/comics-downloader/internal/flag/parser"
 	"github.com/Girbons/comics-downloader/pkg/config"
@@ -93,22 +94,22 @@ func LoadComicFromSource(options *config.Options) ([]*core.Comic, error) {
 		err        error
 	)
 
-	switch sourceUrl := options.Source; sourceUrl {
-	case "readcomiconline.li":
+	switch {
+	case strings.Contains(options.Source, "readcomiconline"):
 		base = NewReadComiconline(options)
-	case "ww1.comicextra.com", "www.comicextra.com", "www.comicextra.net", "comicextra.net":
+	case strings.Contains(options.Source, "comicextra"):
 		base = NewComicextra(options)
-	case "mangareader.tv":
+	case strings.Contains(options.Source, "mangareader"):
 		base = NewMangareader(options)
-	case "www.mangatown.com":
+	case strings.Contains(options.Source, "mangatown"):
 		base = NewMangatown(options)
-	case "mangadex.org":
+	case strings.Contains(options.Source, "mangadex"):
 		base = NewMangadex(options)
-	case "readallcomics.com":
+	case strings.Contains(options.Source, "readallcomics"):
 		base = NewReadallcomics(options)
-	case "mangakakalot.com":
+	case strings.Contains(options.Source, "mangakakalot"):
 		base = NewMangaKakalot(options)
-	case "manganato.com", "readmanganato.com", "chapmanganato.com":
+	case strings.Contains(options.Source, "manganato"):
 		base = NewManganato(options)
 	default:
 		err = fmt.Errorf("source unknown")

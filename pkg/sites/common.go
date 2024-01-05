@@ -19,13 +19,13 @@ func MangaKakalotGetInfo(domain string, url string) (string, string) {
 	}
 	doc := soup.HTMLParse(res)
 	f := doc.Find("div", "class", breadcrumbClassName(domain))
-	switch domain {
-	case "mangakakalot.com":
+	switch {
+	case strings.Contains(domain, "mangakakalot"):
 		f = f.Find("p")
 		items := f.FindAll("span", "itemprop", "itemListElement")
 		f = items[len(items)-1]
 		f = f.Find("a").Find("span")
-	case "manganato.com":
+	case strings.Contains(domain, "manganato"):
 		items := f.FindAll("a", "class", "a-h")
 		f = items[len(items)-1]
 	}
@@ -36,18 +36,7 @@ func MangaKakalotGetInfo(domain string, url string) (string, string) {
 	}
 	// parse number from url
 	parts := util.TrimAndSplitURL(url)
-	var fillPart string
-	if len(parts) == 6 {
-		fillPart = parts[3] + "/" + parts[4]
-	} else {
-		fillPart = parts[3]
-	}
-	exp := regexp2.MustCompile("(?<=https://(mangakakalot|manganato|readmanganato|chapmanganato).com/"+fillPart+"/chapter(_|-))[0-9]{1,3}(_end)?(\\.[0-9])?", 0)
-	match, err := exp.FindStringMatch(url)
-	if match == nil || err != nil {
-		return "", ""
-	}
-	issueNumber := match.String()
+	issueNumber := strings.Split(parts[len(parts)-1], "-")[1]
 	return name, issueNumber
 }
 
@@ -88,40 +77,40 @@ func MangaKakalotRetrieveIssueLinks(domain string, url string) ([]string, error)
 // mangakakalot.com and (read)manganato.com domain-specific css class or element names
 
 func rowClassName(domain string) string {
-	switch domain {
-	case "mangakakalot.com":
+	switch {
+	case strings.Contains(domain, "mangakakalot"):
 		return "row"
-	case "manganato.com":
+	case strings.Contains(domain, "manganato"):
 		return "a-h"
 	}
 	return ""
 }
 
 func chapterListClassName(domain string) string {
-	switch domain {
-	case "mangakakalot.com":
+	switch {
+	case strings.Contains(domain, "mangakakalot"):
 		return "chapter-list"
-	case "manganato.com":
+	case strings.Contains(domain, "manganato"):
 		return "panel-story-chapter-list"
 	}
 	return ""
 }
 
 func chapterListItemElementName(domain string) string {
-	switch domain {
-	case "mangakakalot.com":
+	switch {
+	case strings.Contains(domain, "mangakakalot"):
 		return "div"
-	case "manganato.com":
+	case strings.Contains(domain, "manganato"):
 		return "li"
 	}
 	return ""
 }
 
 func breadcrumbClassName(domain string) string {
-	switch domain {
-	case "mangakakalot.com":
+	switch {
+	case strings.Contains(domain, "mangakakalot"):
 		return "breadcrumb"
-	case "manganato.com":
+	case strings.Contains(domain, "manganato"):
 		return "panel-breadcrumb"
 	}
 	return ""

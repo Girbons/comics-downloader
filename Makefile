@@ -8,8 +8,11 @@ osx-build-arm: # Creates Mac OSX
 osx-build-x86-64: # Creates Mac OSX
 	@GOOS=darwin GOARCH=amd64 go build -o build/comics-downloader-osx-x86-64 ./cmd/downloader
 
-windows-build: # Creates Windows
-	@GOOS=windows go build -o build/comics-downloader.exe ./cmd/downloader
+windows-x86-64-build: # Creates Windows
+	@GOOS=windows GOARCH=amd64 go build -o build/comics-downloader-win-x86-64.exe ./cmd/downloader
+
+windows-386-build: # Creates Windows
+	@GOOS=windows GOARCH=386 go build -o build/comics-downloader-win-386.exe ./cmd/downloader
 
 linux-build: # Creates Linux
 	@GOOS=linux go build -o build/comics-downloader ./cmd/downloader
@@ -37,11 +40,12 @@ builds: # Creates executables for OSX/Windows/Linux
 	@make linux-arm-build
 	@make linux-arm64-build
 	@make linux-build
-	@make linux-gui-build
 	@make osx-build-arm
 	@make osx-build-x86-64
+	@windows-x86-64-build
+	@windows-386-build
 	@make osx-gui-build
-	@make windows-build
+	@make linux-gui-build
 	@make windows-gui-build
 
 remove-builds: # Remove executables
