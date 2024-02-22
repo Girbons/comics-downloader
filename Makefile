@@ -14,8 +14,8 @@ windows-x86-64-build: # Creates Windows
 windows-386-build: # Creates Windows
 	@GOOS=windows GOARCH=386 go build -o build/comics-downloader-win-386.exe ./cmd/downloader
 
-linux-build: # Creates Linux
-	@GOOS=linux go build -o build/comics-downloader ./cmd/downloader
+linux-x86-64-build: # Creates Linux
+	@GOOS=linux GOARCH=amd64 go build -o build/comics-downloader-linux-x86-64 ./cmd/downloader
 
 linux-386-build:
 	@GOOS=linux GOARCH=386 go build -o build/comics-downloader-linux-386 ./cmd/downloader
@@ -39,11 +39,11 @@ builds: # Creates executables for OSX/Windows/Linux
 	@make linux-386-build
 	@make linux-arm-build
 	@make linux-arm64-build
-	@make linux-build
+	@make linux-x86-64-build
 	@make osx-build-arm
 	@make osx-build-x86-64
-	@windows-x86-64-build
-	@windows-386-build
+	@make windows-x86-64-build
+	@make windows-386-build
 	@make osx-gui-build
 	@make linux-gui-build
 	@make windows-gui-build

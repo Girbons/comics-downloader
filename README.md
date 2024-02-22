@@ -23,21 +23,21 @@
 
 Download the latest release:
 
-- [Linux](https://github.com/Girbons/comics-downloader/releases/download/v0.33.8/comics-downloader)
-- [Linux (386)](https://github.com/Girbons/comics-downloader/releases/download/v0.33.8/comics-downloader-linux-386)
-- [Mac OSX (Arm64)](https://github.com/Girbons/comics-downloader/releases/download/v0.33.8/comics-downloader-osx-arm)
-- [Mac OSX (x86-64)](https://github.com/Girbons/comics-downloader/releases/download/v0.33.8/comics-downloader-osx-x86-64)
-- [Windows](https://github.com/Girbons/comics-downloader/releases/download/v0.33.8/comics-downloader.exe)
-- [Windows (386)](https://github.com/Girbons/comics-downloader/releases/download/v0.33.8/comics-downloader-win-386.exe)
-- [Windows (x86-64)](https://github.com/Girbons/comics-downloader/releases/download/v0.33.8/comics-downloader-win-x86-64.exe)
-- [Linux ARM](https://github.com/Girbons/comics-downloader/releases/download/v0.33.8/comics-downloader-linux-arm)
-- [Linux ARM64](https://github.com/Girbons/comics-downloader/releases/download/v0.33.8/comics-downloader-linux-arm64)
+- [Linux (x86-64)](https://github.com/Girbons/comics-downloader/releases/download/v0.33.9/comics-downloader-linux-x86-64)
+- [Linux (386)](https://github.com/Girbons/comics-downloader/releases/download/v0.33.9/comics-downloader-linux-386)
+- [Mac OSX (Arm64)](https://github.com/Girbons/comics-downloader/releases/download/v0.33.9/comics-downloader-osx-arm)
+- [Mac OSX (x86-64)](https://github.com/Girbons/comics-downloader/releases/download/v0.33.9/comics-downloader-osx-x86-64)
+- [Windows](https://github.com/Girbons/comics-downloader/releases/download/v0.33.9/comics-downloader.exe)
+- [Windows (386)](https://github.com/Girbons/comics-downloader/releases/download/v0.33.9/comics-downloader-win-386.exe)
+- [Windows (x86-64)](https://github.com/Girbons/comics-downloader/releases/download/v0.33.9/comics-downloader-win-x86-64.exe)
+- [Linux ARM](https://github.com/Girbons/comics-downloader/releases/download/v0.33.9/comics-downloader-linux-arm)
+- [Linux ARM64](https://github.com/Girbons/comics-downloader/releases/download/v0.33.9/comics-downloader-linux-arm64)
 
 Download the latest GUI release:
 
-- [Linux](https://github.com/Girbons/comics-downloader/releases/download/v0.33.8/comics-downloader-gui)
-- [Mac OSX](https://github.com/Girbons/comics-downloader/releases/download/v0.33.8/comics-downloader-gui-osx)
-- [Windows](https://github.com/Girbons/comics-downloader/releases/download/v0.33.8/comics-downloader-gui-windows.exe)
+- [Linux](https://github.com/Girbons/comics-downloader/releases/download/v0.33.9/comics-downloader-gui)
+- [Mac OSX](https://github.com/Girbons/comics-downloader/releases/download/v0.33.9/comics-downloader-gui-osx)
+- [Windows](https://github.com/Girbons/comics-downloader/releases/download/v0.33.9/comics-downloader-gui-windows.exe)
 
 ## Usage
 

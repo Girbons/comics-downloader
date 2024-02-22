@@ -99,7 +99,7 @@ func TestCustomComicName(t *testing.T) {
 //}
 
 func TestSiteLoaderComicExtra(t *testing.T) {
-  url := "https://comicextra.net/comic/batman-unseen/issue-5/full"
+	url := "https://comicextra.me/batman-unseen/issue-5/full"
 	outputFolder := filepath.Dir(os.Args[0])
 	options := &config.Options{
 		All:          false,
@@ -114,7 +114,7 @@ func TestSiteLoaderComicExtra(t *testing.T) {
 	collection, err := LoadComicFromSource(options)
 
 	assert.Nil(t, err)
-	assert.Equal(t, 5, len(collection))
+	assert.Equal(t, 1, len(collection))
 
 	comic := collection[0]
 
@@ -149,7 +149,7 @@ func TestLoaderUnknownSource(t *testing.T) {
 }
 
 func TestIssuesRange(t *testing.T) {
-  url := "https://comicextra.net/comic/batman-unseen/issue-5/full"
+	url := "https://comicextra.net/batman-unseen/issue-5/full"
 	outputFolder := filepath.Dir(os.Args[0])
 	options := &config.Options{
 		All:          true,

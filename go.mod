@@ -1,6 +1,6 @@
 module github.com/Girbons/comics-downloader
 
-go 1.21.0
+go 1.22.0
 
 require (
 	fyne.io/fyne v1.4.3
@@ -13,7 +13,7 @@ require (
 	github.com/schollz/progressbar/v2 v2.15.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.8.4
-	golang.org/x/mod v0.14.0
+	golang.org/x/mod v0.15.0
 	golang.org/x/sync v0.6.0
 )
 
