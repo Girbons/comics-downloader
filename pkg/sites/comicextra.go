@@ -86,35 +86,37 @@ func (c *Comicextra) retrieveLastIssue(url string) (string, error) {
 func (c *Comicextra) RetrieveIssueLinks() ([]string, error) {
 	url := c.options.URL
 
+	splittedUrl := util.TrimAndSplitURL(url)
+
+	comicName := splittedUrl[3]
+
 	if c.options.Last {
 		issue, err := c.retrieveLastIssue(url)
 		return []string{issue}, err
 	}
 
+	// check if the user has submitted a generic url
+	if !strings.HasSuffix(url, "/issue") {
+		// enable `-all` flag in this case
+		c.options.Logger.Warning("URL does not contain a specific issue, `-all` flag will be automaticcaly enabled")
+		c.options.All = true
+	}
+
 	if c.options.All && c.isSingleIssue(url) {
-		url = "https://" + c.options.Source + "/comic" + util.TrimAndSplitURL(url)[3]
+		url = "https://" + c.options.Source + "/comic/" + comicName
 	} else if c.isSingleIssue(url) {
+
+		if !strings.HasSuffix(url, "/full") {
+			url = url + "/full"
+		}
+
 		return []string{url}, nil
 	}
 
-	// retrieve pages before
-
-	name := util.TrimAndSplitURL(url)[4]
 	var (
-		pages    []string
 		links    []string
 		elements []soup.Root
 	)
-
-	// do not handle pagination
-	// remove the page that comes within the url
-	parts := strings.Split(url, "/")
-	if len(parts) >= 6 {
-		url = parts[0] + "//" + parts[2] + "/" + parts[3] + "/" + parts[4]
-	}
-
-	// and start from 1
-	pages = append(pages, url+"/1")
 
 	response, err := soup.Get(url)
 	if err != nil {
@@ -123,36 +125,19 @@ func (c *Comicextra) RetrieveIssueLinks() ([]string, error) {
 
 	doc := soup.HTMLParse(response)
 
-	pagesDiv := doc.Find("div", "class", "general-nav")
-	if pagesDiv.Pointer != nil {
-		elements = pagesDiv.FindAll("a")
+	episodeList := doc.Find("div", "class", "episode-list")
+	if episodeList.Pointer != nil {
+		elements = episodeList.FindAll("a")
 	}
 
 	for _, element := range elements {
 		pageURL := element.Attrs()["href"]
-		if !strings.Contains(pageURL, "onclick") && !util.IsValueInSlice(pageURL, pages) {
-			pages = append(pages, pageURL)
-		}
-	}
-
-	re := regexp.MustCompile("<a[^>]+href=\"([^\">]+" + "/" + name + "/.+)\"")
-
-	for _, pageURL := range pages {
-		response, err := soup.Get(pageURL)
-		if err != nil {
-			return nil, err
-		}
-
-		match := re.FindAllStringSubmatch(response, -1)
-
-		for i := range match {
-			url := match[i][1]
-			if !strings.Contains(url, "onclick") && !util.IsValueInSlice(url, pages) {
-				url = url + "/full"
-				if util.IsURLValid(url) && !util.IsValueInSlice(url, links) {
-					links = append(links, url)
-				}
+		if !strings.Contains(pageURL, "onclick") && !util.IsValueInSlice(pageURL, links) {
+			if !strings.HasSuffix(pageURL, "/full") {
+				pageURL = pageURL + "/full"
 			}
+
+			links = append(links, pageURL)
 		}
 	}
 
@@ -166,8 +151,9 @@ func (c *Comicextra) RetrieveIssueLinks() ([]string, error) {
 // GetInfo extracts the basic info from the given url.
 func (c *Comicextra) GetInfo(url string) (string, string) {
 	parts := util.TrimAndSplitURL(url)
-	name := parts[4]
-	issueNumber := parts[5]
+
+	name := parts[3]
+	issueNumber := parts[4]
 
 	return name, issueNumber
 }

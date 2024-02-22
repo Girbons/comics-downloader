@@ -15,7 +15,7 @@ windows-386-build: # Creates Windows
 	@GOOS=windows GOARCH=386 go build -o build/comics-downloader-win-386.exe ./cmd/downloader
 
 linux-build: # Creates Linux
-	@GOOS=linux go build -o build/comics-downloader ./cmd/downloader
+	@GOOS=linux GOARDCH=amd64	go build -o build/comics-downloader-x86-64 ./cmd/downloader
 
 linux-386-build:
 	@GOOS=linux GOARCH=386 go build -o build/comics-downloader-linux-386 ./cmd/downloader
