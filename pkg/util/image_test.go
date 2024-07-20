@@ -11,5 +11,6 @@ func TestImageType(t *testing.T) {
 	assert.Equal(t, ImageType("image/jpeg"), "jpg")
 	assert.Equal(t, ImageType("image/png"), "png")
 	assert.Equal(t, ImageType("image/gif"), "gif")
+	assert.Equal(t, ImageType("image/webp"), "webp")
 	assert.Equal(t, ImageType("foo"), "unknown")
 }
