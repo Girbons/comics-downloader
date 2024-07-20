@@ -8,6 +8,8 @@ import (
 	"image/png"
 	"io"
 	"strings"
+	
+	"golang.org/x/image/webp"
 )
 
 // IMAGEREGEX to extract the image html tag
@@ -24,6 +26,8 @@ func ImageType(mimeStr string) (tp string) {
 		tp = "jpg"
 	case "image/gif", "gif":
 		tp = "gif"
+	case "image/webp", "webp":
+		tp = "webp"
 	case "img":
 		tp = "img"
 	default:
@@ -35,6 +39,29 @@ func ImageType(mimeStr string) (tp string) {
 // SaveImage saves an image from a given format
 func SaveImage(w io.Writer, content io.Reader, format string) error {
 	img, _, err := image.Decode(content)
+
+	if err != nil {
+		return err
+	}
+
+	switch strings.ToLower(format) {
+	case "img":
+		_, err = io.Copy(w, content)
+		return err
+	case "gif":
+		return gif.Encode(w, img, nil)
+	case "jpg", "jpeg":
+		return jpeg.Encode(w, img, &jpeg.Options{Quality: 100})
+	case "png":
+		pngEncoder := png.Encoder{CompressionLevel: png.BestCompression}
+		return pngEncoder.Encode(w, img)
+	default:
+		return errors.New("format not found")
+	}
+}
+
+func SaveImageWEBP(w io.Writer, content io.Reader, format string) error {
+	img, err := webp.Decode(content)
 
 	if err != nil {
 		return err
