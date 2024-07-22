@@ -294,7 +294,9 @@ func (comic *Comic) DownloadImages(options *config.Options) (string, error) {
 			}
 			defer imgFile.Close()
 
-			err = util.SaveImage(imgFile, rsp.Body, format)
+			isWebp := strings.HasSuffix(link, ".webp")
+			err = util.SaveImage(imgFile, rsp.Body, format, isWebp)
+			
 			if err != nil {
 				msgError := fmt.Sprintf("There was an error while downloading image number: %d - comic issue: %s", i, comic.IssueNumber)
 				options.Logger.Error(msgError)
