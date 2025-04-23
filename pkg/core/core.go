@@ -228,7 +228,7 @@ func (comic *Comic) makeCBRZ(options *config.Options) error {
 // DownloadImages will download the comic/manga images
 func (comic *Comic) DownloadImages(options *config.Options) (string, error) {
 	if len(comic.Links) == 0 {
-		return "", fmt.Errorf("Download failed, no links found for:", comic.URLSource)
+		return "", fmt.Errorf("Download failed, no links found for: %s", comic.URLSource)
 	}
 
 	var dir string
