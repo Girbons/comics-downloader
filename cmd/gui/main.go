@@ -5,13 +5,14 @@ import (
 
 	"fyne.io/fyne"
 	"fyne.io/fyne/app"
+	"fyne.io/fyne/container"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
 	downloader "github.com/Girbons/comics-downloader/cmd/app"
 	"github.com/Girbons/comics-downloader/internal/version"
 )
 
-func watchLogs(logSection *widget.ScrollContainer, box *widget.Box) {
+func watchLogs(logSection *container.Scroll, box *widget.Box) {
 	for {
 		box.Append(widget.NewLabel(<-downloader.Messages))
 		logSection.Resize(logSection.Size())
@@ -98,7 +99,7 @@ func main() {
 
 	clearLogsButton := widget.NewButton("Clear Logs", func() {
 		box.Children = make([]fyne.CanvasObject, 0)
-		widget.Refresh(box)
+		box.Refresh()
 	})
 
 	submitButton := widget.NewButton("Download", func() {
@@ -112,7 +113,8 @@ func main() {
 		submitButton,
 	)
 
-	logSection := widget.NewScrollContainer(box)
+	// logSection := widget.NewScrollContainer(box)
+	logSection := container.NewScroll(box)
 
 	go watchLogs(logSection, box)
 	go appStatus(submitButton)
