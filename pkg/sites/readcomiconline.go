@@ -27,8 +27,8 @@ func NewReadComiconline(options *config.Options) *ReadComicOnline {
 }
 
 func deobfuscateUrl(imageLink string) (string, error) {
-	imageLink = strings.Replace(imageLink, "_x236", "d", -1)
-	imageLink = strings.Replace(imageLink, "_x945", "g", -1)
+	imageLink = strings.ReplaceAll(imageLink, "_x236", "d")
+	imageLink = strings.ReplaceAll(imageLink, "_x945", "g")
 
 	if strings.HasPrefix(imageLink, "https://2.bp.blogspot.com") {
 		return imageLink, nil
