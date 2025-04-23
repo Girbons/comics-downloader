@@ -133,7 +133,7 @@ func (m *Mangadex) getChapter(chapterID string) (mangaID, volume, chapter, title
 		Chapter struct {
 			Hash string   `json:"hash"`
 			Data []string `json:"data"`
-		} `json:"chapter`
+		} `json:"chapter"`
 	}
 
 	res, err = http.Get(fmt.Sprintf("https://api.mangadex.org/at-home/server/%s", chapterID))
