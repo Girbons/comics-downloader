@@ -41,10 +41,10 @@ func main() {
 	countryEntry := widget.NewEntry()
 	countryEntry.SetPlaceHolder("Country param used by mangadex which uses ISO 3166-1 codes")
 
-	choices := widget.NewRadio(options, nil)
+	choices := widget.NewRadioGroup(options, nil)
 	choices.SetSelected("pdf")
 
-	imagesFormatChoices := widget.NewRadio(imagesFormat, nil)
+	imagesFormatChoices := widget.NewRadioGroup(imagesFormat, nil)
 	imagesFormatChoices.SetSelected("jpg")
 
 	allChaptersCheck := widget.NewCheck("", nil)
@@ -120,5 +120,4 @@ func main() {
 	w.SetContent(fyne.NewContainerWithLayout(layout.NewBorderLayout(form, buttons, nil, nil), form, buttons, logSection))
 	w.Resize(fyne.NewSize(800, 400))
 	w.ShowAndRun()
-
 }
