@@ -11,11 +11,11 @@ import (
 type Downloader struct {
 	URL               *widget.Entry
 	Country           *widget.Entry
-	Format            *widget.Radio
+	Format            *widget.RadioGroup
 	AllChapters       *widget.Check
 	LastChapter       *widget.Check
 	ImagesOnly        *widget.Check
-	ImagesFormat      *widget.Radio
+	ImagesFormat      *widget.RadioGroup
 	OutputFolder      *widget.Entry
 	CreateDefaultPath *widget.Check
 	IssuesRange       *widget.Entry

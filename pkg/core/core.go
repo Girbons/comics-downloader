@@ -5,7 +5,6 @@ import (
 	"context"
 	"fmt"
 	"image"
-	"io/ioutil"
 	"os"
 	"runtime"
 	"strings"
@@ -71,7 +70,7 @@ func (comic *Comic) makeEPUB(options *config.Options) error {
 	}
 	defer os.RemoveAll(imagesPath)
 
-	files, err := ioutil.ReadDir(imagesPath)
+	files, err := os.ReadDir(imagesPath)
 	if err != nil {
 		return err
 	}
@@ -129,7 +128,7 @@ func (comic *Comic) makePDF(options *config.Options) error {
 
 	defer os.RemoveAll(imagesPath)
 
-	files, err := ioutil.ReadDir(imagesPath)
+	files, err := os.ReadDir(imagesPath)
 	if err != nil {
 		return err
 	}
@@ -142,7 +141,6 @@ func (comic *Comic) makePDF(options *config.Options) error {
 
 		if !options.ForceAspect {
 			img, err := os.Open(fileName)
-
 			if err != nil {
 				options.Logger.Error(err.Error())
 			}
@@ -159,7 +157,7 @@ func (comic *Comic) makePDF(options *config.Options) error {
 		}
 		pdf.AddPageFormat("P", gofpdf.SizeType{Wd: mmWd, Ht: mmHt})
 
-		data, err := ioutil.ReadFile(fileName)
+		data, err := os.ReadFile(fileName)
 		if err != nil {
 			return err
 		}
@@ -197,7 +195,7 @@ func (comic *Comic) makeCBRZ(options *config.Options) error {
 	}
 	defer os.RemoveAll(imagesPath)
 
-	files, err := ioutil.ReadDir(imagesPath)
+	files, err := os.ReadDir(imagesPath)
 	if err != nil {
 		return err
 	}
@@ -230,7 +228,7 @@ func (comic *Comic) makeCBRZ(options *config.Options) error {
 // DownloadImages will download the comic/manga images
 func (comic *Comic) DownloadImages(options *config.Options) (string, error) {
 	if len(comic.Links) == 0 {
-		return "", fmt.Errorf("Download failed, no links found for:", comic.URLSource)
+		return "", fmt.Errorf("Download failed, no links found for: %s", comic.URLSource)
 	}
 
 	var dir string
@@ -241,7 +239,7 @@ func (comic *Comic) DownloadImages(options *config.Options) (string, error) {
 		return dir, err
 	}
 
-	files, err := ioutil.ReadDir(dir)
+	files, err := os.ReadDir(dir)
 	if err != nil {
 		return dir, err
 	}
@@ -296,7 +294,6 @@ func (comic *Comic) DownloadImages(options *config.Options) (string, error) {
 
 			isWebp := strings.HasSuffix(link, ".webp")
 			err = util.SaveImage(imgFile, rsp.Body, format, isWebp)
-			
 			if err != nil {
 				msgError := fmt.Sprintf("There was an error while downloading image number: %d - comic issue: %s", i, comic.IssueNumber)
 				options.Logger.Error(msgError)
@@ -307,7 +304,6 @@ func (comic *Comic) DownloadImages(options *config.Options) (string, error) {
 				options.Logger.Error(barErr.Error())
 			}
 			return nil
-
 		})
 	}
 

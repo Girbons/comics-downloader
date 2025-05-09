@@ -28,7 +28,6 @@ func (r *Readallcomics) retrieveImageLinks(comic *core.Comic) ([]string, error) 
 	var links []string
 
 	response, err := soup.Get(comic.URLSource)
-
 	if err != nil {
 		return links, err
 	}
@@ -122,7 +121,7 @@ func (r *Readallcomics) GetInfo(url string) (string, string) {
 	parts := util.TrimAndSplitURL(url)
 
 	lastPart := parts[len(parts)-1]
-	title := strings.Replace(lastPart, "-", " ", -1)
+	title := strings.ReplaceAll(lastPart, "-", " ")
 	splittedTitle := strings.Split(title, " ")
 
 	name := strings.Join(splittedTitle[:len(splittedTitle)-2], " ")

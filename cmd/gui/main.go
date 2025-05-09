@@ -5,13 +5,14 @@ import (
 
 	"fyne.io/fyne"
 	"fyne.io/fyne/app"
+	"fyne.io/fyne/container"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
 	downloader "github.com/Girbons/comics-downloader/cmd/app"
 	"github.com/Girbons/comics-downloader/internal/version"
 )
 
-func watchLogs(logSection *widget.ScrollContainer, box *widget.Box) {
+func watchLogs(logSection *container.Scroll, box *widget.Box) {
 	for {
 		box.Append(widget.NewLabel(<-downloader.Messages))
 		logSection.Resize(logSection.Size())
@@ -41,10 +42,10 @@ func main() {
 	countryEntry := widget.NewEntry()
 	countryEntry.SetPlaceHolder("Country param used by mangadex which uses ISO 3166-1 codes")
 
-	choices := widget.NewRadio(options, nil)
+	choices := widget.NewRadioGroup(options, nil)
 	choices.SetSelected("pdf")
 
-	imagesFormatChoices := widget.NewRadio(imagesFormat, nil)
+	imagesFormatChoices := widget.NewRadioGroup(imagesFormat, nil)
 	imagesFormatChoices.SetSelected("jpg")
 
 	allChaptersCheck := widget.NewCheck("", nil)
@@ -98,7 +99,7 @@ func main() {
 
 	clearLogsButton := widget.NewButton("Clear Logs", func() {
 		box.Children = make([]fyne.CanvasObject, 0)
-		widget.Refresh(box)
+		box.Refresh()
 	})
 
 	submitButton := widget.NewButton("Download", func() {
@@ -112,7 +113,8 @@ func main() {
 		submitButton,
 	)
 
-	logSection := widget.NewScrollContainer(box)
+	// logSection := widget.NewScrollContainer(box)
+	logSection := container.NewScroll(box)
 
 	go watchLogs(logSection, box)
 	go appStatus(submitButton)
@@ -120,5 +122,4 @@ func main() {
 	w.SetContent(fyne.NewContainerWithLayout(layout.NewBorderLayout(form, buttons, nil, nil), form, buttons, logSection))
 	w.Resize(fyne.NewSize(800, 400))
 	w.ShowAndRun()
-
 }
