@@ -234,7 +234,7 @@ func (comic *Comic) DownloadImages(options *config.Options) (string, error) {
 	var dir string
 	var err error
 
-	dir, err = util.ImagesPathSetup(options.CreateDefaultPath, options.OutputFolder, comic.Source, comic.Name, comic.IssueNumber)
+	dir, err = util.ImagesPathSetup(options.CreateDefaultPath, options.OutputFolder, comic.Source, comic.Name, options.IssueFolderName, comic.IssueNumber)
 	if err != nil {
 		return dir, err
 	}

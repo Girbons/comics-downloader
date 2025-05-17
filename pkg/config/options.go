@@ -24,6 +24,7 @@ type Options struct {
 	URL                 string
 	Source              string
 	IssuesRange         string
+	IssueFolderName     string
 
 	Client *http.ComicClient
 	Logger *logger.Logger
