@@ -40,6 +40,8 @@ var (
 	versionFlag bool
 	// range of issues to download
 	issuesRange string
+	// string to be used for each issue/chapter folder
+	issueFolderName string
 )
 
 func init() {
@@ -59,6 +61,7 @@ func init() {
 	flag.StringVar(&url, "url", "", "Comic URL or Comic URLS by separating each site with a comma without the use of spaces")
 	flag.StringVar(&outputFolder, "output", "", "Folder where the comics will be saved")
 	flag.StringVar(&issuesRange, "range", "", "Range of issues to download, example 3-9")
+	flag.StringVar(&issueFolderName, "issue-folder-name", "issue-", "Folder name where each issue/chapter will be saved, default 'issue-#'")
 
 	flag.IntVar(&daemonTimeout, "daemon-timeout", 600, "DaemonTimeout (seconds), specifies how often the downloader runs")
 }
@@ -88,6 +91,7 @@ func main() {
 		OutputFolder:        outputFolder,
 		CreateDefaultPath:   createDefaultPath,
 		IssuesRange:         issuesRange,
+		IssueFolderName:     issueFolderName,
 	}
 
 	app.Run(options)
