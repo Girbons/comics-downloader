@@ -1,6 +1,7 @@
 module github.com/Girbons/comics-downloader
 
 go 1.22.0
+toolchain go1.24.1
 
 require (
 	fyne.io/fyne v1.4.3
@@ -15,7 +16,7 @@ require (
 	github.com/stretchr/testify v1.8.4
 	golang.org/x/image v0.18.0
 	golang.org/x/mod v0.17.0
-	golang.org/x/sync v0.7.0
+	golang.org/x/sync v0.12.0
 )
 
 require (
@@ -42,8 +43,8 @@ require (
 	github.com/ulikunitz/xz v0.5.11 // indirect
 	github.com/vincent-petithory/dataurl v0.0.0-20191104211930-d1553a71de50 // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
-	golang.org/x/net v0.0.0-20210505024714-0287a6fb4125 // indirect
-	golang.org/x/sys v0.22.0 // indirect
-	golang.org/x/text v0.16.0 // indirect
+	golang.org/x/net v0.38.0 // indirect
+	golang.org/x/sys v0.31.0 // indirect
+	golang.org/x/text v0.23.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
