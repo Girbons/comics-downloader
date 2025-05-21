@@ -39,11 +39,11 @@ func PathSetup(createDefaultPath bool, outputFolder, source, name string) (strin
 // ImagesPathSetup creates the folders for the images to be saved.
 // when `createDefaultPath` is false the images are stored without prepending
 // the default folder path `comics/source/name/[comic.format]`.
-func ImagesPathSetup(createDefaultPath bool, outputFolder, source, name, issueNumber string) (string, error) {
+func ImagesPathSetup(createDefaultPath bool, outputFolder, source, name, issueFolderName, issueNumber string) (string, error) {
 	path := fmt.Sprintf("%s/comics/%s/%s/images-%s/", outputFolder, source, name, issueNumber)
 
 	if !createDefaultPath {
-		path = fmt.Sprintf("%s/images-%s", outputFolder, issueNumber)
+		path = fmt.Sprintf("%s/%s%s", outputFolder, issueFolderName, issueNumber)
 	}
 
 	return createPath(path)
