@@ -9,13 +9,11 @@ import (
 // createPath create folders given the path.
 func createPath(path string) (string, error) {
 	err := os.MkdirAll(path, os.ModePerm)
-
 	if err != nil {
 		return path, err
 	}
 
 	dir, err := filepath.Abs(path)
-
 	if err != nil {
 		return dir, err
 	}
@@ -51,7 +49,11 @@ func ImagesPathSetup(createDefaultPath bool, outputFolder, source, name, issueNu
 
 // CurrentDir returns the path where the executable is
 func CurrentDir() (string, error) {
-	return filepath.Abs(filepath.Dir(os.Args[0]))
+	exePath, err := os.Executable()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Dir(exePath), nil
 }
 
 // DirectoryOrFileDoesNotExist check if a directory/file exist.
