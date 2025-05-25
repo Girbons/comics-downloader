@@ -121,12 +121,140 @@ func (r *Readallcomics) GetInfo(url string) (string, string) {
 	parts := util.TrimAndSplitURL(url)
 
 	lastPart := parts[len(parts)-1]
-	title := strings.ReplaceAll(lastPart, "-", " ")
-	splittedTitle := strings.Split(title, " ")
 
-	name := strings.Join(splittedTitle[:len(splittedTitle)-2], " ")
-	issueNumber := splittedTitle[len(splittedTitle)-1] // get the issue number
+	splittedByHyphen := strings.Split(lastPart, "-")
+
+	if len(splittedByHyphen) <= 1 {
+		title := strings.ReplaceAll(lastPart, "-", " ")
+		splittedTitle := strings.Split(title, " ")
+		name := strings.Join(splittedTitle[:len(splittedTitle)-2], " ")
+		issueNumber := splittedTitle[len(splittedTitle)-1]
+		return name, issueNumber
+	}
+
+	var issueIndices []int
+
+	for i, part := range splittedByHyphen {
+		if len(part) == 3 && isNumeric(part) {
+			issueIndices = append(issueIndices, i)
+		} else if len(part) >= 2 && strings.HasPrefix(strings.ToLower(part), "v") && isNumeric(part[1:]) {
+			issueIndices = append(issueIndices, i)
+		} else if len(part) <= 2 && isNumeric(part) {
+			issueIndices = append(issueIndices, i)
+		} else if len(part) == 4 && part >= "1900" && part <= "2099" {
+			issueIndices = append(issueIndices, i)
+		} else if strings.Contains(part, "029") {
+			for j := 0; j <= len(part)-3; j++ {
+				if j+3 <= len(part) && isNumeric(part[j:j+3]) {
+					issueIndices = append(issueIndices, i)
+					break
+				}
+			}
+		}
+	}
+
+	splitIndex := -1
+
+	if len(issueIndices) > 0 {
+		for _, idx := range issueIndices {
+			part := splittedByHyphen[idx]
+			if (len(part) == 3 && isNumeric(part)) ||
+				(len(part) >= 2 && strings.HasPrefix(strings.ToLower(part), "v") && isNumeric(part[1:])) ||
+				strings.Contains(part, "029") {
+				splitIndex = idx
+				break
+			}
+		}
+
+		if splitIndex == -1 {
+			splitIndex = issueIndices[0]
+		}
+	}
+
+	if splitIndex > 0 {
+		name := strings.Join(splittedByHyphen[:splitIndex], "-")
+
+		issueNumberPart := splittedByHyphen[splitIndex]
+		var issueNumber string
+
+		if strings.Contains(issueNumberPart, "029") || (len(issueNumberPart) > 3 && !isNumeric(issueNumberPart)) {
+			found := false
+			for i := 0; i <= len(issueNumberPart)-3; i++ {
+				if i+3 <= len(issueNumberPart) && isNumeric(issueNumberPart[i:i+3]) {
+					issueNumber = issueNumberPart[i : i+3]
+					found = true
+					break
+				}
+			}
+			if !found {
+				for i := 0; i <= len(issueNumberPart)-1; i++ {
+					for length := 2; length >= 1; length-- {
+						if i+length <= len(issueNumberPart) && isNumeric(issueNumberPart[i:i+length]) {
+							issueNumber = issueNumberPart[i : i+length]
+							found = true
+							break
+						}
+					}
+					if found {
+						break
+					}
+				}
+			}
+			if !found {
+				issueNumber = issueNumberPart
+			}
+
+			if splitIndex < len(splittedByHyphen)-1 {
+				remainingParts := splittedByHyphen[splitIndex+1:]
+				for _, part := range remainingParts {
+					if len(part) == 4 && part >= "1900" && part <= "2099" {
+						issueNumber += "-" + part
+						break
+					}
+				}
+			}
+		} else {
+			issueNumber = strings.Join(splittedByHyphen[splitIndex:], "-")
+		}
+
+		name = strings.ReplaceAll(name, "-", " ")
+
+		return name, issueNumber
+	}
+
+	if len(splittedByHyphen) >= 2 {
+		lastPart := splittedByHyphen[len(splittedByHyphen)-1]
+		secondLastPart := splittedByHyphen[len(splittedByHyphen)-2]
+
+		if len(lastPart) == 4 && lastPart >= "1900" && lastPart <= "2099" {
+			name := strings.Join(splittedByHyphen[:len(splittedByHyphen)-2], "-")
+			issueNumber := secondLastPart + "-" + lastPart
+
+			name = strings.ReplaceAll(name, "-", " ")
+
+			return name, issueNumber
+		}
+	}
+
+	name := strings.Join(splittedByHyphen[:len(splittedByHyphen)-1], "-")
+	issueNumber := splittedByHyphen[len(splittedByHyphen)-1]
+
+	name = strings.ReplaceAll(name, "-", " ")
+
 	return name, issueNumber
+}
+
+// isNumeric checks if a string contains only digits
+func isNumeric(s string) bool {
+	if s == "" {
+		return false
+	}
+	for _, r := range s {
+		if r < '0' || r > '9' {
+			return false
+		}
+	}
+	return true
 }
 
 // Initialize prepare the comic instance with links and images.
