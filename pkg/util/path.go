@@ -47,13 +47,13 @@ func ImagesPathSetup(createDefaultPath bool, outputFolder, source, name, issueNu
 	return createPath(path)
 }
 
-// CurrentDir returns the path where the executable is
+// CurrentDir returns the path where the executable was called.
 func CurrentDir() (string, error) {
-	exePath, err := os.Executable()
+	exePath, err := os.Getwd()
 	if err != nil {
 		return "", err
 	}
-	return filepath.Dir(exePath), nil
+	return exePath, nil
 }
 
 // DirectoryOrFileDoesNotExist check if a directory/file exist.

@@ -12,7 +12,6 @@ import (
 	"github.com/Girbons/comics-downloader/pkg/detector"
 	"github.com/Girbons/comics-downloader/pkg/http"
 	"github.com/Girbons/comics-downloader/pkg/sites"
-	"github.com/Girbons/comics-downloader/pkg/util"
 	"github.com/sirupsen/logrus"
 )
 
@@ -39,7 +38,7 @@ func download(options *config.Options) {
 	}
 
 	if options.OutputFolder == "" {
-		dir, err := util.CurrentDir()
+		dir, err := os.Getwd()
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error determining current directory: %v\n", err)
 			options.OutputFolder = "."
