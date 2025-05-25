@@ -3,7 +3,6 @@ package app
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 	"strings"
 	"time"
 
@@ -13,6 +12,7 @@ import (
 	"github.com/Girbons/comics-downloader/pkg/detector"
 	"github.com/Girbons/comics-downloader/pkg/http"
 	"github.com/Girbons/comics-downloader/pkg/sites"
+	"github.com/Girbons/comics-downloader/pkg/util"
 	"github.com/sirupsen/logrus"
 )
 
@@ -39,7 +39,13 @@ func download(options *config.Options) {
 	}
 
 	if options.OutputFolder == "" {
-		options.OutputFolder = filepath.Dir(os.Args[0])
+		dir, err := util.CurrentDir()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error determining current directory: %v\n", err)
+			options.OutputFolder = "."
+		} else {
+			options.OutputFolder = dir
+		}
 	}
 
 	isNewVersionAvailable, newVersionLink, err := version.IsNewAvailable()
