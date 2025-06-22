@@ -119,126 +119,209 @@ func (r *Readallcomics) RetrieveIssueLinks() ([]string, error) {
 // GetInfo extracts the comic info from the given URL.
 func (r *Readallcomics) GetInfo(url string) (string, string) {
 	parts := util.TrimAndSplitURL(url)
-
 	lastPart := parts[len(parts)-1]
+	urlParts := strings.Split(lastPart, "-")
 
-	splittedByHyphen := strings.Split(lastPart, "-")
-
-	if len(splittedByHyphen) <= 1 {
-		title := strings.ReplaceAll(lastPart, "-", " ")
-		splittedTitle := strings.Split(title, " ")
-		name := strings.Join(splittedTitle[:len(splittedTitle)-2], " ")
-		issueNumber := splittedTitle[len(splittedTitle)-1]
-		return name, issueNumber
+	// Handle simple case with no hyphens
+	if len(urlParts) <= 1 {
+		return r.parseSimpleFormat(lastPart)
 	}
 
+	// Find potential issue number indices
+	issueIndices := r.findIssueIndices(urlParts)
+
+	// Determine the best split point
+	splitIndex := r.determineBestSplitIndex(urlParts, issueIndices)
+
+	// Extract name and issue number based on split index
+	if splitIndex > 0 {
+		return r.extractInfoWithSplitIndex(urlParts, splitIndex)
+	}
+
+	// Handle year suffix pattern (e.g., "name-issue-year")
+	if r.hasYearSuffix(urlParts) {
+		return r.parseYearSuffixFormat(urlParts)
+	}
+
+	// Default fallback: last part is issue number
+	return r.parseDefaultFormat(urlParts)
+}
+
+// parseSimpleFormat handles URLs with no hyphens in the last part
+func (r *Readallcomics) parseSimpleFormat(lastPart string) (string, string) {
+	title := strings.ReplaceAll(lastPart, "-", " ")
+	splittedTitle := strings.Split(title, " ")
+	name := strings.Join(splittedTitle[:len(splittedTitle)-2], " ")
+	issueNumber := splittedTitle[len(splittedTitle)-1]
+	return name, issueNumber
+}
+
+// findIssueIndices identifies parts of the URL that could be issue numbers
+func (r *Readallcomics) findIssueIndices(urlParts []string) []int {
 	var issueIndices []int
 
-	for i, part := range splittedByHyphen {
-		if len(part) == 3 && isNumeric(part) {
+	for i, part := range urlParts {
+		if r.isThreeDigitIssue(part) ||
+			r.isVersionNumber(part) ||
+			r.isShortNumeric(part) ||
+			r.isYear(part) ||
+			r.hasEmbeddedNumber(part) {
 			issueIndices = append(issueIndices, i)
-		} else if len(part) >= 2 && strings.HasPrefix(strings.ToLower(part), "v") && isNumeric(part[1:]) {
-			issueIndices = append(issueIndices, i)
-		} else if len(part) <= 2 && isNumeric(part) {
-			issueIndices = append(issueIndices, i)
-		} else if len(part) == 4 && part >= "1900" && part <= "2099" {
-			issueIndices = append(issueIndices, i)
-		} else if strings.Contains(part, "029") {
-			for j := 0; j <= len(part)-3; j++ {
-				if j+3 <= len(part) && isNumeric(part[j:j+3]) {
-					issueIndices = append(issueIndices, i)
-					break
-				}
+		}
+	}
+
+	return issueIndices
+}
+
+// isThreeDigitIssue checks if a part is a 3-digit numeric issue number
+func (r *Readallcomics) isThreeDigitIssue(part string) bool {
+	return len(part) == 3 && isNumeric(part)
+}
+
+// isVersionNumber checks if a part is a version number (e.g., "v2")
+func (r *Readallcomics) isVersionNumber(part string) bool {
+	return len(part) >= 2 &&
+		strings.HasPrefix(strings.ToLower(part), "v") &&
+		isNumeric(part[1:])
+}
+
+// isShortNumeric checks if a part is a short numeric value (1-2 digits)
+func (r *Readallcomics) isShortNumeric(part string) bool {
+	return len(part) <= 2 && isNumeric(part)
+}
+
+// isYear checks if a part represents a year (1900-2099)
+func (r *Readallcomics) isYear(part string) bool {
+	return len(part) == 4 && part >= "1900" && part <= "2099"
+}
+
+// hasEmbeddedNumber checks if a part contains embedded numbers (e.g., "029something")
+func (r *Readallcomics) hasEmbeddedNumber(part string) bool {
+	if !strings.Contains(part, "029") {
+		return false
+	}
+
+	for j := 0; j <= len(part)-3; j++ {
+		if j+3 <= len(part) && isNumeric(part[j:j+3]) {
+			return true
+		}
+	}
+	return false
+}
+
+// determineBestSplitIndex finds the optimal point to split name from issue info
+func (r *Readallcomics) determineBestSplitIndex(urlParts []string, issueIndices []int) int {
+	if len(issueIndices) == 0 {
+		return -1
+	}
+
+	// Look for high-priority patterns first
+	for _, idx := range issueIndices {
+		part := urlParts[idx]
+		if r.isThreeDigitIssue(part) ||
+			r.isVersionNumber(part) ||
+			r.hasEmbeddedNumber(part) {
+			return idx
+		}
+	}
+
+	// Use the first available index as fallback
+	return issueIndices[0]
+}
+
+// extractInfoWithSplitIndex extracts name and issue using the determined split point
+func (r *Readallcomics) extractInfoWithSplitIndex(urlParts []string, splitIndex int) (string, string) {
+	name := strings.Join(urlParts[:splitIndex], "-")
+	name = strings.ReplaceAll(name, "-", " ")
+
+	issueNumber := r.extractIssueNumber(urlParts, splitIndex)
+
+	return name, issueNumber
+}
+
+// extractIssueNumber extracts the issue number from the URL parts starting at splitIndex
+func (r *Readallcomics) extractIssueNumber(urlParts []string, splitIndex int) string {
+	issueNumberPart := urlParts[splitIndex]
+
+	// Handle complex issue number extraction for embedded numbers
+	if strings.Contains(issueNumberPart, "029") ||
+		(len(issueNumberPart) > 3 && !isNumeric(issueNumberPart)) {
+
+		if extractedNumber := r.extractEmbeddedNumber(issueNumberPart); extractedNumber != "" {
+			// For embedded numbers, don't add year suffix - just return the extracted number
+			return extractedNumber
+		}
+
+		// If we couldn't extract an embedded number, check for year suffix
+		if yearSuffix := r.findYearInRemainingParts(urlParts, splitIndex); yearSuffix != "" {
+			return issueNumberPart + "-" + yearSuffix
+		}
+		return issueNumberPart
+	}
+
+	// Simple case: join all parts from split index onward
+	return strings.Join(urlParts[splitIndex:], "-")
+}
+
+// extractEmbeddedNumber finds numeric patterns within a complex part
+func (r *Readallcomics) extractEmbeddedNumber(part string) string {
+	// Try 3-digit patterns first
+	for i := 0; i <= len(part)-3; i++ {
+		if i+3 <= len(part) && isNumeric(part[i:i+3]) {
+			return part[i : i+3]
+		}
+	}
+
+	// Try shorter patterns
+	for i := 0; i <= len(part)-1; i++ {
+		for length := 2; length >= 1; length-- {
+			if i+length <= len(part) && isNumeric(part[i:i+length]) {
+				return part[i : i+length]
 			}
 		}
 	}
 
-	splitIndex := -1
+	return ""
+}
 
-	if len(issueIndices) > 0 {
-		for _, idx := range issueIndices {
-			part := splittedByHyphen[idx]
-			if (len(part) == 3 && isNumeric(part)) ||
-				(len(part) >= 2 && strings.HasPrefix(strings.ToLower(part), "v") && isNumeric(part[1:])) ||
-				strings.Contains(part, "029") {
-				splitIndex = idx
-				break
+// findYearInRemainingParts looks for year information in parts after the split index
+func (r *Readallcomics) findYearInRemainingParts(urlParts []string, splitIndex int) string {
+	if splitIndex < len(urlParts)-1 {
+		remainingParts := urlParts[splitIndex+1:]
+		for _, part := range remainingParts {
+			if r.isYear(part) {
+				return part
 			}
-		}
-
-		if splitIndex == -1 {
-			splitIndex = issueIndices[0]
 		}
 	}
+	return ""
+}
 
-	if splitIndex > 0 {
-		name := strings.Join(splittedByHyphen[:splitIndex], "-")
-
-		issueNumberPart := splittedByHyphen[splitIndex]
-		var issueNumber string
-
-		if strings.Contains(issueNumberPart, "029") || (len(issueNumberPart) > 3 && !isNumeric(issueNumberPart)) {
-			found := false
-			for i := 0; i <= len(issueNumberPart)-3; i++ {
-				if i+3 <= len(issueNumberPart) && isNumeric(issueNumberPart[i:i+3]) {
-					issueNumber = issueNumberPart[i : i+3]
-					found = true
-					break
-				}
-			}
-			if !found {
-				for i := 0; i <= len(issueNumberPart)-1; i++ {
-					for length := 2; length >= 1; length-- {
-						if i+length <= len(issueNumberPart) && isNumeric(issueNumberPart[i:i+length]) {
-							issueNumber = issueNumberPart[i : i+length]
-							found = true
-							break
-						}
-					}
-					if found {
-						break
-					}
-				}
-			}
-			if !found {
-				issueNumber = issueNumberPart
-			}
-
-			if splitIndex < len(splittedByHyphen)-1 {
-				remainingParts := splittedByHyphen[splitIndex+1:]
-				for _, part := range remainingParts {
-					if len(part) == 4 && part >= "1900" && part <= "2099" {
-						issueNumber += "-" + part
-						break
-					}
-				}
-			}
-		} else {
-			issueNumber = strings.Join(splittedByHyphen[splitIndex:], "-")
-		}
-
-		name = strings.ReplaceAll(name, "-", " ")
-
-		return name, issueNumber
+// hasYearSuffix checks if the URL has a year as the last component
+func (r *Readallcomics) hasYearSuffix(urlParts []string) bool {
+	if len(urlParts) < 2 {
+		return false
 	}
+	lastPart := urlParts[len(urlParts)-1]
+	return r.isYear(lastPart)
+}
 
-	if len(splittedByHyphen) >= 2 {
-		lastPart := splittedByHyphen[len(splittedByHyphen)-1]
-		secondLastPart := splittedByHyphen[len(splittedByHyphen)-2]
+// parseYearSuffixFormat handles URLs ending with year (e.g., "name-issue-2023")
+func (r *Readallcomics) parseYearSuffixFormat(urlParts []string) (string, string) {
+	lastPart := urlParts[len(urlParts)-1]
+	secondLastPart := urlParts[len(urlParts)-2]
 
-		if len(lastPart) == 4 && lastPart >= "1900" && lastPart <= "2099" {
-			name := strings.Join(splittedByHyphen[:len(splittedByHyphen)-2], "-")
-			issueNumber := secondLastPart + "-" + lastPart
+	name := strings.Join(urlParts[:len(urlParts)-2], "-")
+	issueNumber := secondLastPart + "-" + lastPart
+	name = strings.ReplaceAll(name, "-", " ")
 
-			name = strings.ReplaceAll(name, "-", " ")
+	return name, issueNumber
+}
 
-			return name, issueNumber
-		}
-	}
-
-	name := strings.Join(splittedByHyphen[:len(splittedByHyphen)-1], "-")
-	issueNumber := splittedByHyphen[len(splittedByHyphen)-1]
-
+// parseDefaultFormat handles the fallback case where last part is the issue number
+func (r *Readallcomics) parseDefaultFormat(urlParts []string) (string, string) {
+	name := strings.Join(urlParts[:len(urlParts)-1], "-")
+	issueNumber := urlParts[len(urlParts)-1]
 	name = strings.ReplaceAll(name, "-", " ")
 
 	return name, issueNumber
