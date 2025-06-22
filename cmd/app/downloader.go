@@ -40,7 +40,7 @@ func download(options *config.Options) {
 	if options.OutputFolder == "" {
 		dir, err := os.Getwd()
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error determining current directory: %v\n", err)
+			options.Logger.Error("Error determining current directory: %v\n")
 			options.OutputFolder = "."
 		} else {
 			options.OutputFolder = dir
