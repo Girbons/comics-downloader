@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"image"
 	"os"
+	"path"
 	"runtime"
+	"sort"
 	"strings"
 
 	"golang.org/x/sync/errgroup"
@@ -16,7 +18,7 @@ import (
 	"github.com/Girbons/comics-downloader/pkg/util"
 	epub "github.com/bmaupin/go-epub"
 	"github.com/jung-kurt/gofpdf"
-	"github.com/mholt/archiver"
+	"github.com/mholt/archives"
 	"github.com/schollz/progressbar/v2"
 )
 
@@ -186,9 +188,6 @@ func (comic *Comic) makeCBRZ(options *config.Options) error {
 	var filesToAdd []string
 	var err error
 
-	// setup a new Epub instance
-	archive := archiver.NewZip()
-
 	imagesPath, err := comic.DownloadImages(options)
 	if err != nil {
 		return err
@@ -209,11 +208,41 @@ func (comic *Comic) makeCBRZ(options *config.Options) error {
 	if err != nil {
 		return err
 	}
-	// the archive must be created as `.zip`then change the extension to `.cbr`or `.cbz`.
+
+	// the archive must be created as `.zip` then change the extension to `.cbr` or `.cbz`.
 	zipArchiveName := fmt.Sprintf("%s/%s.zip", dir, comic.IssueNumber)
 	newName := util.GetPathToFile(dir, comic.Name, comic.IssueNumber, comic.Format, options.IssueNumberNameOnly)
 
-	if err = archive.Archive(filesToAdd, zipArchiveName); err != nil {
+	// Create output file
+	out, err := os.Create(zipArchiveName)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+	// Sort files to ensure consistent ordering
+	sort.Slice(files, func(i, j int) bool {
+		return files[i].Name() < files[j].Name()
+	})
+	// Map files on disk to their paths in the archive
+	fileMap := make(map[string]string)
+	for _, filePath := range filesToAdd {
+		// Use just the filename (no path) in the archive
+		fileName := path.Base(filePath)
+		fileMap[filePath] = fileName
+	}
+
+	// Get files from disk using the archives helper
+	archiveFiles, err := archives.FilesFromDisk(context.Background(), nil, fileMap)
+	if err != nil {
+		return err
+	}
+
+	// Create ZIP format (no compression needed for CBZ)
+	format := archives.Zip{}
+
+	// Create the archive
+	err = format.Archive(context.Background(), out, archiveFiles)
+	if err != nil {
 		return err
 	}
 
@@ -222,7 +251,7 @@ func (comic *Comic) makeCBRZ(options *config.Options) error {
 	}
 
 	options.Logger.Info(fmt.Sprintf("%s %s", strings.ToUpper(comic.Format), DefaultMessage))
-	return err
+	return nil
 }
 
 // DownloadImages will download the comic/manga images
