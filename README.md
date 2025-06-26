@@ -10,7 +10,8 @@
 ## Supported Sites
 
 - https://comicextra.net/
-- https://readcomiconline.li/
+- https://readallcomics.com/
+- https://readcomiconline.li/  ⚠️
 - https://www.mangareader.tv/
 - https://www.mangatown.com/
 - https://mangadex.org/
