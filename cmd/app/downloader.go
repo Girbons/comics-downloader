@@ -3,7 +3,6 @@ package app
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 	"strings"
 	"time"
 
@@ -39,7 +38,13 @@ func download(options *config.Options) {
 	}
 
 	if options.OutputFolder == "" {
-		options.OutputFolder = filepath.Dir(os.Args[0])
+		dir, err := os.Getwd()
+		if err != nil {
+			options.Logger.Error("Error determining current directory: %v\n")
+			options.OutputFolder = "."
+		} else {
+			options.OutputFolder = dir
+		}
 	}
 
 	isNewVersionAvailable, newVersionLink, err := version.IsNewAvailable()

@@ -10,7 +10,8 @@
 ## Supported Sites
 
 - https://comicextra.net/
-- https://readcomiconline.li/
+- https://readallcomics.com/
+- https://readcomiconline.li/  ⚠️
 - https://www.mangareader.tv/
 - https://www.mangatown.com/
 - https://mangadex.org/
@@ -98,7 +99,8 @@ Usage:
 
 ### Checking for mangas using a Raspberry Pi
 
-If you'd like to track your favourite mangas you can use this bash [script](https://gist.github.com/nestukh/5397b836c8e5f34f6feb4ec4efe6b86a).
+If you'd like to track your favourite mangas you can use this bash
+[script](https://gist.github.com/nestukh/5397b836c8e5f34f6feb4ec4efe6b86a).
 
 ### Multiple URLs
 
@@ -125,7 +127,8 @@ example:
 
 ### Download the whole comic
 
-Provide the comic url and use the `-all` flag. The url provided can be any issue of the comic, or the main comic page url.
+Provide the comic url and use the `-all` flag. The url provided can be any issue
+of the comic, or the main comic page url.
 
 example:
 
@@ -135,7 +138,8 @@ example:
 
 ### Download the range of issues
 
-Provide the comic url and use the `-range` flag. The url provided can be any issue of the comic, or the main comic page url.
+Provide the comic url and use the `-range` flag. The url provided can be any
+issue of the comic, or the main comic page url.
 
 example:
 
@@ -153,8 +157,8 @@ To download the last comic issue use `-last` flag.
 
 ### Download to custom folder
 
-To download to a custom folder use the `-output` flag.
-The folder will be created if not already existing.
+To download to a custom folder use the `-output` flag. The folder will be
+created if not already existing.
 
 ```bash
 ./comics-downloader -url=[your url] -output=[your path]
@@ -162,8 +166,8 @@ The folder will be created if not already existing.
 
 ### Run as daemon
 
-You can run the CLI downloader as daemon using `-daemon` flag.
-works only if `-all` or `-last` flags are specified.
+You can run the CLI downloader as daemon using `-daemon` flag. works only if
+`-all` or `-last` flags are specified.
 
 ```bash
 ./comics-downloader -url=[your url] -daemon
@@ -197,8 +201,8 @@ Default is **jpg**.
 
 ### Avoid Default Folder Structure
 
-The default folder structure that will be created is: `/comics/[source]/[name]/`.
-To avoid that use `-create-default-path` flag.
+The default folder structure that will be created is:
+`/comics/[source]/[name]/`. To avoid that use `-create-default-path` flag.
 
 ```bash
 ./comics-downloader -url=[your url] -create-default-path=false
@@ -212,13 +216,15 @@ To avoid that use `-create-default-path` flag.
 - [soup](https://github.com/anaskhan96/soup)
 - [progressbar](https://github.com/schollz/progressbar)
 - [logrus](https://github.com/sirupsen/logrus)
-- [archiver](https://github.com/mholt/archiver)
+- [archives](https://github.com/mholt/archives)
 - [regexp2](https://github.com/dlclark/regexp2)
 
 ## Contributing
 
-Feel free to submit a pull request, a guide to setup the development environment is available [here](docs/dev.md)
+Feel free to submit a pull request, a guide to setup the development environment
+is available [here](docs/dev.md)
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
+for details

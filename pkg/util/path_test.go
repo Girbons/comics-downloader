@@ -25,7 +25,7 @@ func TestGenerateFileName(t *testing.T) {
 
 func TestDirectoryOrFileDoesNotExist(t *testing.T) {
 
-	path, _ := ImagesPathSetup(true, filepath.Dir(os.Args[0]), "source", "name", "issueNumber")
+	path, _ := ImagesPathSetup(true, filepath.Dir(os.Args[0]), "source", "name", "issue-", "issueNumber")
 	defer os.RemoveAll(path)
 
 	result := DirectoryOrFileDoesNotExist(path)
