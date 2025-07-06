@@ -9,7 +9,7 @@ import (
 
 // Tag specifies the current release tag.
 // It needs to be manually updated.
-const Tag = "v0.33.9"
+const Tag = "v0.34-alpha"
 
 // IsNewAvailable will fetch the latest project releases
 // and will compare the latest release Tag against the current Tag.
@@ -17,7 +17,6 @@ func IsNewAvailable() (bool, string, error) {
 	ctx := context.Background()
 	client := github.NewClient(nil)
 	releases, _, err := client.Repositories.ListReleases(ctx, "Girbons", "comics-downloader", nil)
-
 	if err != nil {
 		return false, "", err
 	}
