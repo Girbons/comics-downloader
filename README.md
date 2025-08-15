@@ -12,11 +12,11 @@
 - https://comicextra.net/
 - https://readallcomics.com/
 - https://readcomiconline.li/  ⚠️
-- https://www.mangareader.tv/
-- https://www.mangatown.com/
-- https://mangadex.org/
-- https://mangakakalot.com/
-- https://manganato.com/
+- https://www.mangareader.tv/  ⚠️
+- https://www.mangatown.com/   ⚠️
+- https://mangadex.org/        ⚠️
+- https://mangakakalot.com/    ⚠️
+- https://manganato.com/       ⚠️
 
 ## Getting Started
 
