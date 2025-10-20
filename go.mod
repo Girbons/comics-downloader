@@ -9,7 +9,6 @@ require (
 	github.com/anaskhan96/soup v1.2.5
 	github.com/bmaupin/go-epub v1.1.0
 	github.com/dlclark/regexp2 v1.10.0
-	github.com/google/go-github v17.0.0+incompatible
 	github.com/jung-kurt/gofpdf v1.16.2
 	github.com/mholt/archives v0.1.2
 	github.com/schollz/progressbar/v2 v2.15.0
@@ -37,7 +36,6 @@ require (
 	github.com/gofrs/uuid v3.1.0+incompatible // indirect
 	github.com/goki/freetype v0.0.0-20181231101311-fa8a33aabaff // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
-	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/hashicorp/golang-lru/v2 v2.0.7 // indirect

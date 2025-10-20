@@ -17,6 +17,14 @@ func NewComicClient() *ComicClient {
 	}
 }
 
+// HTTPClient exposes the underlying http.Client instance.
+func (c *ComicClient) HTTPClient() *http.Client {
+	if c == nil {
+		return nil
+	}
+	return c.Client
+}
+
 // PrepareRequest setup a `GET` request with customs headers.
 func (c *ComicClient) PrepareRequest(link, hostname string) (*http.Request, error) {
 	req, err := http.NewRequest("GET", link, nil)

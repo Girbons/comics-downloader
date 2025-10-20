@@ -66,15 +66,8 @@ func init() {
 	flag.IntVar(&daemonTimeout, "daemon-timeout", 600, "DaemonTimeout (seconds), specifies how often the downloader runs")
 }
 
-func main() {
-	flag.Parse()
-
-	if versionFlag {
-		fmt.Println("comics-downloader version", version.Tag)
-		os.Exit(0)
-	}
-
-	options := &config.Options{
+func buildOptions() config.Options {
+	return config.Options{
 		Debug:               debug,
 		All:                 all,
 		Last:                last,
@@ -93,6 +86,16 @@ func main() {
 		IssuesRange:         issuesRange,
 		IssueFolderName:     issueFolderName,
 	}
+}
 
-	app.Run(options)
+func main() {
+	flag.Parse()
+
+	if versionFlag {
+		fmt.Println("comics-downloader version", version.Tag)
+		os.Exit(0)
+	}
+
+	opts := buildOptions()
+	app.Run(&opts)
 }
