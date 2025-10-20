@@ -99,7 +99,7 @@ func (comic *Comic) makeEPUB(options *config.Options, images *DownloadResult) er
 	}
 
 	if options.Logger != nil {
-		options.Logger.Info(fmt.Sprintf("%s %s", strings.ToUpper(comic.Format), DefaultMessage))
+		options.Logger.Infof("%s %s", strings.ToUpper(comic.Format), DefaultMessage)
 	}
 	return nil
 }
@@ -157,7 +157,7 @@ func (comic *Comic) makePDF(options *config.Options, images *DownloadResult) err
 	}
 
 	if options.Logger != nil {
-		options.Logger.Info(fmt.Sprintf("%s %s", strings.ToUpper(comic.Format), DefaultMessage))
+		options.Logger.Infof("%s %s", strings.ToUpper(comic.Format), DefaultMessage)
 	}
 	return nil
 }
@@ -198,7 +198,7 @@ func (comic *Comic) makeCBRZ(options *config.Options, images *DownloadResult) er
 	}
 
 	if options.Logger != nil {
-		options.Logger.Info(fmt.Sprintf("%s %s", strings.ToUpper(comic.Format), DefaultMessage))
+		options.Logger.Infof("%s %s", strings.ToUpper(comic.Format), DefaultMessage)
 	}
 	return nil
 }
@@ -285,7 +285,7 @@ func (comic *Comic) DownloadImages(options *config.Options) (*DownloadResult, er
 			isWebp := strings.HasSuffix(strings.ToLower(job.link), ".webp")
 			if err := util.SaveImage(imgFile, response.Body, format, isWebp); err != nil {
 				if options.Logger != nil {
-					options.Logger.Error(fmt.Sprintf("There was an error while downloading image number: %d - comic issue: %s (%v)", job.index, comic.IssueNumber, err))
+					options.Logger.Errorf("There was an error while downloading image number: %d - comic issue: %s (%v)", job.index, comic.IssueNumber, err)
 				}
 				imgFile.Close()
 				_ = os.Remove(targetPath)
