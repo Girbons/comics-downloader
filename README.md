@@ -199,6 +199,16 @@ Default is **jpg**.
 ./comics-downloader -url=[your url] -images-only -images-format=jpg
 ```
 
+### Work Around Site Protection
+
+Some sources employ rotating fingerprints or require a logged-in session. You can rotate multiple User-Agent strings and forward session cookies collected from your browser:
+
+```bash
+./comics-downloader -url=[your url] \
+  --user-agents="Mozilla/5.0 ...,Mozilla/5.0 (Macintosh; ...)" \
+  --session-cookie="cf_clearance=...; other=value"
+```
+
 ### Avoid Default Folder Structure
 
 The default folder structure that will be created is:

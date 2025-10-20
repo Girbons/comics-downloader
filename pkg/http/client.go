@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"sync/atomic"
 	"time"
 )
 
@@ -52,11 +53,35 @@ func WithRateLimiter(limiter RateLimiter) Option {
 	}
 }
 
-// WithUserAgent overrides the default user-agent header.
+// WithUserAgent overrides the default user-agent header with a single value.
 func WithUserAgent(agent string) Option {
+	return WithUserAgents([]string{agent})
+}
+
+// WithUserAgents configures a list of User-Agent values to rotate through per request.
+func WithUserAgents(agents []string) Option {
 	return func(cc *ComicClient) {
-		if strings.TrimSpace(agent) != "" {
-			cc.userAgent = agent
+		filtered := filterNonEmpty(agents)
+		if len(filtered) > 0 {
+			cc.userAgents = filtered
+		}
+	}
+}
+
+// WithHeaders adds static headers to every request.
+func WithHeaders(headers map[string]string) Option {
+	return func(cc *ComicClient) {
+		if len(headers) == 0 {
+			return
+		}
+		if cc.headers == nil {
+			cc.headers = make(map[string]string)
+		}
+		for key, value := range headers {
+			if strings.TrimSpace(key) == "" || strings.TrimSpace(value) == "" {
+				continue
+			}
+			cc.headers[key] = value
 		}
 	}
 }
@@ -67,7 +92,9 @@ type ComicClient struct {
 	retryCount  int
 	retryWait   time.Duration
 	rateLimiter RateLimiter
-	userAgent   string
+	userAgents  []string
+	headers     map[string]string
+	uaCounter   uint32
 }
 
 // NewComicClient returns a ComicClient instance with sane defaults.
@@ -78,7 +105,8 @@ func NewComicClient(options ...Option) *ComicClient {
 		},
 		retryCount: defaultRetryCount,
 		retryWait:  defaultRetryWait,
-		userAgent:  defaultUserAgent,
+		userAgents: []string{defaultUserAgent},
+		headers:    make(map[string]string),
 	}
 
 	for _, opt := range options {
@@ -87,6 +115,10 @@ func NewComicClient(options ...Option) *ComicClient {
 
 	if cc.client.Timeout == 0 {
 		cc.client.Timeout = defaultTimeout
+	}
+
+	if len(cc.userAgents) == 0 {
+		cc.userAgents = []string{defaultUserAgent}
 	}
 
 	return cc
@@ -111,8 +143,14 @@ func (c *ComicClient) PrepareRequest(link, hostname string) (*http.Request, erro
 		req.Header.Set("Referer", link)
 	}
 
-	if c != nil && c.userAgent != "" {
-		req.Header.Set("User-Agent", c.userAgent)
+	if c != nil {
+		req.Header.Set("User-Agent", c.selectUserAgent())
+		for key, value := range c.headers {
+			if strings.EqualFold(key, "user-agent") {
+				continue
+			}
+			req.Header.Set(key, value)
+		}
 	}
 
 	return req, nil
@@ -184,4 +222,25 @@ func (c *ComicClient) wait(ctx context.Context) error {
 		return nil
 	}
 	return c.rateLimiter.Wait(ctx)
+}
+
+func (c *ComicClient) selectUserAgent() string {
+	if len(c.userAgents) == 0 {
+		return defaultUserAgent
+	}
+	if len(c.userAgents) == 1 {
+		return c.userAgents[0]
+	}
+	index := int(atomic.AddUint32(&c.uaCounter, 1)-1) % len(c.userAgents)
+	return c.userAgents[index]
+}
+
+func filterNonEmpty(values []string) []string {
+	var out []string
+	for _, value := range values {
+		if trimmed := strings.TrimSpace(value); trimmed != "" {
+			out = append(out, trimmed)
+		}
+	}
+	return out
 }

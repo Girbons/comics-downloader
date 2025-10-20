@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/Girbons/comics-downloader/cmd/app"
 	"github.com/Girbons/comics-downloader/internal/version"
@@ -42,6 +43,9 @@ var (
 	issuesRange string
 	// string to be used for each issue/chapter folder
 	issueFolderName string
+	// request customization
+	userAgentsCSV string
+	sessionCookie string
 )
 
 func init() {
@@ -62,6 +66,8 @@ func init() {
 	flag.StringVar(&outputFolder, "output", "", "Folder where the comics will be saved")
 	flag.StringVar(&issuesRange, "range", "", "Range of issues to download, example 3-9")
 	flag.StringVar(&issueFolderName, "issue-folder-name", "issue-", "Folder name where each issue/chapter will be saved, default 'issue-#'")
+	flag.StringVar(&userAgentsCSV, "user-agents", "", "Comma-separated list of alternative User-Agent values to rotate per request")
+	flag.StringVar(&sessionCookie, "session-cookie", "", "Custom Cookie header value (e.g., cf_clearance=...; other=...) for protected sources")
 
 	flag.IntVar(&daemonTimeout, "daemon-timeout", 600, "DaemonTimeout (seconds), specifies how often the downloader runs")
 }
@@ -85,6 +91,8 @@ func buildOptions() config.Options {
 		CreateDefaultPath:   createDefaultPath,
 		IssuesRange:         issuesRange,
 		IssueFolderName:     issueFolderName,
+		UserAgents:          splitAndTrim(userAgentsCSV),
+		SessionCookie:       strings.TrimSpace(sessionCookie),
 	}
 }
 
@@ -98,4 +106,22 @@ func main() {
 
 	opts := buildOptions()
 	app.Run(&opts)
+}
+
+func splitAndTrim(csv string) []string {
+	if strings.TrimSpace(csv) == "" {
+		return nil
+	}
+	parts := strings.Split(csv, ",")
+	var out []string
+	for _, part := range parts {
+		trimmed := strings.TrimSpace(part)
+		if trimmed != "" {
+			out = append(out, trimmed)
+		}
+	}
+	if len(out) == 0 {
+		return nil
+	}
+	return out
 }

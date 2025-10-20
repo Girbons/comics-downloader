@@ -23,6 +23,8 @@ func TestBuildOptionsCopiesGlobals(t *testing.T) {
 		daemonTimeout       int
 		issuesRange         string
 		issueFolderName     string
+		userAgentsCSV       string
+		sessionCookie       string
 	}{
 		debug:               debug,
 		all:                 all,
@@ -41,6 +43,8 @@ func TestBuildOptionsCopiesGlobals(t *testing.T) {
 		daemonTimeout:       daemonTimeout,
 		issuesRange:         issuesRange,
 		issueFolderName:     issueFolderName,
+		userAgentsCSV:       userAgentsCSV,
+		sessionCookie:       sessionCookie,
 	}
 	defer func() {
 		debug = prev.debug
@@ -60,6 +64,8 @@ func TestBuildOptionsCopiesGlobals(t *testing.T) {
 		daemonTimeout = prev.daemonTimeout
 		issuesRange = prev.issuesRange
 		issueFolderName = prev.issueFolderName
+		userAgentsCSV = prev.userAgentsCSV
+		sessionCookie = prev.sessionCookie
 	}()
 
 	debug = true
@@ -79,6 +85,8 @@ func TestBuildOptionsCopiesGlobals(t *testing.T) {
 	daemonTimeout = 42
 	issuesRange = "1-5"
 	issueFolderName = "chapter-"
+	userAgentsCSV = "UA1, UA2 ,"
+	sessionCookie = "cf_clearance=abc123; other=value"
 
 	opts := buildOptions()
 
@@ -104,5 +112,13 @@ func TestBuildOptionsCopiesGlobals(t *testing.T) {
 
 	if opts.IssuesRange != "1-5" {
 		t.Fatalf("expected issues range to be copied, got %q", opts.IssuesRange)
+	}
+
+	if len(opts.UserAgents) != 2 || opts.UserAgents[0] != "UA1" || opts.UserAgents[1] != "UA2" {
+		t.Fatalf("expected user agents to be parsed, got %+v", opts.UserAgents)
+	}
+
+	if opts.SessionCookie != "cf_clearance=abc123; other=value" {
+		t.Fatalf("expected session cookie to be copied, got %q", opts.SessionCookie)
 	}
 }

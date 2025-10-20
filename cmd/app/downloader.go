@@ -36,15 +36,15 @@ type Runner struct {
 
 // NewRunner returns a Runner with default factories.
 func NewRunner(base config.Options) *Runner {
+	clientOpts := buildClientOptions(base)
+
 	return &Runner{
 		base: base,
 		loggerFactory: func(bind bool, messages chan string) *logger.Logger {
 			return logger.NewLogger(bind, messages)
 		},
 		clientFactory: func() *httpclient.ComicClient {
-			return httpclient.NewComicClient(
-				httpclient.WithUserAgent(fmt.Sprintf("comics-downloader/%s", version.Tag)),
-			)
+			return httpclient.NewComicClient(clientOpts...)
 		},
 		sleep: time.Sleep,
 	}
@@ -192,4 +192,39 @@ func GuiRun(options *config.Options) {
 func Run(options *config.Options) {
 	runner := NewRunner(*options)
 	runner.Run()
+}
+
+func buildClientOptions(base config.Options) []httpclient.Option {
+	defaultUA := fmt.Sprintf("comics-downloader/%s", version.Tag)
+	agents := mergeUserAgents(defaultUA, base.UserAgents)
+	opts := []httpclient.Option{httpclient.WithUserAgents(agents)}
+
+	if strings.TrimSpace(base.SessionCookie) != "" {
+		opts = append(opts, httpclient.WithHeaders(map[string]string{
+			"Cookie": base.SessionCookie,
+		}))
+	}
+
+	return opts
+}
+
+func mergeUserAgents(defaultAgent string, provided []string) []string {
+	candidates := append([]string{defaultAgent}, provided...)
+	seen := make(map[string]struct{}, len(candidates))
+	var result []string
+	for _, candidate := range candidates {
+		trimmed := strings.TrimSpace(candidate)
+		if trimmed == "" {
+			continue
+		}
+		if _, ok := seen[trimmed]; ok {
+			continue
+		}
+		seen[trimmed] = struct{}{}
+		result = append(result, trimmed)
+	}
+	if len(result) == 0 {
+		result = append(result, defaultAgent)
+	}
+	return result
 }

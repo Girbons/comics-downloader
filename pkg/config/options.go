@@ -25,6 +25,8 @@ type Options struct {
 	Source              string
 	IssuesRange         string
 	IssueFolderName     string
+	UserAgents          []string
+	SessionCookie       string
 
 	Client *http.ComicClient
 	Logger *logger.Logger
