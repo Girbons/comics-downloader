@@ -41,8 +41,12 @@ func NewRunner(base config.Options) *Runner {
 		loggerFactory: func(bind bool, messages chan string) *logger.Logger {
 			return logger.NewLogger(bind, messages)
 		},
-		clientFactory: httpclient.NewComicClient,
-		sleep:         time.Sleep,
+		clientFactory: func() *httpclient.ComicClient {
+			return httpclient.NewComicClient(
+				httpclient.WithUserAgent(fmt.Sprintf("comics-downloader/%s", version.Tag)),
+			)
+		},
+		sleep: time.Sleep,
 	}
 }
 
