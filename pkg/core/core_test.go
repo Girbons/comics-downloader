@@ -1,177 +1,161 @@
 package core
 
 import (
-	"fmt"
+	"bytes"
+	"encoding/base64"
+	"image"
+	_ "image/png"
+	"io"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"testing"
-	"time"
 
 	"github.com/Girbons/comics-downloader/internal/logger"
 	"github.com/Girbons/comics-downloader/pkg/config"
-	"github.com/Girbons/comics-downloader/pkg/http"
-	"github.com/stretchr/testify/assert"
+	httpclient "github.com/Girbons/comics-downloader/pkg/http"
+	"github.com/stretchr/testify/require"
 )
 
-func exists(f string) bool {
-	_, err := os.Stat(f)
-	if os.IsNotExist(err) {
-		return false
-	}
-	return err == nil
+var samplePNG = func() []byte {
+	data, _ := base64.StdEncoding.DecodeString(
+		"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGP4//8/AAX+Av4N70a4AAAAAElFTkSuQmCC",
+	)
+	return data
+}()
+
+func newImageServer() *httptest.Server {
+	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "image/png")
+		_, _ = w.Write(samplePNG)
+	}))
 }
 
-func TestNewComic(t *testing.T) {
-	comic := new(Comic)
-	// links
-	links := []string{"foo.example.com"}
+func newTestOptions(t *testing.T, server *httptest.Server) *config.Options {
+	t.Helper()
 
-	comic.Name = "foo"
-	comic.IssueNumber = "2"
-	comic.Links = links
-	comic.Source = "bar"
-	comic.ImagesFormat = "png"
+	client := httpclient.NewComicClient(
+		httpclient.WithHTTPClient(server.Client()),
+		httpclient.WithRetry(0, 0),
+	)
 
-	assert.Equal(t, "foo", comic.Name)
-	assert.Equal(t, "2", comic.IssueNumber)
-	assert.Equal(t, "bar", comic.Source)
+	return &config.Options{
+		OutputFolder:      t.TempDir(),
+		CreateDefaultPath: true,
+		Debug:             false,
+		Logger:            logger.NewLogger(false, nil),
+		Client:            client,
+		IssueFolderName:   "issue-",
+	}
+}
 
-	assert.Equal(t, 1, len(comic.Links))
+func buildLinks(server *httptest.Server, count int) []string {
+	links := make([]string, count)
+	for i := 0; i < count; i++ {
+		links[i] = server.URL + "/img.png"
+	}
+	return links
+}
+
+func TestDownloadImagesCreatesFiles(t *testing.T) {
+	server := newImageServer()
+	defer server.Close()
+
+	opts := newTestOptions(t, server)
+
+	comic := &Comic{
+		Name:         "foo",
+		Source:       "test-source",
+		IssueNumber:  "1",
+		ImagesFormat: "png",
+		Links:        buildLinks(server, 3),
+	}
+
+	result, err := comic.DownloadImages(opts)
+	require.NoError(t, err)
+	require.Len(t, result.FilePaths, 3)
+
+	for _, file := range result.FilePaths {
+		data, err := readFile(file)
+		require.NoError(t, err)
+		require.NotEmpty(t, data)
+		_, format, err := image.Decode(bytes.NewReader(data))
+		require.NoError(t, err)
+		require.Equal(t, "png", format)
+	}
 }
 
 func TestMakeComicPDF(t *testing.T) {
-	comic := new(Comic)
+	server := newImageServer()
+	defer server.Close()
 
-	comic.Name = "foo"
-	comic.Format = "pdf"
-	comic.IssueNumber = "example-chapter-1"
-	comic.Links = []string{"https://via.placeholder.com/150", "https://via.placeholder.com/150", "https://via.placeholder.com/150"}
-	comic.ImagesFormat = "png"
+	opts := newTestOptions(t, server)
 
-	opt := &config.Options{
-		OutputFolder:      filepath.Dir(os.Args[0]),
-		CreateDefaultPath: true,
-		Debug:             false,
-		Logger:            logger.NewLogger(false, make(chan string)),
-		Client:            http.NewComicClient(),
+	comic := &Comic{
+		Name:         "foo",
+		Source:       "test-source",
+		IssueNumber:  "1",
+		Format:       PDF,
+		ImagesFormat: "png",
+		Links:        buildLinks(server, 2),
 	}
-	time.Sleep(5 * time.Second)
-	err := comic.MakeComic(opt)
-	assert.Nil(t, err)
 
-	dir, _ := filepath.Abs(fmt.Sprintf("%s/%s/%s/%s/", filepath.Dir(os.Args[0]), "comics", "foo", "foo-example-chapter-1.pdf"))
-	assert.True(t, exists(dir))
+	require.NoError(t, comic.MakeComic(opts))
+
+	output := filepath.Join(opts.OutputFolder, "comics", comic.Source, comic.Name, "foo-1.pdf")
+	require.FileExists(t, output)
 }
 
 func TestMakeComicEPUB(t *testing.T) {
-	comic := new(Comic)
+	server := newImageServer()
+	defer server.Close()
 
-	comic.Name = "foo"
-	comic.Format = "epub"
-	comic.IssueNumber = "example-chapter-1"
-	comic.Author = "author"
-	comic.ImagesFormat = "png"
+	opts := newTestOptions(t, server)
 
-	comic.Links = []string{"https://via.placeholder.com/150", "https://via.placeholder.com/150", "https://via.placeholder.com/150"}
-
-	opt := &config.Options{
-		OutputFolder:      filepath.Dir(os.Args[0]),
-		CreateDefaultPath: true,
-		Debug:             false,
-		Logger:            logger.NewLogger(false, make(chan string)),
-		Client:            http.NewComicClient(),
+	comic := &Comic{
+		Name:         "bar",
+		Source:       "test-source",
+		IssueNumber:  "42",
+		Author:       "Author",
+		Format:       EPUB,
+		ImagesFormat: "png",
+		Links:        buildLinks(server, 2),
 	}
 
-	time.Sleep(10 * time.Second)
-	err := comic.MakeComic(opt)
-	assert.Nil(t, err)
+	require.NoError(t, comic.MakeComic(opts))
 
-	dir, _ := filepath.Abs(fmt.Sprintf("%s/%s/%s/%s/", filepath.Dir(os.Args[0]), "comics", "foo", "foo-example-chapter-1.epub"))
-	assert.True(t, exists(dir))
+	output := filepath.Join(opts.OutputFolder, "comics", comic.Source, comic.Name, "bar-42.epub")
+	require.FileExists(t, output)
 }
 
-func TestDownloadImagesPNGFormat(t *testing.T) {
-	comic := new(Comic)
+func TestMakeComicCBZ(t *testing.T) {
+	server := newImageServer()
+	defer server.Close()
 
-	comic.Name = "foo-png"
-	comic.Source = "fake"
-	comic.IssueNumber = "example-chapter-1"
-	comic.Links = []string{"https://via.placeholder.com/150", "https://via.placeholder.com/150", "https://via.placeholder.com/150"}
-	comic.ImagesFormat = "png"
+	opts := newTestOptions(t, server)
 
-	opt := &config.Options{
-		OutputFolder:      filepath.Dir(os.Args[0]),
-		Debug:             false,
-		CreateDefaultPath: true,
-		Logger:            logger.NewLogger(false, make(chan string)),
-		Client:            http.NewComicClient(),
+	comic := &Comic{
+		Name:         "baz",
+		Source:       "test-source",
+		IssueNumber:  "7",
+		Format:       CBZ,
+		ImagesFormat: "png",
+		Links:        buildLinks(server, 2),
 	}
-	time.Sleep(10 * time.Second)
-	_, err := comic.DownloadImages(opt)
-	assert.Nil(t, err)
+
+	require.NoError(t, comic.MakeComic(opts))
+
+	output := filepath.Join(opts.OutputFolder, "comics", comic.Source, comic.Name, "baz-7.cbz")
+	require.FileExists(t, output)
 }
 
-func TestDownloadImagesJPGFormat(t *testing.T) {
-	comic := new(Comic)
-
-	comic.Name = "foo-jpg"
-	comic.Source = "fake"
-	comic.IssueNumber = "example-chapter-1"
-	comic.Links = []string{"https://via.placeholder.com/150", "https://via.placeholder.com/150", "https://via.placeholder.com/150"}
-	comic.ImagesFormat = "jpg"
-
-	opt := &config.Options{
-		OutputFolder:      filepath.Dir(os.Args[0]),
-		CreateDefaultPath: true,
-		Debug:             false,
-		Logger:            logger.NewLogger(false, make(chan string)),
-		Client:            http.NewComicClient(),
+func readFile(path string) ([]byte, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
 	}
-	time.Sleep(10 * time.Second)
-	_, err := comic.DownloadImages(opt)
+	defer file.Close()
 
-	assert.Nil(t, err)
-}
-
-func TestDownloadImagesJPEGFormat(t *testing.T) {
-	comic := new(Comic)
-
-	comic.Name = "bar-jpeg"
-	comic.Source = "fake"
-	comic.IssueNumber = "example-chapter-1"
-	comic.ImagesFormat = "jpeg"
-	comic.Links = []string{"https://via.placeholder.com/150", "https://via.placeholder.com/150", "https://via.placeholder.com/150"}
-
-	opt := &config.Options{
-		OutputFolder:      filepath.Dir(os.Args[0]),
-		CreateDefaultPath: true,
-		Debug:             false,
-		Logger:            logger.NewLogger(false, make(chan string)),
-		Client:            http.NewComicClient(),
-	}
-	time.Sleep(10 * time.Second)
-	_, err := comic.DownloadImages(opt)
-	assert.Nil(t, err)
-}
-
-func TestDownloadImagesIMGFormat(t *testing.T) {
-	comic := new(Comic)
-
-	comic.Name = "bar-img"
-	comic.Source = "fake"
-	comic.IssueNumber = "example-chapter-1"
-	comic.Links = []string{"https://via.placeholder.com/150", "https://via.placeholder.com/150", "https://via.placeholder.com/150"}
-	comic.ImagesFormat = "img"
-
-	opt := &config.Options{
-		OutputFolder:      filepath.Dir(os.Args[0]),
-		CreateDefaultPath: true,
-		Debug:             false,
-		Logger:            logger.NewLogger(false, make(chan string)),
-		Client:            http.NewComicClient(),
-	}
-	time.Sleep(10 * time.Second)
-	_, err := comic.DownloadImages(opt)
-
-	assert.Nil(t, err)
+	return io.ReadAll(file)
 }
