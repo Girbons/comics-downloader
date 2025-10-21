@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 
 	"github.com/Girbons/comics-downloader/internal/logger"
 	"github.com/Girbons/comics-downloader/pkg/config"
@@ -41,12 +42,14 @@ func newTestOptions(t *testing.T, server *httptest.Server) *config.Options {
 	)
 
 	return &config.Options{
-		OutputFolder:      t.TempDir(),
-		CreateDefaultPath: true,
-		Debug:             false,
-		Logger:            logger.NewLogger(false, nil),
-		Client:            client,
-		IssueFolderName:   "issue-",
+		OutputFolder:       t.TempDir(),
+		CreateDefaultPath:  true,
+		Debug:              false,
+		Logger:             logger.NewLogger(false, nil),
+		Client:             client,
+		IssueFolderName:    "issue-",
+		RequestDelay:       time.Nanosecond,
+		RequestDelayJitter: 0,
 	}
 }
 

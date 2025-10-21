@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"image"
+	"math/rand"
 	"os"
 	"path"
 	"path/filepath"
@@ -231,6 +232,19 @@ func (comic *Comic) DownloadImages(options *config.Options) (*DownloadResult, er
 	progress := progressbar.NewOptions(len(comic.Links), progressbar.OptionSetRenderBlankState(true))
 	format := util.ImageType(comic.ImagesFormat)
 
+	requestDelay := options.RequestDelay
+	requestJitter := options.RequestDelayJitter
+	if requestDelay < 0 {
+		requestDelay = 0
+	}
+	if requestJitter < 0 {
+		requestJitter = 0
+	}
+	if requestDelay == 0 && requestJitter == 0 {
+		requestDelay = config.DefaultRequestDelay
+		requestJitter = config.DefaultRequestDelayJitter
+	}
+
 	type downloadJob struct {
 		index int
 		link  string
@@ -251,6 +265,8 @@ func (comic *Comic) DownloadImages(options *config.Options) (*DownloadResult, er
 	group, ctx := errgroup.WithContext(ctx)
 	sem := semaphore.NewWeighted(int64(runtime.NumCPU()))
 	var mu sync.Mutex
+	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
+	var rngMu sync.Mutex
 
 	for _, job := range jobs {
 		job := job
@@ -262,6 +278,17 @@ func (comic *Comic) DownloadImages(options *config.Options) (*DownloadResult, er
 
 			reqCtx, cancelReq := context.WithTimeout(ctx, 30*time.Second)
 			defer cancelReq()
+
+			sleepDuration := requestDelay
+			if requestJitter > 0 {
+				rngMu.Lock()
+				extra := time.Duration(rng.Int63n(int64(requestJitter)))
+				rngMu.Unlock()
+				sleepDuration += extra
+			}
+			if sleepDuration > 0 {
+				time.Sleep(sleepDuration)
+			}
 
 			request, err := client.PrepareRequest(job.link, comic.Source)
 			if err != nil {
