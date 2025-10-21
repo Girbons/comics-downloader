@@ -1,103 +1,93 @@
 package sites
 
-//import (
-//	"testing"
-//
-//	"github.com/Girbons/comics-downloader/internal/logger"
-//	"github.com/Girbons/comics-downloader/pkg/config"
-//	"github.com/Girbons/comics-downloader/pkg/core"
-//	"github.com/stretchr/testify/assert"
-//)
-//
-//const (
-//	URL    = "https://www.mangareader.net/naruto/1/"
-//	SOURCE = "www.mangareader.net"
-//)
-//
-//func TestMangareaderGetInfo(t *testing.T) {
-//	mr := new(Mangareader)
-//	name, issueNumber := mr.GetInfo(URL)
-//
-//	assert.Equal(t, "naruto", name)
-//	assert.Equal(t, "1", issueNumber)
-//}
-//
-//func TestRetrieveMangareaderImageLinks(t *testing.T) {
-//	opt :=
-//		&config.Options{
-//			URL:    URL,
-//			Source: SOURCE,
-//			All:    false,
-//			Last:   false,
-//			Debug:  false,
-//			Logger: logger.NewLogger(false, make(chan string)),
-//		}
-//	mr := NewMangareader(opt)
-//
-//	comic := new(core.Comic)
-//	comic.URLSource = URL
-//	comic.Name = "naruto"
-//	comic.IssueNumber = "1"
-//	comic.Source = SOURCE
-//
-//	links, err := mr.retrieveImageLinks(comic)
-//
-//	assert.Equal(t, 53, len(links))
-//	assert.Nil(t, err)
-//}
-//
-//func TestSetupMangareader(t *testing.T) {
-//	opt :=
-//		&config.Options{
-//			URL:    URL,
-//			Source: SOURCE,
-//			All:    false,
-//			Last:   false,
-//			Debug:  false,
-//			Logger: logger.NewLogger(false, make(chan string)),
-//		}
-//	mr := NewMangareader(opt)
-//
-//	comic := new(core.Comic)
-//	comic.Name = "naruto"
-//	comic.IssueNumber = "1"
-//	comic.URLSource = URL
-//	comic.Source = SOURCE
-//
-//	err := mr.Initialize(comic)
-//
-//	assert.Nil(t, err)
-//	assert.Equal(t, 53, len(comic.Links))
-//}
-//
-//func TestMangareaderRetrieveIssueLinks(t *testing.T) {
-//	opt :=
-//		&config.Options{
-//			URL:    "https://www.mangareader.net/naruto",
-//			All:    false,
-//			Last:   false,
-//			Debug:  false,
-//			Logger: logger.NewLogger(false, make(chan string)),
-//		}
-//	mr := NewMangareader(opt)
-//	issues, err := mr.RetrieveIssueLinks()
-//
-//	assert.Nil(t, err)
-//	assert.Equal(t, 700, len(issues))
-//}
-//
-//func TestMangareaderRetrieveLastIssueLink(t *testing.T) {
-//	opt :=
-//		&config.Options{
-//			URL:    "https://www.mangareader.net/naruto",
-//			All:    false,
-//			Last:   true,
-//			Debug:  false,
-//			Logger: logger.NewLogger(false, make(chan string)),
-//		}
-//	mr := NewMangareader(opt)
-//	issue, err := mr.retrieveLastIssue("https://www.mangareader.net/naruto")
-//
-//	assert.Nil(t, err)
-//	assert.Equal(t, "https://www.mangareader.net/naruto/700", issue)
-//}
+import (
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
+	"github.com/Girbons/comics-downloader/internal/logger"
+	"github.com/Girbons/comics-downloader/pkg/config"
+	"github.com/Girbons/comics-downloader/pkg/core"
+	"github.com/stretchr/testify/require"
+)
+
+const (
+	mangareaderIssuePath = "/naruto/1/"
+	mangareaderBasePath  = "/naruto"
+	mangareaderLastIssue = "/naruto/700"
+)
+
+func newMangareaderServer() *httptest.Server {
+	issueHTML := `
+        <html>
+            <body>
+                <img data-src="https://cdn.example.com/naruto/001.jpg" />
+                <img data-src="https://cdn.example.com/naruto/002.jpg" />
+            </body>
+        </html>`
+
+	baseHTML := `
+        <html>
+            <body>
+                <table class="d48">
+                    <tr><td><a href="/naruto/1/">Chapter 1</a></td></tr>
+                    <tr><td><a href="/naruto/2/">Chapter 2</a></td></tr>
+                </table>
+                <ul class="d44">
+                    <li><a href="` + mangareaderLastIssue + `">Latest</a></li>
+                </ul>
+            </body>
+        </html>`
+
+	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case mangareaderIssuePath:
+			_, _ = w.Write([]byte(issueHTML))
+		case "/naruto/2/":
+			_, _ = w.Write([]byte(issueHTML))
+		case mangareaderBasePath:
+			_, _ = w.Write([]byte(baseHTML))
+		case mangareaderLastIssue:
+			_, _ = w.Write([]byte("<html></html>"))
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+}
+
+func TestMangareaderScraper(t *testing.T) {
+	server := newMangareaderServer()
+	defer server.Close()
+
+	opts := &config.Options{
+		URL:    server.URL + mangareaderIssuePath,
+		Logger: logger.NewLogger(false, nil),
+	}
+
+	scraper := NewMangareader(opts)
+
+	comic := &core.Comic{URLSource: server.URL + mangareaderIssuePath}
+	require.NoError(t, scraper.Initialize(comic))
+	require.Equal(t, []string{
+		"https://cdn.example.com/naruto/001.jpg",
+		"https://cdn.example.com/naruto/002.jpg",
+	}, comic.Links)
+
+	opts.All = true
+	opts.URL = server.URL + mangareaderIssuePath
+	scraper = NewMangareader(opts)
+	issues, err := scraper.RetrieveIssueLinks()
+	require.NoError(t, err)
+	require.Equal(t, []string{
+		"https://mangareader.tv" + mangareaderIssuePath,
+		"https://mangareader.tv/naruto/2/",
+	}, issues)
+
+	opts.Last = true
+	opts.All = false
+	opts.URL = server.URL + mangareaderBasePath
+	scraper = NewMangareader(opts)
+	lastIssues, err := scraper.RetrieveIssueLinks()
+	require.NoError(t, err)
+	require.Equal(t, []string{"https://mangareader.tv" + mangareaderLastIssue}, lastIssues)
+}

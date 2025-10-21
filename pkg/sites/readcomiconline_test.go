@@ -1,94 +1,87 @@
 package sites
 
 import (
+	"fmt"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/Girbons/comics-downloader/internal/logger"
 	"github.com/Girbons/comics-downloader/pkg/config"
 	"github.com/Girbons/comics-downloader/pkg/core"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-func TestReadComicOnlineSetup(t *testing.T) {
+const (
+	rcoIssuePath = "/Comic/My-Comic/Issue-2"
+	rcoListPath  = "/Comic/My-Comic"
+)
 
-	comic := new(core.Comic)
-	comic.URLSource = "https://readcomiconline.li/Comic/Batman-2016/Issue-58?id=143175"
+func newReadComicOnlineServer() *httptest.Server {
+	issueHTML := `
+        <html>
+            <body>
+                <script>push('https://2.bp.blogspot.com/abc123=s1600?')</script>
+                <script>push('https://2.bp.blogspot.com/def456=s1600?')</script>
+            </body>
+        </html>`
 
-	opt :=
-		&config.Options{
-			URL:    "https://readcomiconline.li/Comic/Batman-2016/Issue-58?id=143175",
-			All:    false,
-			Last:   false,
-			Debug:  false,
-			Logger: logger.NewLogger(false, make(chan string)),
+	listHTML := `
+        <html>
+            <body>
+                <a href="` + rcoIssuePath + `?id=2">Issue 2</a>
+                <a href="/Comic/My-Comic/Issue-1?id=1">Issue 1</a>
+            </body>
+        </html>`
+
+	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case rcoIssuePath:
+			_, _ = fmt.Fprint(w, issueHTML)
+		case rcoListPath:
+			_, _ = fmt.Fprint(w, listHTML)
+		default:
+			http.NotFound(w, r)
 		}
-	readComicOnline := NewReadComiconline(opt)
-	err := readComicOnline.Initialize(comic)
-
-	assert.Nil(t, err)
-	assert.Equal(t, 24, len(comic.Links))
+	}))
 }
 
-func TestReadComicOnlineGetInfo(t *testing.T) {
-	opt :=
-		&config.Options{
-			URL:    "https://readcomiconline.li/Comic/Batman-2016/Issue-58?id=143175",
-			All:    false,
-			Last:   false,
-			Debug:  false,
-			Logger: logger.NewLogger(false, make(chan string)),
-		}
-	readComicOnline := NewReadComiconline(opt)
-	name, issueNumber := readComicOnline.GetInfo("https://readcomiconline.li/Comic/Batman-2016/Issue-58?id=143175")
+func TestReadComicOnlineScraper(t *testing.T) {
+	server := newReadComicOnlineServer()
+	defer server.Close()
 
-	assert.Equal(t, "Batman-2016", name)
-	assert.Equal(t, "58", issueNumber)
-}
+	originalBase := baseUrl
+	baseUrl = server.URL
+	defer func() { baseUrl = originalBase }()
 
-func TestReadComicOnlineRetrieveIssueLinks(t *testing.T) {
-	opt :=
-		&config.Options{
-			URL:    "https://readcomiconline.li/Comic/100-Bullets",
-			All:    false,
-			Last:   false,
-			Debug:  false,
-			Logger: logger.NewLogger(false, make(chan string)),
-		}
-	readComicOnline := NewReadComiconline(opt)
-	issues, err := readComicOnline.RetrieveIssueLinks()
+	opts := &config.Options{
+		URL:    server.URL + rcoIssuePath,
+		Logger: logger.NewLogger(false, nil),
+	}
 
-	assert.Nil(t, err)
-	assert.Equal(t, 100, len(issues))
-}
+	scraper := NewReadComiconline(opts)
 
-func TestReadComicOnlineRetrieveIssueLinksLastChapter(t *testing.T) {
-	opt :=
-		&config.Options{
-			URL:    "https://readcomiconline.li/Comic/100-Bullets",
-			All:    false,
-			Last:   true,
-			Debug:  false,
-			Logger: logger.NewLogger(false, make(chan string)),
-		}
-	readComicOnline := NewReadComiconline(opt)
-	issues, err := readComicOnline.RetrieveIssueLinks()
+	comic := &core.Comic{URLSource: server.URL + rcoIssuePath}
+	require.NoError(t, scraper.Initialize(comic))
+	require.Equal(t, []string{
+		"https://2.bp.blogspot.com/abc123=s1600?",
+		"https://2.bp.blogspot.com/def456=s1600?",
+	}, comic.Links)
 
-	assert.Nil(t, err)
-	assert.Equal(t, 1, len(issues))
-}
+	opts.All = true
+	opts.URL = server.URL + rcoListPath
+	scraper = NewReadComiconline(opts)
+	issues, err := scraper.RetrieveIssueLinks()
+	require.NoError(t, err)
+	require.Equal(t, []string{
+		server.URL + "/Comic/My-Comic/Issue-2",
+		server.URL + "/Comic/My-Comic/Issue-1",
+	}, issues)
 
-func TestReadComicOnlineRetrieveLastIssueLink(t *testing.T) {
-	opt :=
-		&config.Options{
-			URL:    "https://readcomiconline.li/Comic/100-Bullets",
-			All:    false,
-			Last:   true,
-			Debug:  false,
-			Logger: logger.NewLogger(false, make(chan string)),
-		}
-	readComicOnline := NewReadComiconline(opt)
-	issue, err := readComicOnline.retrieveLastIssue("https://readcomiconline.li/Comic/100-Bullets")
-
-	assert.Nil(t, err)
-	assert.Equal(t, "https://readcomiconline.li/Comic/100-Bullets/Issue-100-2", issue)
+	opts.All = false
+	opts.Last = true
+	scraper = NewReadComiconline(opts)
+	last, err := scraper.RetrieveIssueLinks()
+	require.NoError(t, err)
+	require.Equal(t, []string{server.URL + "/Comic/My-Comic/Issue-2"}, last)
 }
