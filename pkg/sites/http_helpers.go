@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	urlpkg "net/url"
 
@@ -67,7 +68,11 @@ func fetchBytes(ctx context.Context, client *httpclient.ComicClient, link string
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if closeErr := resp.Body.Close(); closeErr != nil {
+			log.Printf("sites: failed to close response body for %s: %v", link, closeErr)
+		}
+	}()
 
 	if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices {
 		return nil, fmt.Errorf("unexpected status code %d for %s", resp.StatusCode, link)

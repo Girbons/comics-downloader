@@ -1,7 +1,6 @@
 package sites
 
 import (
-	"errors"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -18,7 +17,7 @@ func initializeCollection(issues []string, options *config.Options, base BaseSit
 	var err error
 
 	if len(issues) == 0 {
-		return collection, errors.New("No issues found")
+		return collection, fmt.Errorf("no issues found for URL %q; ensure it points to a specific comic or chapter page", options.URL)
 	}
 
 	var startRange, endRange float64
@@ -43,7 +42,10 @@ func initializeCollection(issues []string, options *config.Options, base BaseSit
 			continue
 		}
 
-		dir, _ := util.PathSetup(options.CreateDefaultPath, options.OutputFolder, options.Source, name)
+		dir, pathErr := util.PathSetup(options.CreateDefaultPath, options.OutputFolder, options.Source, name)
+		if pathErr != nil {
+			return collection, pathErr
+		}
 		fileName := util.GetPathToFile(dir, name, issueNumber, options.Format, options.IssueNumberNameOnly)
 
 		if util.DirectoryOrFileDoesNotExist(fileName) || options.ImagesOnly {
@@ -116,9 +118,17 @@ func LoadComicFromSource(options *config.Options) ([]*core.Comic, error) {
 		return collection, err
 	}
 
+	if options.Logger != nil && options.Debug {
+		options.Logger.Debugf("sites: retrieving issues for %s", options.URL)
+	}
+
 	issues, err = base.RetrieveIssueLinks()
 	if err != nil {
 		return collection, err
+	}
+
+	if options.Logger != nil && options.Debug {
+		options.Logger.Debugf("sites: %d issue(s) discovered for %s", len(issues), options.URL)
 	}
 
 	return initializeCollection(issues, options, base)

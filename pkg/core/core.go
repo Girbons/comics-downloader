@@ -3,9 +3,12 @@ package core
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"fmt"
 	"image"
+	"io"
 	"math/rand"
+	"net/http"
 	"os"
 	"path"
 	"path/filepath"
@@ -125,7 +128,9 @@ func (comic *Comic) makePDF(options *config.Options, images *DownloadResult) err
 				}
 			} else {
 				im, _, err := image.DecodeConfig(img)
-				img.Close()
+				if closeErr := img.Close(); closeErr != nil && options.Logger != nil {
+					options.Logger.Errorf("failed to close image %s: %v", fileName, closeErr)
+				}
 				if err != nil {
 					if options.Logger != nil {
 						options.Logger.Error(err.Error())
@@ -177,7 +182,13 @@ func (comic *Comic) makeCBRZ(options *config.Options, images *DownloadResult) er
 	if err != nil {
 		return err
 	}
-	defer out.Close()
+	defer func() {
+		if out != nil {
+			if closeErr := out.Close(); closeErr != nil && options.Logger != nil {
+				options.Logger.Errorf("failed to close archive %s: %v", zipArchiveName, closeErr)
+			}
+		}
+	}()
 
 	fileMap := make(map[string]string)
 	for _, filePath := range images.FilePaths {
@@ -193,6 +204,11 @@ func (comic *Comic) makeCBRZ(options *config.Options, images *DownloadResult) er
 	if err = format.Archive(context.Background(), out, archiveFiles); err != nil {
 		return err
 	}
+
+	if err = out.Close(); err != nil {
+		return err
+	}
+	out = nil
 
 	if err = os.Rename(zipArchiveName, newName); err != nil {
 		return err
@@ -267,6 +283,7 @@ func (comic *Comic) DownloadImages(options *config.Options) (*DownloadResult, er
 	var mu sync.Mutex
 	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
 	var rngMu sync.Mutex
+	const sniffLimit = 256
 
 	for _, job := range jobs {
 		job := job
@@ -275,6 +292,11 @@ func (comic *Comic) DownloadImages(options *config.Options) (*DownloadResult, er
 		}
 		group.Go(func() error {
 			defer sem.Release(1)
+			defer func() {
+				if progressErr := progress.Add(1); progressErr != nil && options.Logger != nil {
+					options.Logger.Error(progressErr.Error())
+				}
+			}()
 
 			reqCtx, cancelReq := context.WithTimeout(ctx, 30*time.Second)
 			defer cancelReq()
@@ -300,7 +322,54 @@ func (comic *Comic) DownloadImages(options *config.Options) (*DownloadResult, er
 			if err != nil {
 				return err
 			}
-			defer response.Body.Close()
+			defer func() {
+				if closeErr := response.Body.Close(); closeErr != nil {
+					if options.Logger != nil {
+						options.Logger.Errorf("failed to close response body for %s: %v", job.link, closeErr)
+					}
+				}
+			}()
+
+			if response.StatusCode < http.StatusOK || response.StatusCode >= http.StatusMultipleChoices {
+				if options.Logger != nil {
+					options.Logger.Errorf("There was an error while downloading image number: %d - comic issue: %s (status code: %d)", job.index, comic.IssueNumber, response.StatusCode)
+				}
+				return nil
+			}
+
+			data, err := io.ReadAll(response.Body)
+			if err != nil {
+				if options.Logger != nil {
+					options.Logger.Errorf("Failed reading image number: %d - comic issue: %s (%v)", job.index, comic.IssueNumber, err)
+				}
+				return nil
+			}
+
+			if len(data) == 0 {
+				if options.Logger != nil {
+					options.Logger.Errorf("Image number: %d - comic issue: %s returned an empty response body", job.index, comic.IssueNumber)
+				}
+				return nil
+			}
+
+			contentType := strings.ToLower(strings.TrimSpace(response.Header.Get("Content-Type")))
+			if contentType == "" {
+				sniffLen := len(data)
+				if sniffLen > sniffLimit {
+					sniffLen = sniffLimit
+				}
+				contentType = strings.ToLower(http.DetectContentType(data[:sniffLen]))
+			}
+
+			isWebp := strings.HasSuffix(strings.ToLower(job.link), ".webp") || strings.Contains(contentType, "image/webp")
+			if options.Logger != nil && contentType != "" && !strings.HasPrefix(contentType, "image/") {
+				reportLen := len(data)
+				if reportLen > sniffLimit {
+					reportLen = sniffLimit
+				}
+				snippet := base64.StdEncoding.EncodeToString(data[:reportLen])
+				options.Logger.Errorf("Unexpected content type '%s' while downloading image number: %d - url: %s (bytes=%d, snippet_base64=%s)", contentType, job.index, job.link, len(data), snippet)
+			}
 
 			fileName := fmt.Sprintf("%04d-image.%s", job.index, format)
 			targetPath := filepath.Join(dir, fileName)
@@ -309,23 +378,31 @@ func (comic *Comic) DownloadImages(options *config.Options) (*DownloadResult, er
 				return err
 			}
 
-			isWebp := strings.HasSuffix(strings.ToLower(job.link), ".webp")
-			if err := util.SaveImage(imgFile, response.Body, format, isWebp); err != nil {
+			reader := bytes.NewReader(data)
+			if err := util.SaveImage(imgFile, reader, format, isWebp); err != nil {
 				if options.Logger != nil {
-					options.Logger.Errorf("There was an error while downloading image number: %d - comic issue: %s (%v)", job.index, comic.IssueNumber, err)
+					reportLen := len(data)
+					if reportLen > sniffLimit {
+						reportLen = sniffLimit
+					}
+					snippet := base64.StdEncoding.EncodeToString(data[:reportLen])
+					options.Logger.Errorf("There was an error while downloading image number: %d - comic issue: %s (%v) (content-type=%s bytes=%d snippet_base64=%s)", job.index, comic.IssueNumber, err, contentType, len(data), snippet)
 				}
-				imgFile.Close()
-				_ = os.Remove(targetPath)
+				if closeErr := imgFile.Close(); closeErr != nil && options.Logger != nil {
+					options.Logger.Errorf("failed to close image file %s: %v", targetPath, closeErr)
+				}
+				if removeErr := os.Remove(targetPath); removeErr != nil && options.Logger != nil {
+					options.Logger.Errorf("failed to remove incomplete image %s: %v", targetPath, removeErr)
+				}
 			} else {
-				imgFile.Close()
+				if closeErr := imgFile.Close(); closeErr != nil && options.Logger != nil {
+					options.Logger.Errorf("failed to close image file %s: %v", targetPath, closeErr)
+				}
 				mu.Lock()
 				results[job.index] = targetPath
 				mu.Unlock()
 			}
 
-			if progressErr := progress.Add(1); progressErr != nil && options.Logger != nil {
-				options.Logger.Error(progressErr.Error())
-			}
 			return nil
 		})
 	}
@@ -371,7 +448,11 @@ func (comic *Comic) MakeComic(options *config.Options) error {
 	if err != nil {
 		return err
 	}
-	defer os.RemoveAll(result.Dir)
+	defer func() {
+		if err := os.RemoveAll(result.Dir); err != nil && options.Logger != nil {
+			options.Logger.Errorf("failed to remove temporary directory %s: %v", result.Dir, err)
+		}
+	}()
 
 	switch comic.Format {
 	case EPUB:

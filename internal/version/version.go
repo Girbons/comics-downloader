@@ -3,7 +3,9 @@ package version
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"sync"
 	"time"
@@ -18,6 +20,9 @@ const (
 
 // Tag specifies the current release tag. Overridden at build time via -ldflags.
 var Tag = "development"
+
+// ErrInvalidSemverTag indicates that either the current or latest tag is not valid semantic version.
+var ErrInvalidSemverTag = errors.New("invalid semver tag")
 
 type release struct {
 	TagName string `json:"tag_name"`
@@ -64,7 +69,11 @@ func IsNewAvailable(ctx context.Context, client *http.Client) (bool, string, err
 		updateCache(false, "", err)
 		return false, "", err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if closeErr := resp.Body.Close(); closeErr != nil {
+			log.Printf("version: failed to close release response body: %v", closeErr)
+		}
+	}()
 
 	if resp.StatusCode != http.StatusOK {
 		err = fmt.Errorf("unexpected status code: %d", resp.StatusCode)
@@ -85,7 +94,7 @@ func IsNewAvailable(ctx context.Context, client *http.Client) (bool, string, err
 	latest := releases[0]
 
 	if !semver.IsValid(Tag) || !semver.IsValid(latest.TagName) {
-		err = fmt.Errorf("invalid semver tag (current=%q latest=%q)", Tag, latest.TagName)
+		err = fmt.Errorf("%w (current=%q latest=%q)", ErrInvalidSemverTag, Tag, latest.TagName)
 		updateCache(false, "", err)
 		return false, "", err
 	}

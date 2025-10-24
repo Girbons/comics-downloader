@@ -197,7 +197,9 @@ func (c *ComicClient) Do(req *http.Request) (*http.Response, error) {
 
 		if resp.StatusCode >= 500 {
 			lastErr = fmt.Errorf("server error: %d", resp.StatusCode)
-			resp.Body.Close()
+			if closeErr := resp.Body.Close(); closeErr != nil {
+				lastErr = fmt.Errorf("%w; close error: %v", lastErr, closeErr)
+			}
 			continue
 		}
 
