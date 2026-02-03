@@ -36,9 +36,12 @@ func (r *Readallcomics) retrieveImageLinks(comic *core.Comic) ([]string, error) 
 
 	images := document.FindAll("img")
 	for _, img := range images {
-		url := img.Attrs()["src"]
-		if util.IsURLValid(url) {
-			links = append(links, url)
+		src, ok := img.Attrs()["src"]
+		if !ok {
+			continue
+		}
+		if util.IsURLValid(src) && !util.IsValueInSlice(src, links) {
+			links = append(links, src)
 		}
 	}
 
@@ -61,21 +64,76 @@ func (r *Readallcomics) getIssues(url string) ([]string, error) {
 	doc := soup.HTMLParse(response)
 
 	if strings.Contains(url, "category") {
-		chapters := doc.Find("ul", "class", "list-story").FindAll("a")
-		for _, chapter := range chapters {
-			issueUrl := chapter.Attrs()["href"]
-			if util.IsURLValid(issueUrl) {
-				links = append(links, issueUrl)
-			}
+		chapterList := doc.Find("ul", "class", "list-story")
+		if chapterList.Error != nil {
+			return nil, fmt.Errorf("readallcomics: unable to find chapter list on %s", url)
+		}
 
+		for _, chapter := range chapterList.FindAll("a") {
+			issueURL, ok := chapter.Attrs()["href"]
+			if !ok {
+				continue
+			}
+			issueURL = strings.TrimSpace(issueURL)
+			if issueURL == "" {
+				continue
+			}
+			if !strings.HasPrefix(issueURL, "http") {
+				issueURL = fmt.Sprintf("%s/%s", strings.TrimRight(DefaultUrl, "/"), strings.TrimLeft(issueURL, "/"))
+			}
+			if util.IsURLValid(issueURL) && !util.IsValueInSlice(issueURL, links) {
+				links = append(links, issueURL)
+			}
 		}
 	} else {
-		chapters := doc.Find("select", "id", "selectbox").FindAll("option")
-		for _, chapter := range chapters {
-			issueUrl := chapter.Attrs()["value"]
-			if util.IsURLValid(issueUrl) {
-				links = append(links, issueUrl)
+		selectBox := doc.Find("select", "id", "selectbox")
+		if selectBox.Error == nil {
+			for _, chapter := range selectBox.FindAll("option") {
+				issueURL, ok := chapter.Attrs()["value"]
+				if !ok {
+					continue
+				}
+				issueURL = strings.TrimSpace(issueURL)
+				if issueURL == "" {
+					continue
+				}
+				if !strings.HasPrefix(issueURL, "http") {
+					issueURL = fmt.Sprintf("%s/%s", strings.TrimRight(DefaultUrl, "/"), strings.TrimLeft(issueURL, "/"))
+				}
+				if util.IsURLValid(issueURL) && !util.IsValueInSlice(issueURL, links) {
+					links = append(links, issueURL)
+				}
 			}
+		}
+
+		if len(links) == 0 {
+			// fallback: scan for anchors that point to issues
+			for _, chapter := range doc.FindAll("a") {
+				issueURL, ok := chapter.Attrs()["href"]
+				if !ok {
+					continue
+				}
+				issueURL = strings.TrimSpace(issueURL)
+				if issueURL == "" {
+					continue
+				}
+				if !strings.HasPrefix(issueURL, "http") {
+					issueURL = fmt.Sprintf("%s/%s", strings.TrimRight(DefaultUrl, "/"), strings.TrimLeft(issueURL, "/"))
+				}
+				if !strings.Contains(issueURL, DefaultUrl) {
+					continue
+				}
+				if strings.Contains(issueURL, "/category/") {
+					continue
+				}
+				if util.IsURLValid(issueURL) && !util.IsValueInSlice(issueURL, links) {
+					links = append(links, issueURL)
+				}
+			}
+		}
+
+		if len(links) == 0 {
+			return nil, fmt.Errorf("readallcomics: unable to find issue references on %s", url)
 		}
 	}
 
@@ -101,6 +159,10 @@ func (r *Readallcomics) RetrieveIssueLinks() ([]string, error) {
 		chapters, err := r.getIssues(url)
 		if err != nil {
 			return nil, err
+		}
+
+		if len(chapters) == 0 {
+			return nil, fmt.Errorf("readallcomics: no chapters found at %s", url)
 		}
 
 		if r.options.Last {
