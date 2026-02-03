@@ -63,12 +63,21 @@ func deobfuscateUrl(imageLink string) (string, error) {
 
 func (c *ReadComicOnline) retrieveImageLinks(comic *core.Comic) ([]string, error) {
 	var links []string
+	const debugSnippetLimit = 4096
 
 	comic.URLSource = strings.Split(comic.URLSource, "?")[0]
+	fetchURL := comic.URLSource + "?quality=hd&readType=1"
 
-	response, err := soup.Get(comic.URLSource + "?quality=hd&readType=1")
+	if c.options.Debug && c.options.Logger != nil {
+		c.options.Logger.Debugf("readcomiconline: fetching %s", fetchURL)
+	}
+
+	response, err := soup.Get(fetchURL)
 	if err != nil {
-		return nil, err
+		if c.options.Logger != nil {
+			c.options.Logger.Errorf("readcomiconline: request to %s failed: %v", fetchURL, err)
+		}
+		return nil, fmt.Errorf("readcomiconline: fetch %s: %w", fetchURL, err)
 	}
 
 	re := regexp.MustCompile(`push\(\'(.*?)\'\)`)
@@ -87,7 +96,24 @@ func (c *ReadComicOnline) retrieveImageLinks(comic *core.Comic) ([]string, error
 		}
 	}
 
-	if c.options.Debug {
+	if c.options.Debug && c.options.Logger != nil {
+		c.options.Logger.Debugf("readcomiconline: found %d obfuscated entries, %d valid links for %s", len(match), len(links), comic.URLSource)
+		snippet := response
+		if len(snippet) > debugSnippetLimit {
+			snippet = snippet[:debugSnippetLimit]
+		}
+		encoded := base64.StdEncoding.EncodeToString([]byte(snippet))
+		c.options.Logger.Debugf("readcomiconline: response snippet (base64, trimmed to %d bytes) = %s", len(snippet), encoded)
+		if len(match) > 0 {
+			c.options.Logger.Debugf("readcomiconline: first obfuscated entry (base64) = %s", base64.StdEncoding.EncodeToString([]byte(match[0][1])))
+		}
+		if len(links) > 0 {
+			preview := links[0]
+			if len(preview) > 256 {
+				preview = preview[:256] + "..."
+			}
+			c.options.Logger.Debugf("readcomiconline: first decoded link = %s", preview)
+		}
 		c.options.Logger.Debug(fmt.Sprintf("Image Links found: %s", strings.Join(links, " ")))
 	}
 
