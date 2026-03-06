@@ -201,7 +201,7 @@ func (c *ReadComicOnline) GetInfo(url string) (string, string) {
 // on ReadComicOnline.to
 func (c *ReadComicOnline) Initialize(comic *core.ComicIssue) error {
 	links, err := c.retrieveImageLinks(comic)
-	comic.Links = links
+	comic.ImageLinks = links
 
 	return err
 }

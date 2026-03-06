@@ -141,7 +141,7 @@ func (m *Mangatown) GetInfo(url string) (string, string) {
 // Initialize loads links and metadata from mangatown
 func (m *Mangatown) Initialize(comic *core.ComicIssue) error {
 	links, err := m.retrieveImageLinks(comic)
-	comic.Links = links
+	comic.ImageLinks = links
 
 	return err
 }

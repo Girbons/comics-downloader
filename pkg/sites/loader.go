@@ -14,7 +14,7 @@ import (
 
 func initializeCollection(issues []string, options *config.Options, base BaseSite) ([]*core.ComicIssue, error) {
 	var collection []*core.ComicIssue
-	var err error
+	// var err error
 
 	if len(issues) == 0 {
 		return collection, fmt.Errorf("no issues found for URL %q; ensure it points to a specific comic or chapter page", options.URL)
@@ -42,13 +42,19 @@ func initializeCollection(issues []string, options *config.Options, base BaseSit
 			continue
 		}
 
+		outputFormat, err := core.ToComicOutputFormat(options.OutputFormat)
+		if err != nil {
+			return collection, err
+		}
+
 		dir, pathErr := util.PathSetup(options.CreateDefaultPath, options.OutputFolder, options.SourceName, name)
 		if pathErr != nil {
 			return collection, pathErr
 		}
-		fileName := util.GetPathToFile(dir, name, issueNumber, options.Format, options.IssueNumberNameOnly)
+		fileName := util.GetPathToFile(dir, name, issueNumber, outputFormat.String(), options.IssueNumberNameOnly)
 
 		if util.DirectoryOrFileDoesNotExist(fileName) || options.ImagesOnly {
+
 			comic := &core.ComicIssue{
 				Name:        name,
 				IssueNumber: issueNumber,
@@ -56,7 +62,7 @@ func initializeCollection(issues []string, options *config.Options, base BaseSit
 					Name: options.SourceName,
 					URL:  url,
 				},
-				Format:       options.Format,
+				OutputFormat: outputFormat,
 				ImagesFormat: options.ImagesFormat,
 			}
 			if err = base.Initialize(comic); err != nil {

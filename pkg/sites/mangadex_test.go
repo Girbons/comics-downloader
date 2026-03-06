@@ -113,7 +113,7 @@ func TestMangadexInitialize(t *testing.T) {
 	require.Equal(t, []string{
 		md.uploadsBase + "/HASH/001.png",
 		md.uploadsBase + "/HASH/002.png",
-	}, comic.Links)
+	}, comic.ImageLinks)
 }
 
 func TestMangadexGetInfo(t *testing.T) {

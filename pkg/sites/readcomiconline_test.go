@@ -68,7 +68,7 @@ func TestReadComicOnlineScraper(t *testing.T) {
 	require.Equal(t, []string{
 		"https://2.bp.blogspot.com/abc123=s1600?",
 		"https://2.bp.blogspot.com/def456=s1600?",
-	}, comic.Links)
+	}, comic.ImageLinks)
 
 	opts.All = true
 	opts.URL = server.URL + rcoListPath

@@ -405,7 +405,7 @@ func isNumeric(s string) bool {
 // Initialize prepare the comic instance with links and images.
 func (r *Readallcomics) Initialize(comic *core.ComicIssue) error {
 	links, err := r.retrieveImageLinks(comic)
-	comic.Links = links
+	comic.ImageLinks = links
 
 	return err
 }

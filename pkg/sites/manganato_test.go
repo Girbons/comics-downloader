@@ -84,7 +84,7 @@ func TestManganatoScraper(t *testing.T) {
 	require.Equal(t, []string{
 		"https://cdn.example.com/manga-title/001.jpg",
 		"https://cdn.example.com/manga-title/002.jpg",
-	}, comic.Links)
+	}, comic.ImageLinks)
 
 	links, err := scraper.RetrieveIssueLinks()
 	require.NoError(t, err)

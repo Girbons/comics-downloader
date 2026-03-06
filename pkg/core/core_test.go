@@ -72,7 +72,7 @@ func TestDownloadImagesCreatesFiles(t *testing.T) {
 		Source:       &ComicSource{Name: "test-source", URL: server.URL},
 		IssueNumber:  "1",
 		ImagesFormat: "png",
-		Links:        buildLinks(server, 3),
+		ImageLinks:   buildLinks(server, 3),
 	}
 
 	result, err := comic.DownloadImages(opts)
@@ -99,9 +99,9 @@ func TestMakeComicPDF(t *testing.T) {
 		Name:         "foo",
 		Source:       &ComicSource{Name: "test-source", URL: server.URL},
 		IssueNumber:  "1",
-		Format:       PDF,
+		OutputFormat: PDF,
 		ImagesFormat: "png",
-		Links:        buildLinks(server, 2),
+		ImageLinks:   buildLinks(server, 2),
 	}
 
 	require.NoError(t, comic.MakeComic(opts))
@@ -121,9 +121,9 @@ func TestMakeComicEPUB(t *testing.T) {
 		Source:       &ComicSource{Name: "test-source", URL: server.URL},
 		IssueNumber:  "42",
 		Author:       "Author",
-		Format:       EPUB,
+		OutputFormat: EPUB,
 		ImagesFormat: "png",
-		Links:        buildLinks(server, 2),
+		ImageLinks:   buildLinks(server, 2),
 	}
 
 	require.NoError(t, comic.MakeComic(opts))
@@ -142,9 +142,9 @@ func TestMakeComicCBZ(t *testing.T) {
 		Name:         "baz",
 		Source:       &ComicSource{Name: "test-source", URL: server.URL},
 		IssueNumber:  "7",
-		Format:       CBZ,
+		OutputFormat: CBZ,
 		ImagesFormat: "png",
-		Links:        buildLinks(server, 2),
+		ImageLinks:   buildLinks(server, 2),
 	}
 
 	require.NoError(t, comic.MakeComic(opts))

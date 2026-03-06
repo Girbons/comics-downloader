@@ -69,7 +69,7 @@ func TestReadAllComicsScraper(t *testing.T) {
 	require.Equal(t, []string{
 		"https://cdn.example.com/sandman/001.jpg",
 		"https://cdn.example.com/sandman/002.jpg",
-	}, comic.Links)
+	}, comic.ImageLinks)
 
 	// Category listing for All
 	opts.All = true

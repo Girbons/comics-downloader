@@ -33,7 +33,7 @@ func TestBuildOptionsCopiesGlobals(t *testing.T) {
 		imagesFormat:        imagesFormat,
 		country:             country,
 		forceAspect:         forceAspect,
-		format:              format,
+		format:              outputFormat,
 		customComicName:     customComicName,
 		issueNumberNameOnly: issueNumberNameOnly,
 		url:                 url,
@@ -54,7 +54,7 @@ func TestBuildOptionsCopiesGlobals(t *testing.T) {
 		imagesFormat = prev.imagesFormat
 		country = prev.country
 		forceAspect = prev.forceAspect
-		format = prev.format
+		outputFormat = prev.format
 		customComicName = prev.customComicName
 		issueNumberNameOnly = prev.issueNumberNameOnly
 		url = prev.url
@@ -75,7 +75,7 @@ func TestBuildOptionsCopiesGlobals(t *testing.T) {
 	imagesFormat = "png"
 	country = "jp"
 	forceAspect = true
-	format = "epub"
+	outputFormat = "epub"
 	customComicName = "custom"
 	issueNumberNameOnly = true
 	url = "http://example.com/comic"
@@ -94,7 +94,7 @@ func TestBuildOptionsCopiesGlobals(t *testing.T) {
 		t.Fatalf("expected boolean flags to be copied into options: %+v", opts)
 	}
 
-	if opts.ImagesFormat != "png" || opts.Country != "jp" || opts.Format != "epub" {
+	if opts.ImagesFormat != "png" || opts.Country != "jp" || opts.OutputFormat != "epub" {
 		t.Fatalf("expected string values to be copied, got %+v", opts)
 	}
 

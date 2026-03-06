@@ -122,7 +122,7 @@ func (m *Mangareader) Initialize(comic *core.ComicIssue) error {
 	comic.IssueNumber = issueNumber
 
 	links, err := m.retrieveImageLinks(comic)
-	comic.Links = links
+	comic.ImageLinks = links
 
 	return err
 }

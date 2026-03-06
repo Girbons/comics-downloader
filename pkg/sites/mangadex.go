@@ -260,6 +260,6 @@ func (m *Mangadex) Initialize(comic *core.ComicIssue) error {
 	if err != nil {
 		return err
 	}
-	comic.Links = images
+	comic.ImageLinks = images
 	return nil
 }

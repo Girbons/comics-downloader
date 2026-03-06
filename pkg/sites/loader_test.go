@@ -36,7 +36,7 @@ func (s *stubSite) RetrieveIssueLinks() ([]string, error) {
 func TestInitializeCollectionFiltersIssues(t *testing.T) {
 	options := &config.Options{
 		SourceName:   "test-source",
-		Format:       "pdf",
+		OutputFormat: "pdf",
 		ImagesFormat: "png",
 		IssuesRange:  "1-2",
 		All:          true,

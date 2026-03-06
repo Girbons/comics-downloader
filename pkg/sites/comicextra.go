@@ -162,7 +162,7 @@ func (c *Comicextra) GetInfo(url string) (string, string) {
 // on comicextra.com
 func (c *Comicextra) Initialize(comic *core.ComicIssue) error {
 	links, err := c.retrieveImageLinks(comic)
-	comic.Links = links
+	comic.ImageLinks = links
 
 	return err
 }

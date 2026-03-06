@@ -24,7 +24,7 @@ type Options struct {
 	DaemonTimeout       int
 	ImagesFormat        string
 	Country             string
-	Format              string
+	OutputFormat        string
 	CustomComicName     string
 	ForceAspect         bool
 	OutputFolder        string

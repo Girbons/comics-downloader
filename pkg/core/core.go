@@ -33,26 +33,19 @@ import (
 // DefaultMessage for correctly saved file
 const DefaultMessage = "file correctly saved"
 
-// manga output format supported
-const (
-	CBR  = "cbr"
-	CBZ  = "cbz"
-	EPUB = "epub"
-	PDF  = "pdf"
-)
-
 type ComicSource struct {
 	Name string
-	URL  string
+	URL  string // URL of the comic/manga issue
 }
 
 // ComicIssue struct contains all the informations about a comic
 type ComicIssue struct {
-	Author       string
-	Name         string
-	IssueNumber  string
-	Links        []string
-	Format       string
+	Author      string
+	Name        string
+	IssueNumber string
+
+	ImageLinks   []string
+	OutputFormat ComicOutputFormat
 	ImagesFormat string
 
 	Source *ComicSource
@@ -61,7 +54,7 @@ type ComicIssue struct {
 // DownloadResult captures the outcome of downloading a comic's images.
 type DownloadResult struct {
 	Dir       string
-	FilePaths []string
+	FilePaths []string // Absolute paths to the downloaded image files
 }
 
 func ensureClient(options *config.Options) *httpclient.ComicClient {
@@ -103,12 +96,12 @@ func (comic *ComicIssue) makeEPUB(options *config.Options, images *DownloadResul
 		return err
 	}
 
-	if err = e.Write(util.GetPathToFile(dir, comic.Name, comic.IssueNumber, comic.Format, options.IssueNumberNameOnly)); err != nil {
+	if err = e.Write(util.GetPathToFile(dir, comic.Name, comic.IssueNumber, comic.OutputFormat.String(), options.IssueNumberNameOnly)); err != nil {
 		return err
 	}
 
 	if options.Logger != nil {
-		options.Logger.Infof("%s %s", strings.ToUpper(comic.Format), DefaultMessage)
+		options.Logger.Infof("%s %s", strings.ToUpper(comic.OutputFormat.String()), DefaultMessage)
 	}
 	return nil
 }
@@ -162,13 +155,13 @@ func (comic *ComicIssue) makePDF(options *config.Options, images *DownloadResult
 		return err
 	}
 
-	filePath := util.GetPathToFile(dir, comic.Name, comic.IssueNumber, comic.Format, options.IssueNumberNameOnly)
+	filePath := util.GetPathToFile(dir, comic.Name, comic.IssueNumber, comic.OutputFormat.String(), options.IssueNumberNameOnly)
 	if err = pdf.OutputFileAndClose(filePath); err != nil {
 		return err
 	}
 
 	if options.Logger != nil {
-		options.Logger.Infof("%s %s", strings.ToUpper(comic.Format), DefaultMessage)
+		options.Logger.Infof("%s %s", strings.ToUpper(comic.OutputFormat.String()), DefaultMessage)
 	}
 	return nil
 }
@@ -181,7 +174,7 @@ func (comic *ComicIssue) makeCBRZ(options *config.Options, images *DownloadResul
 	}
 
 	zipArchiveName := filepath.Join(dir, fmt.Sprintf("%s.zip", comic.IssueNumber))
-	newName := util.GetPathToFile(dir, comic.Name, comic.IssueNumber, comic.Format, options.IssueNumberNameOnly)
+	newName := util.GetPathToFile(dir, comic.Name, comic.IssueNumber, comic.OutputFormat.String(), options.IssueNumberNameOnly)
 
 	out, err := os.Create(zipArchiveName)
 	if err != nil {
@@ -220,14 +213,14 @@ func (comic *ComicIssue) makeCBRZ(options *config.Options, images *DownloadResul
 	}
 
 	if options.Logger != nil {
-		options.Logger.Infof("%s %s", strings.ToUpper(comic.Format), DefaultMessage)
+		options.Logger.Infof("%s %s", strings.ToUpper(comic.OutputFormat.String()), DefaultMessage)
 	}
 	return nil
 }
 
 // DownloadImages will download the comic/manga images.
 func (comic *ComicIssue) DownloadImages(options *config.Options) (*DownloadResult, error) {
-	if len(comic.Links) == 0 {
+	if len(comic.ImageLinks) == 0 {
 		return nil, fmt.Errorf("download failed, no links found for: %s", comic.Source.URL)
 	}
 
@@ -239,7 +232,7 @@ func (comic *ComicIssue) DownloadImages(options *config.Options) (*DownloadResul
 	}
 
 	existing, err := readExistingImages(dir)
-	if err == nil && len(existing) == len(comic.Links) && len(existing) > 0 {
+	if err == nil && len(existing) == len(comic.ImageLinks) && len(existing) > 0 {
 		return &DownloadResult{Dir: dir, FilePaths: existing}, nil
 	}
 
@@ -250,7 +243,7 @@ func (comic *ComicIssue) DownloadImages(options *config.Options) (*DownloadResul
 		return nil, err
 	}
 
-	progress := progressbar.NewOptions(len(comic.Links), progressbar.OptionSetRenderBlankState(true))
+	progress := progressbar.NewOptions(len(comic.ImageLinks), progressbar.OptionSetRenderBlankState(true))
 	format := util.ImageType(comic.ImagesFormat)
 
 	requestDelay := options.RequestDelay
@@ -271,15 +264,15 @@ func (comic *ComicIssue) DownloadImages(options *config.Options) (*DownloadResul
 		link  string
 	}
 
-	jobs := make([]downloadJob, 0, len(comic.Links))
-	for idx, link := range comic.Links {
+	jobs := make([]downloadJob, 0, len(comic.ImageLinks))
+	for idx, link := range comic.ImageLinks {
 		if strings.TrimSpace(link) == "" {
 			continue
 		}
 		jobs = append(jobs, downloadJob{index: idx, link: link})
 	}
 
-	results := make([]string, len(comic.Links))
+	results := make([]string, len(comic.ImageLinks))
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
 	defer cancel()
 
@@ -459,7 +452,7 @@ func (comic *ComicIssue) MakeComic(options *config.Options) error {
 		}
 	}()
 
-	switch comic.Format {
+	switch comic.OutputFormat {
 	case EPUB:
 		return comic.makeEPUB(options, result)
 	case CBR, CBZ:

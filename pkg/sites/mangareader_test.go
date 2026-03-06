@@ -73,7 +73,7 @@ func TestMangareaderScraper(t *testing.T) {
 	require.Equal(t, []string{
 		"https://cdn.example.com/naruto/001.jpg",
 		"https://cdn.example.com/naruto/002.jpg",
-	}, comic.Links)
+	}, comic.ImageLinks)
 
 	opts.All = true
 	opts.URL = server.URL + mangareaderIssuePath

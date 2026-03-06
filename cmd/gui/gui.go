@@ -47,7 +47,7 @@ func (d *Downloader) Submit() {
 		All:               d.AllChapters.Checked,
 		Last:              d.LastChapter.Checked,
 		URL:               strings.TrimSpace(d.URL.Text),
-		Format:            d.Format.Selected,
+		OutputFormat:      d.Format.Selected,
 		Country:           d.Country.Text,
 		ImagesFormat:      d.ImagesFormat.Selected,
 		ImagesOnly:        d.ImagesOnly.Checked,

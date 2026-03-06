@@ -51,7 +51,7 @@ func MangaKakalotInitialize(comic *core.ComicIssue) error {
 	for _, img := range f.FindAll("img") {
 		links = append(links, img.Attrs()["src"])
 	}
-	comic.Links = links
+	comic.ImageLinks = links
 	return nil
 }
 

@@ -79,7 +79,7 @@ func TestComicExtraScraper(t *testing.T) {
 	require.Equal(t, []string{
 		"https://cdn.example.com/batman?page=1",
 		"https://cdn.example.com/batman?page=2",
-	}, comic.Links)
+	}, comic.ImageLinks)
 }
 
 func TestComicExtraRetrieveIssueLinksAll(t *testing.T) {
