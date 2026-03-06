@@ -139,12 +139,17 @@ func TestMakeComicCBZ(t *testing.T) {
 	opts := newTestOptions(t, server)
 
 	comic := &ComicIssue{
-		Name:         "baz",
-		Source:       &ComicSource{Name: "test-source", URL: server.URL},
+		Name: "baz",
+
 		IssueNumber:  "7",
 		OutputFormat: CBZ,
 		ImagesFormat: "png",
 		ImageLinks:   buildLinks(server, 2),
+
+		Source: &ComicSource{Name: "test-source", URL: server.URL},
+		SeriesMetadata: &SeriesMetadata{
+			Title: "Baz Series",
+		},
 	}
 
 	require.NoError(t, comic.MakeComic(opts))

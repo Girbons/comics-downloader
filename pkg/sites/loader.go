@@ -58,12 +58,17 @@ func initializeCollection(issues []string, options *config.Options, base BaseSit
 			comic := &core.ComicIssue{
 				Name:        name,
 				IssueNumber: issueNumber,
+
+				OutputFormat: outputFormat,
+				ImagesFormat: options.ImagesFormat,
+
 				Source: &core.ComicSource{
 					Name: options.SourceName,
 					URL:  url,
 				},
-				OutputFormat: outputFormat,
-				ImagesFormat: options.ImagesFormat,
+				SeriesMetadata: &core.SeriesMetadata{
+					Title: name,
+				},
 			}
 			if err = base.Initialize(comic); err != nil {
 				return collection, err

@@ -33,24 +33,6 @@ import (
 // DefaultMessage for correctly saved file
 const DefaultMessage = "file correctly saved"
 
-type ComicSource struct {
-	Name string
-	URL  string // URL of the comic/manga issue
-}
-
-// ComicIssue struct contains all the informations about a comic
-type ComicIssue struct {
-	Author      string
-	Name        string
-	IssueNumber string
-
-	ImageLinks   []string
-	OutputFormat ComicOutputFormat
-	ImagesFormat string
-
-	Source *ComicSource
-}
-
 // DownloadResult captures the outcome of downloading a comic's images.
 type DownloadResult struct {
 	Dir       string
@@ -173,6 +155,11 @@ func (comic *ComicIssue) makeCBRZ(options *config.Options, images *DownloadResul
 		return err
 	}
 
+	comicinfoXMLPath, err := comic.makeComicInfoXML(options, images)
+	if err != nil {
+		return err
+	}
+
 	zipArchiveName := filepath.Join(dir, fmt.Sprintf("%s.zip", comic.IssueNumber))
 	newName := util.GetPathToFile(dir, comic.Name, comic.IssueNumber, comic.OutputFormat.String(), options.IssueNumberNameOnly)
 
@@ -192,6 +179,7 @@ func (comic *ComicIssue) makeCBRZ(options *config.Options, images *DownloadResul
 	for _, filePath := range images.FilePaths {
 		fileMap[filePath] = path.Base(filePath)
 	}
+	fileMap[comicinfoXMLPath] = "ComicInfo.xml"
 
 	archiveFiles, err := archives.FilesFromDisk(context.Background(), nil, fileMap)
 	if err != nil {

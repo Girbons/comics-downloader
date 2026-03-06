@@ -7,6 +7,7 @@ toolchain go1.24.4
 require (
 	fyne.io/fyne v1.4.3
 	github.com/anaskhan96/soup v1.2.5
+	github.com/beevik/etree v1.6.0
 	github.com/bmaupin/go-epub v1.1.0
 	github.com/dlclark/regexp2 v1.10.0
 	github.com/jung-kurt/gofpdf v1.16.2
