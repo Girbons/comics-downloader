@@ -53,8 +53,31 @@ func (comic *ComicIssue) makeEPUB(options *config.Options, images *DownloadResul
 	e := epub.NewEpub(comic.IssueNumber)
 	e.SetTitle(fmt.Sprintf("%s-%s", comic.Name, comic.IssueNumber))
 
-	if comic.Author != "" {
-		e.SetAuthor(comic.Author)
+	if len(comic.SeriesMetadata.Creators) > 0 {
+		setAuthor := false
+		writerRole := string(CreatorRoleWriter)
+		for _, creator := range comic.SeriesMetadata.Creators {
+			if strings.EqualFold(string(creator.Role), writerRole) {
+				e.SetAuthor(creator.Name)
+				setAuthor = true
+				break
+			}
+		}
+
+		if !setAuthor {
+			// if no creator with role "Writer" is found, set the author to the first creator in the list
+			author := comic.SeriesMetadata.Creators[0].Name
+			e.SetAuthor(author)
+		}
+	}
+
+	if comic.LanguageISO != nil {
+		e.SetLang(*comic.LanguageISO)
+	}
+
+	comicDescription := comic.getDescriptionForLanguage(options, options.Country)
+	if comicDescription != "" {
+		e.SetDescription(comicDescription)
 	}
 
 	for _, file := range images.FilePaths {

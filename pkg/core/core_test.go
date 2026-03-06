@@ -117,13 +117,13 @@ func TestMakeComicEPUB(t *testing.T) {
 	opts := newTestOptions(t, server)
 
 	comic := &ComicIssue{
-		Name:         "bar",
-		Source:       &ComicSource{Name: "test-source", URL: server.URL},
-		IssueNumber:  "42",
-		Author:       "Author",
-		OutputFormat: EPUB,
-		ImagesFormat: "png",
-		ImageLinks:   buildLinks(server, 2),
+		Name:           "bar",
+		Source:         &ComicSource{Name: "test-source", URL: server.URL},
+		IssueNumber:    "42",
+		OutputFormat:   EPUB,
+		ImagesFormat:   "png",
+		ImageLinks:     buildLinks(server, 2),
+		SeriesMetadata: &SeriesMetadata{},
 	}
 
 	require.NoError(t, comic.MakeComic(opts))

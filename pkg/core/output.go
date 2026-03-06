@@ -86,13 +86,9 @@ func (comic *ComicIssue) makeComicInfoXML(options *config.Options, images *Downl
 			break
 		}
 	}
-	for lang, localizedDesc := range comic.SeriesMetadata.Description {
-		// TODO: use the country option to select the localized description instead of defaulting to English, or add a separate option for the localized description language
-		if lang == "en" {
-			comicInfo.CreateElement("Summary").SetText(localizedDesc)
-			break
-		}
-	}
+
+	comicDescription := comic.getDescriptionForLanguage(options, options.Country)
+	comicInfo.CreateElement("Summary").SetText(comicDescription)
 
 	comicInfo.CreateElement("Number").SetText(comic.IssueNumber)
 	if comic.Volume != nil {

@@ -1,7 +1,10 @@
 package core
 
 import (
+	"strings"
 	"time"
+
+	"github.com/Girbons/comics-downloader/pkg/config"
 )
 
 type AgeRating string
@@ -30,11 +33,11 @@ type ComicSource struct {
 	URL  string // URL of the comic/manga issue
 }
 
-type CreatorsRole string
+type CreatorRole string
 
 type SeriesCreator struct {
 	Name string
-	Role CreatorsRole
+	Role CreatorRole
 }
 
 type SeriesMetadata struct {
@@ -56,8 +59,7 @@ type SeriesMetadata struct {
 
 // ComicIssue struct contains all the informations about a comic
 type ComicIssue struct {
-	Author string // Remove in favor of SeriesMetadata.Creators??
-	Name   string // Issue name/title
+	Name string // Issue name/title
 
 	IssueNumber string
 	Volume      *string
@@ -73,15 +75,15 @@ type ComicIssue struct {
 }
 
 const (
-	CreatorRoleUnknown     = "Unknown"
-	CreatorRoleWriter      = "Writer"
-	CreatorRolePenciller   = "Penciller"
-	CreatorRoleInker       = "Inker"
-	CreatorRoleColorist    = "Colorist"
-	CreatorRoleLetterer    = "Letterer"
-	CreatorRoleCoverArtist = "CoverArtist"
-	CreatorRoleEditor      = "Editor"
-	CreatorRoleTranslator  = "Translator"
+	CreatorRoleUnknown     CreatorRole = "Unknown"
+	CreatorRoleWriter      CreatorRole = "Writer"
+	CreatorRolePenciller   CreatorRole = "Penciller"
+	CreatorRoleInker       CreatorRole = "Inker"
+	CreatorRoleColorist    CreatorRole = "Colorist"
+	CreatorRoleLetterer    CreatorRole = "Letterer"
+	CreatorRoleCoverArtist CreatorRole = "CoverArtist"
+	CreatorRoleEditor      CreatorRole = "Editor"
+	CreatorRoleTranslator  CreatorRole = "Translator"
 )
 
 // func SourceAuthorRoleToSeriesAuthorRole(sourceRole string) string {
@@ -107,3 +109,22 @@ const (
 // 		return CreatorRoleUnknown
 // 	}
 // }
+
+func (c *ComicIssue) getDescriptionForLanguage(options *config.Options, lang string) string {
+	if len(c.SeriesMetadata.Description) <= 0 {
+		return ""
+	}
+
+	for lang, desc := range c.SeriesMetadata.Description {
+		if options.Country == "" || options.Country == strings.ToLower(lang) {
+			return desc
+		}
+	}
+
+	// if no description matching the country option is found, set the description to the first one in the map
+	for _, desc := range c.SeriesMetadata.Description {
+		return desc
+	}
+
+	return ""
+}
