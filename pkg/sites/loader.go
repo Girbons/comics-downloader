@@ -9,6 +9,7 @@ import (
 	"github.com/Girbons/comics-downloader/internal/flag/parser"
 	"github.com/Girbons/comics-downloader/pkg/config"
 	"github.com/Girbons/comics-downloader/pkg/core"
+	httpclient "github.com/Girbons/comics-downloader/pkg/http"
 	"github.com/Girbons/comics-downloader/pkg/util"
 )
 
@@ -134,6 +135,11 @@ func LoadComicFromSource(options *config.Options) ([]*core.ComicIssue, error) {
 		collection []*core.ComicIssue
 		err        error
 	)
+
+	// ensure the client is actually set
+	if options.Client == nil {
+		options.Client = httpclient.NewComicClient()
+	}
 
 	switch {
 	case strings.Contains(options.SourceName, "readcomiconline"):

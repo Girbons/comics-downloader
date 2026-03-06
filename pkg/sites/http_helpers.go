@@ -38,6 +38,14 @@ func buildRequest(ctx context.Context, client *httpclient.ComicClient, link stri
 	return req, nil
 }
 
+func fetchHTML(ctx context.Context, client *httpclient.ComicClient, link string) (string, error) {
+	response, err := fetchBytes(ctx, client, link)
+	if err != nil {
+		return "", err
+	}
+	return string(response), nil
+}
+
 func fetchJSON(ctx context.Context, client *httpclient.ComicClient, link string, target interface{}) error {
 	if target == nil {
 		return fmt.Errorf("target cannot be nil")

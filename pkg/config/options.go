@@ -12,6 +12,8 @@ const (
 	DefaultRequestDelay = 500 * time.Millisecond
 	// DefaultRequestDelayJitter adds up to this much random extra delay to avoid fixed patterns.
 	DefaultRequestDelayJitter = 250 * time.Millisecond
+	// DefaultRequestTimeout is the default timeout for HTTP requests.
+	DefaulltRequestTimeout = 30 * time.Second
 )
 
 // Options represents the comics downloader options.
@@ -34,11 +36,16 @@ type Options struct {
 	SourceName          string
 	IssuesRange         string
 	IssueFolderName     string
-	UserAgents          []string
-	SessionCookie       string
-	RequestDelay        time.Duration
-	RequestDelayJitter  time.Duration
+
+	UserAgents         []string
+	SessionCookie      string
+	RequestDelay       time.Duration
+	RequestDelayJitter time.Duration
+	RequestTimeout     time.Duration
 
 	Client *http.ComicClient
 	Logger *logger.Logger
 }
+
+// TODO: create function to handle creating options with default values and factories for client and logger
+// want to avoid having to avoid malformed options

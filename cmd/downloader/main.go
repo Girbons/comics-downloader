@@ -45,8 +45,9 @@ var (
 	// string to be used for each issue/chapter folder
 	issueFolderName string
 	// request customization
-	userAgentsCSV string
-	sessionCookie string
+	userAgentsCSV  string
+	sessionCookie  string
+	requestTimeout time.Duration
 	// throttling
 	requestDelay       time.Duration
 	requestDelayJitter time.Duration
@@ -72,6 +73,7 @@ func init() {
 	flag.StringVar(&issueFolderName, "issue-folder-name", "issue-", "Folder name where each issue/chapter will be saved, default 'issue-#'")
 	flag.StringVar(&userAgentsCSV, "user-agents", "", "Comma-separated list of alternative User-Agent values to rotate per request")
 	flag.StringVar(&sessionCookie, "session-cookie", "", "Custom Cookie header value (e.g., cf_clearance=...; other=...) for protected sources")
+	flag.DurationVar(&requestTimeout, "request-timeout", config.DefaulltRequestTimeout, "Timeout for HTTP requests (e.g., 8s)")
 	flag.DurationVar(&requestDelay, "request-delay", config.DefaultRequestDelay, "Base delay inserted before downloading each image (e.g. 500ms)")
 	flag.DurationVar(&requestDelayJitter, "request-delay-jitter", config.DefaultRequestDelayJitter, "Maximum additional random delay added to the base request delay (e.g. 250ms)")
 
@@ -99,6 +101,7 @@ func buildOptions() config.Options {
 		IssueFolderName:     issueFolderName,
 		UserAgents:          splitAndTrim(userAgentsCSV),
 		SessionCookie:       strings.TrimSpace(sessionCookie),
+		RequestTimeout:      requestTimeout,
 		RequestDelay:        requestDelay,
 		RequestDelayJitter:  requestDelayJitter,
 	}

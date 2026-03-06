@@ -1,6 +1,7 @@
 package sites
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
@@ -22,15 +23,20 @@ func NewMangareader(options *config.Options) *Mangareader {
 	}
 }
 
+func (m *Mangareader) requestContext() (context.Context, context.CancelFunc) {
+	return context.WithTimeout(context.Background(), m.options.RequestTimeout)
+}
+
 func (m *Mangareader) retrieveImageLinks(comic *core.ComicIssue) ([]string, error) {
-	var links []string
+	ctx, cancel := m.requestContext()
+	defer cancel()
 
-	response, err := soup.Get(comic.Source.URL)
-
+	response, err := fetchHTML(ctx, m.options.Client, comic.Source.URL)
 	if err != nil {
 		return nil, err
 	}
 
+	var links []string
 	doc := soup.HTMLParse(response)
 	for _, t := range doc.FindAll("img") {
 		imageURL := t.Attrs()["data-src"]
@@ -53,7 +59,10 @@ func (m *Mangareader) isSingleIssue(url string) bool {
 func (m *Mangareader) retrieveLastIssue(url string) (string, error) {
 	url = strings.Join(util.TrimAndSplitURL(url)[:4], "/")
 
-	response, err := soup.Get(url)
+	ctx, cancel := m.requestContext()
+	defer cancel()
+
+	response, err := fetchHTML(ctx, m.options.Client, url)
 	if err != nil {
 		return "", err
 	}
@@ -80,13 +89,15 @@ func (m *Mangareader) RetrieveIssueLinks() ([]string, error) {
 		return []string{url}, nil
 	}
 
-	var links []string
+	ctx, cancel := m.requestContext()
+	defer cancel()
 
-	response, err := soup.Get(url)
+	response, err := fetchHTML(ctx, m.options.Client, url)
 	if err != nil {
 		return nil, err
 	}
 
+	var links []string
 	doc := soup.HTMLParse(response)
 	nodes := doc.Find("table", "class", "d48").FindAll("tr")
 	for _, node := range nodes {

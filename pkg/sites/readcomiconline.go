@@ -1,6 +1,7 @@
 package sites
 
 import (
+	"context"
 	"encoding/base64"
 	"fmt"
 	"regexp"
@@ -9,7 +10,6 @@ import (
 	"github.com/Girbons/comics-downloader/pkg/config"
 	"github.com/Girbons/comics-downloader/pkg/core"
 	"github.com/Girbons/comics-downloader/pkg/util"
-	"github.com/anaskhan96/soup"
 )
 
 var baseUrl = "https://readcomiconline.li"
@@ -24,6 +24,10 @@ func NewReadComiconline(options *config.Options) *ReadComicOnline {
 	return &ReadComicOnline{
 		options: options,
 	}
+}
+
+func (c *ReadComicOnline) requestContext() (context.Context, context.CancelFunc) {
+	return context.WithTimeout(context.Background(), c.options.RequestTimeout)
 }
 
 func deobfuscateUrl(imageLink string) (string, error) {
@@ -72,7 +76,10 @@ func (c *ReadComicOnline) retrieveImageLinks(comic *core.ComicIssue) ([]string, 
 		c.options.Logger.Debugf("readcomiconline: fetching %s", fetchURL)
 	}
 
-	response, err := soup.Get(fetchURL)
+	ctx, cancel := c.requestContext()
+	defer cancel()
+
+	response, err := fetchHTML(ctx, c.options.Client, fetchURL)
 	if err != nil {
 		if c.options.Logger != nil {
 			c.options.Logger.Errorf("readcomiconline: request to %s failed: %v", fetchURL, err)
@@ -126,9 +133,10 @@ func (c *ReadComicOnline) isSingleIssue(url string) bool {
 }
 
 func (c *ReadComicOnline) retrieveLastIssue(url string) (string, error) {
-	var lastIssue string
+	ctx, cancel := c.requestContext()
+	defer cancel()
 
-	response, err := soup.Get(url)
+	response, err := fetchHTML(ctx, c.options.Client, url)
 	if err != nil {
 		return "", err
 	}
@@ -136,7 +144,7 @@ func (c *ReadComicOnline) retrieveLastIssue(url string) (string, error) {
 	name := util.TrimAndSplitURL(url)[4]
 	re := regexp.MustCompile("<a[^>]+href=\"([^\">]+" + "/" + name + "/.+)\"")
 	match := re.FindAllStringSubmatch(response, -1)
-	lastIssue = baseUrl + strings.Split(match[0][1], "?")[0]
+	lastIssue := baseUrl + strings.Split(match[0][1], "?")[0]
 
 	return lastIssue, nil
 }
@@ -162,7 +170,10 @@ func (c *ReadComicOnline) RetrieveIssueLinks() ([]string, error) {
 		links []string
 	)
 
-	response, err := soup.Get(url)
+	ctx, cancel := c.requestContext()
+	defer cancel()
+
+	response, err := fetchHTML(ctx, c.options.Client, url)
 	if err != nil {
 		return nil, err
 	}

@@ -79,6 +79,7 @@ func (comic *ComicIssue) makeComicInfoXML(options *config.Options, images *Downl
 	comicInfo.CreateElement("Series").SetText(comic.SeriesMetadata.Title)
 	comicInfo.CreateElement("Title").SetText(comic.Name)
 	for lang, localizedTitle := range comic.SeriesMetadata.LocalizedTitle {
+		// TODO: use the country option to select the localized title instead of defaulting to English, or add a separate option for the localized title language
 		if lang == "en" {
 			// non-standard field
 			comicInfo.CreateElement("LocalizedSeries").SetText(localizedTitle)
@@ -86,6 +87,7 @@ func (comic *ComicIssue) makeComicInfoXML(options *config.Options, images *Downl
 		}
 	}
 	for lang, localizedDesc := range comic.SeriesMetadata.Description {
+		// TODO: use the country option to select the localized description instead of defaulting to English, or add a separate option for the localized description language
 		if lang == "en" {
 			comicInfo.CreateElement("Summary").SetText(localizedDesc)
 			break

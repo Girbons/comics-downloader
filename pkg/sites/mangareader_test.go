@@ -60,8 +60,9 @@ func TestMangareaderScraper(t *testing.T) {
 	defer server.Close()
 
 	opts := &config.Options{
-		URL:    server.URL + mangareaderIssuePath,
-		Logger: logger.NewLogger(false, nil),
+		URL:            server.URL + mangareaderIssuePath,
+		Logger:         logger.NewLogger(false, nil),
+		RequestTimeout: config.DefaulltRequestTimeout,
 	}
 
 	scraper := NewMangareader(opts)

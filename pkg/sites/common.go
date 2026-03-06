@@ -1,8 +1,10 @@
 package sites
 
 import (
+	"context"
 	"strings"
 
+	"github.com/Girbons/comics-downloader/pkg/config"
 	"github.com/Girbons/comics-downloader/pkg/core"
 	"github.com/Girbons/comics-downloader/pkg/util"
 	"github.com/anaskhan96/soup"
@@ -11,12 +13,20 @@ import (
 
 // mangakakalot.com and manganato.com functions
 
-func MangaKakalotGetInfo(domain string, url string) (string, string) {
-	// get chapter name
-	res, err := soup.Get(url)
+func mangaKakalotRequestContext(options *config.Options) (context.Context, context.CancelFunc) {
+	return context.WithTimeout(context.Background(), options.RequestTimeout)
+}
+
+func MangaKakalotGetInfo(options *config.Options, domain string, url string) (name, issueNumber string, err error) {
+	ctx, cancel := mangaKakalotRequestContext(options)
+	defer cancel()
+
+	res, err := fetchHTML(ctx, options.Client, url)
 	if err != nil {
-		return "", ""
+		return "", "", err
 	}
+
+	// get chapter name
 	doc := soup.HTMLParse(res)
 	f := doc.Find("div", "class", breadcrumbClassName(domain))
 	switch {
@@ -29,22 +39,26 @@ func MangaKakalotGetInfo(domain string, url string) (string, string) {
 		items := f.FindAll("a", "class", "a-h")
 		f = items[len(items)-1]
 	}
-	name := f.Text()
+	name = f.Text()
 	name, err = regexp2.MustCompile("(Vol\\.[0-9]{1,3} )?(Chapter [0-9]{1,3}(\\.[0-9])?) ?: ", 0).Replace(name, "", 0, 1)
 	if err != nil {
-		return "", ""
+		return "", "", err
 	}
 	// parse number from url
 	parts := util.TrimAndSplitURL(url)
-	issueNumber := strings.Split(parts[len(parts)-1], "-")[1]
-	return name, issueNumber
+	issueNumber = strings.Split(parts[len(parts)-1], "-")[1]
+	return name, issueNumber, nil
 }
 
-func MangaKakalotInitialize(comic *core.ComicIssue) error {
-	res, err := soup.Get(comic.Source.URL)
+func MangaKakalotInitialize(options *config.Options, comic *core.ComicIssue) error {
+	ctx, cancel := mangaKakalotRequestContext(options)
+	defer cancel()
+
+	res, err := fetchHTML(ctx, options.Client, comic.Source.URL)
 	if err != nil {
 		return err
 	}
+
 	doc := soup.HTMLParse(res)
 	f := doc.Find("div", "class", "container-chapter-reader")
 	var links []string
@@ -55,15 +69,20 @@ func MangaKakalotInitialize(comic *core.ComicIssue) error {
 	return nil
 }
 
-func MangaKakalotRetrieveIssueLinks(domain string, url string) ([]string, error) {
-	res, err := soup.Get(url)
-	if err != nil {
-		panic(err)
-	}
-	// chapter page link
+func MangaKakalotRetrieveIssueLinks(options *config.Options, domain string, url string) ([]string, error) {
+	// if chapter page, skip fetching and parsing the list page
 	if strings.Contains(url, "/chapter") {
 		return []string{url}, nil
 	}
+
+	ctx, cancel := mangaKakalotRequestContext(options)
+	defer cancel()
+
+	res, err := fetchHTML(ctx, options.Client, url)
+	if err != nil {
+		return nil, err
+	}
+
 	// manga page link
 	doc := soup.HTMLParse(res)
 	f := doc.Find("div", "class", chapterListClassName(domain))

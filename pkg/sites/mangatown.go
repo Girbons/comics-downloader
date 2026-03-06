@@ -1,6 +1,7 @@
 package sites
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
@@ -22,6 +23,10 @@ func NewMangatown(options *config.Options) *Mangatown {
 	}
 }
 
+func (m *Mangatown) requestContext() (context.Context, context.CancelFunc) {
+	return context.WithTimeout(context.Background(), m.options.RequestTimeout)
+}
+
 func (m *Mangatown) findPages(document *soup.Root) []string {
 	var pages []string
 
@@ -37,11 +42,10 @@ func (m *Mangatown) findPages(document *soup.Root) []string {
 }
 
 func (m *Mangatown) retrieveImageLinks(comic *core.ComicIssue) ([]string, error) {
-	var links []string
-	var link string
+	ctx, cancel := m.requestContext()
+	defer cancel()
 
-	response, err := soup.Get(comic.Source.URL)
-
+	response, err := fetchHTML(ctx, m.options.Client, comic.Source.URL)
 	if err != nil {
 		return nil, err
 	}
@@ -49,10 +53,14 @@ func (m *Mangatown) retrieveImageLinks(comic *core.ComicIssue) ([]string, error)
 	document := soup.HTMLParse(response)
 	pages := m.findPages(&document)
 
+	var links []string
+	var link string
 	for _, page := range pages {
 		link = fmt.Sprintf("%s%s.html", comic.Source.URL, page)
-		response, err := soup.Get(link)
+		ctx, cancel := m.requestContext()
+		defer cancel()
 
+		response, err := fetchHTML(ctx, m.options.Client, link)
 		if err != nil {
 			return nil, err
 		}
@@ -76,8 +84,10 @@ func (m *Mangatown) isSingleIssue(url string) bool {
 
 func (m *Mangatown) retrieveLastIssue(url string) (string, error) {
 	url = strings.Join(util.TrimAndSplitURL(url)[:5], "/")
-	response, err := soup.Get(url)
+	ctx, cancel := m.requestContext()
+	defer cancel()
 
+	response, err := fetchHTML(ctx, m.options.Client, url)
 	if err != nil {
 		return "", err
 	}
@@ -105,9 +115,10 @@ func (m *Mangatown) RetrieveIssueLinks() ([]string, error) {
 		return []string{url}, nil
 	}
 
-	var links []string
+	ctx, cancel := m.requestContext()
+	defer cancel()
 
-	response, err := soup.Get(url)
+	response, err := fetchHTML(ctx, m.options.Client, url)
 	if err != nil {
 		return nil, err
 	}
@@ -115,6 +126,7 @@ func (m *Mangatown) RetrieveIssueLinks() ([]string, error) {
 	doc := soup.HTMLParse(response)
 	chapters := doc.Find("ul", "class", "chapter_list").FindAll("a")
 
+	var links []string
 	for _, chapter := range chapters {
 		url := "https://mangatown.com" + chapter.Attrs()["href"]
 		if util.IsURLValid(url) {

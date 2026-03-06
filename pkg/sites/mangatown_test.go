@@ -73,8 +73,9 @@ func TestMangatownScraper(t *testing.T) {
 	defer server.Close()
 
 	opts := &config.Options{
-		URL:    server.URL + mangatownIssuePath,
-		Logger: logger.NewLogger(false, nil),
+		URL:            server.URL + mangatownIssuePath,
+		Logger:         logger.NewLogger(false, nil),
+		RequestTimeout: config.DefaulltRequestTimeout,
 	}
 
 	scraper := NewMangatown(opts)

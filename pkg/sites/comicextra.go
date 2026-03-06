@@ -1,6 +1,7 @@
 package sites
 
 import (
+	"context"
 	"fmt"
 	"regexp"
 	"sort"
@@ -8,6 +9,7 @@ import (
 
 	"github.com/Girbons/comics-downloader/pkg/config"
 	"github.com/Girbons/comics-downloader/pkg/core"
+	httpclient "github.com/Girbons/comics-downloader/pkg/http"
 	"github.com/Girbons/comics-downloader/pkg/util"
 	"github.com/anaskhan96/soup"
 )
@@ -15,19 +17,26 @@ import (
 // Comicextra represents comicextra instance.
 type Comicextra struct {
 	options *config.Options
+	client  *httpclient.ComicClient
 }
 
 // NewComicextra returs a comicextra instance.
 func NewComicextra(options *config.Options) *Comicextra {
 	return &Comicextra{
 		options: options,
+		client:  options.Client,
 	}
 }
 
-func (c *Comicextra) retrieveImageLinks(comic *core.ComicIssue) ([]string, error) {
-	var links []string
+func (c *Comicextra) requestContext() (context.Context, context.CancelFunc) {
+	return context.WithTimeout(context.Background(), c.options.RequestTimeout)
+}
 
-	response, err := soup.Get(comic.Source.URL)
+func (c *Comicextra) retrieveImageLinks(comic *core.ComicIssue) ([]string, error) {
+	ctx, cancel := c.requestContext()
+	defer cancel()
+
+	response, err := fetchHTML(ctx, c.client, comic.Source.URL)
 	if err != nil {
 		return nil, err
 	}
@@ -35,6 +44,7 @@ func (c *Comicextra) retrieveImageLinks(comic *core.ComicIssue) ([]string, error
 	re := regexp.MustCompile(util.IMAGEREGEX)
 	match := re.FindAllStringSubmatch(response, -1)
 
+	var links []string
 	for i := range match {
 		link := deobfuscateURL(match[i][1])
 		if util.IsURLValid(link) {
@@ -54,10 +64,10 @@ func (c *Comicextra) isSingleIssue(url string) bool {
 }
 
 func (c *Comicextra) retrieveLastIssue(url string) (string, error) {
-	var lastIssue string
+	ctx, cancel := c.requestContext()
+	defer cancel()
 
-	response, err := soup.Get(url)
-
+	response, err := fetchHTML(ctx, c.client, url)
 	if err != nil {
 		return "", err
 	}
@@ -77,7 +87,7 @@ func (c *Comicextra) retrieveLastIssue(url string) (string, error) {
 
 	sort.Strings(validLinks)
 
-	lastIssue = validLinks[len(validLinks)-1]
+	lastIssue := validLinks[len(validLinks)-1]
 
 	return lastIssue, nil
 }
@@ -118,7 +128,10 @@ func (c *Comicextra) RetrieveIssueLinks() ([]string, error) {
 		elements []soup.Root
 	)
 
-	response, err := soup.Get(url)
+	ctx, cancel := c.requestContext()
+	defer cancel()
+
+	response, err := fetchHTML(ctx, c.client, url)
 	if err != nil {
 		return nil, err
 	}

@@ -14,7 +14,7 @@ require (
 	github.com/mholt/archives v0.1.2
 	github.com/schollz/progressbar/v2 v2.15.0
 	github.com/sirupsen/logrus v1.9.3
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.11.1
 	golang.org/x/image v0.18.0
 	golang.org/x/mod v0.17.0
 	golang.org/x/sync v0.12.0

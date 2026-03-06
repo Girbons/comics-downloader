@@ -66,9 +66,10 @@ func TestManganatoScraper(t *testing.T) {
 	defer server.Close()
 
 	opts := &config.Options{
-		URL:        server.URL + manganatoListPath,
-		SourceName: "manganato.com",
-		Logger:     logger.NewLogger(false, nil),
+		URL:            server.URL + manganatoListPath,
+		SourceName:     "manganato.com",
+		Logger:         logger.NewLogger(false, nil),
+		RequestTimeout: config.DefaulltRequestTimeout,
 	}
 
 	scraper := NewManganato(opts)

@@ -16,10 +16,9 @@ import (
 )
 
 const (
-	mangadexAPIBase        = "https://api.mangadex.org"
-	mangadexChapterBase    = "https://mangadex.org/chapter"
-	mangadexUploadsBase    = "https://uploads.mangadex.org/data"
-	mangadexRequestTimeout = 8 * time.Second
+	mangadexAPIBase     = "https://api.mangadex.org"
+	mangadexChapterBase = "https://mangadex.org/chapter"
+	mangadexUploadsBase = "https://uploads.mangadex.org/data"
 )
 
 // Mangadex represents a mangadex instance.
@@ -34,16 +33,10 @@ type Mangadex struct {
 
 // NewMangadex returns a Mangadex instance.
 func NewMangadex(options *config.Options) *Mangadex {
-	client := options.Client
-	if client == nil {
-		client = httpclient.NewComicClient()
-		options.Client = client
-	}
-
 	return &Mangadex{
 		country:     strings.ToLower(options.Country),
 		options:     options,
-		client:      client,
+		client:      options.Client,
 		apiBase:     mangadexAPIBase,
 		chapterBase: mangadexChapterBase,
 		uploadsBase: mangadexUploadsBase,
@@ -51,7 +44,7 @@ func NewMangadex(options *config.Options) *Mangadex {
 }
 
 func (m *Mangadex) requestContext() (context.Context, context.CancelFunc) {
-	return context.WithTimeout(context.Background(), mangadexRequestTimeout)
+	return context.WithTimeout(context.Background(), m.options.RequestTimeout)
 }
 
 func joinURL(base, suffix string) string {
@@ -79,15 +72,17 @@ func (m *Mangadex) getManga(mangaID string) (string, error) {
 		return "", fmt.Errorf("unexpected response")
 	}
 
-	for lang, t := range mangaRes.Data.Attributes.Titles {
+	// TODO: set localized title based on country option instead of setting main title to that language
+	// then need to update how paths are generated to use the localized title instead of the main title if the country option is set
+	for lang, title := range mangaRes.Data.Attributes.Titles {
 		if m.country == "" || m.country == strings.ToLower(lang) {
-			return t, nil
+			return title, nil
 		}
 	}
 
 	// Fallback to any available title.
-	for _, t := range mangaRes.Data.Attributes.Titles {
-		return t, nil
+	for _, title := range mangaRes.Data.Attributes.Titles {
+		return title, nil
 	}
 
 	return "", fmt.Errorf("no title found for manga %s", mangaID)

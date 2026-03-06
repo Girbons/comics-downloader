@@ -63,8 +63,9 @@ func TestComicExtraScraper(t *testing.T) {
 	defer server.Close()
 
 	opts := &config.Options{
-		URL:    server.URL + comicExtraIssueFullPath,
-		Logger: logger.NewLogger(false, nil),
+		URL:            server.URL + comicExtraIssueFullPath,
+		Logger:         logger.NewLogger(false, nil),
+		RequestTimeout: config.DefaulltRequestTimeout,
 	}
 
 	comicextra := NewComicextra(opts)
@@ -87,9 +88,10 @@ func TestComicExtraRetrieveIssueLinksAll(t *testing.T) {
 	defer server.Close()
 
 	opts := &config.Options{
-		URL:    server.URL + comicExtraListPath,
-		All:    true,
-		Logger: logger.NewLogger(false, nil),
+		URL:            server.URL + comicExtraListPath,
+		All:            true,
+		Logger:         logger.NewLogger(false, nil),
+		RequestTimeout: config.DefaulltRequestTimeout,
 	}
 
 	comicextra := NewComicextra(opts)
@@ -106,9 +108,10 @@ func TestComicExtraRetrieveLastIssue(t *testing.T) {
 	defer server.Close()
 
 	opts := &config.Options{
-		URL:    server.URL + comicExtraLastIssuePath,
-		Last:   true,
-		Logger: logger.NewLogger(false, nil),
+		URL:            server.URL + comicExtraLastIssuePath,
+		Last:           true,
+		Logger:         logger.NewLogger(false, nil),
+		RequestTimeout: config.DefaulltRequestTimeout,
 	}
 
 	comicextra := NewComicextra(opts)

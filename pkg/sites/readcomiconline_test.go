@@ -55,8 +55,9 @@ func TestReadComicOnlineScraper(t *testing.T) {
 	defer func() { baseUrl = originalBase }()
 
 	opts := &config.Options{
-		URL:    server.URL + rcoIssuePath,
-		Logger: logger.NewLogger(false, nil),
+		URL:            server.URL + rcoIssuePath,
+		Logger:         logger.NewLogger(false, nil),
+		RequestTimeout: config.DefaulltRequestTimeout,
 	}
 
 	scraper := NewReadComiconline(opts)

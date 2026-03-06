@@ -56,8 +56,9 @@ func TestReadAllComicsScraper(t *testing.T) {
 	defer server.Close()
 
 	opts := &config.Options{
-		URL:    server.URL + readAllIssuePath,
-		Logger: logger.NewLogger(false, nil),
+		URL:            server.URL + readAllIssuePath,
+		Logger:         logger.NewLogger(false, nil),
+		RequestTimeout: config.DefaulltRequestTimeout,
 	}
 
 	scraper := NewReadallcomics(opts)

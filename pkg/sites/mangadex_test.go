@@ -71,11 +71,12 @@ func newTestMangadex(t *testing.T) (*Mangadex, func()) {
 	)
 
 	opts := &config.Options{
-		URL:        server.URL + "/title/series-1/naruto",
-		Country:    "en",
-		SourceName: "mangadex.org",
-		Logger:     logger.NewLogger(false, nil),
-		Client:     client,
+		URL:            server.URL + "/title/series-1/naruto",
+		Country:        "en",
+		SourceName:     "mangadex.org",
+		Logger:         logger.NewLogger(false, nil),
+		Client:         client,
+		RequestTimeout: config.DefaulltRequestTimeout,
 	}
 
 	md := NewMangadex(opts)

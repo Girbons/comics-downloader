@@ -1,6 +1,7 @@
 package sites
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
@@ -24,16 +25,22 @@ func NewReadallcomics(options *config.Options) *Readallcomics {
 	}
 }
 
-func (r *Readallcomics) retrieveImageLinks(comic *core.ComicIssue) ([]string, error) {
-	var links []string
+func (r *Readallcomics) requestContext() (context.Context, context.CancelFunc) {
+	return context.WithTimeout(context.Background(), r.options.RequestTimeout)
+}
 
-	response, err := soup.Get(comic.Source.URL)
+func (r *Readallcomics) retrieveImageLinks(comic *core.ComicIssue) ([]string, error) {
+	ctx, cancel := r.requestContext()
+	defer cancel()
+
+	response, err := fetchHTML(ctx, r.options.Client, comic.Source.URL)
 	if err != nil {
-		return links, err
+		return nil, err
 	}
 
 	document := soup.HTMLParse(response)
 
+	var links []string
 	images := document.FindAll("img")
 	for _, img := range images {
 		src, ok := img.Attrs()["src"]
@@ -54,15 +61,18 @@ func (r *Readallcomics) retrieveImageLinks(comic *core.ComicIssue) ([]string, er
 
 // Retrieve issues links from main comic page or from comic issue.
 func (r *Readallcomics) getIssues(url string) ([]string, error) {
-	var links []string
 
-	response, err := soup.Get(url)
+	ctx, cancel := r.requestContext()
+	defer cancel()
+
+	response, err := fetchHTML(ctx, r.options.Client, url)
 	if err != nil {
 		return nil, err
 	}
 
 	doc := soup.HTMLParse(response)
 
+	var links []string
 	if strings.Contains(url, "category") {
 		chapterList := doc.Find("ul", "class", "list-story")
 		if chapterList.Error != nil {
