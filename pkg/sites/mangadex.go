@@ -139,8 +139,22 @@ func (m *Mangadex) getChapters(mangaID string) ([]string, error) {
 	return ids, nil
 }
 
+type mangadexChapter struct {
+	ChapterID     string
+	ChapterNumber string
+	ChapterTitle  string
+	Volume        *string // can be null if not available
+
+	TranslatedLanguage string // Not sure if this always exists or not e.g. "en", "jp"
+	PublishAt          time.Time
+
+	MangaID string
+
+	ImageLinks []string
+}
+
 // getChapter retrieves metadata and image links for a single chapter.
-func (m *Mangadex) getChapter(chapterID string) (mangaID, volume, chapter, title string, images []string, err error) {
+func (m *Mangadex) getChapter(chapterID string) (chapterInfo mangadexChapter, err error) {
 	ctx, cancel := m.requestContext()
 	defer cancel()
 
@@ -148,10 +162,14 @@ func (m *Mangadex) getChapter(chapterID string) (mangaID, volume, chapter, title
 	var chapterRes struct {
 		Result string `json:"result"`
 		Data   struct {
+			ID         string `json:"id"`   // chapter ID
+			Type       string `json:"type"` // should be "chapter"
 			Attributes struct {
-				Volume  string `json:"volume"`
-				Chapter string `json:"chapter"`
-				Title   string `json:"title"`
+				Volume             *string `json:"volume"` // is null if not available
+				Chapter            *string `json:"chapter"`
+				Title              *string `json:"title"`
+				TranslatedLanguage string  `json:"translatedLanguage"`
+				PublishAt          string  `json:"publishAt"`
 			} `json:"attributes"`
 			Relationships []struct {
 				ID   string `json:"id"`
@@ -161,10 +179,15 @@ func (m *Mangadex) getChapter(chapterID string) (mangaID, volume, chapter, title
 	}
 
 	if err := fetchJSON(ctx, m.client, endpoint, &chapterRes); err != nil {
-		return "", "", "", "", nil, err
+		return mangadexChapter{}, err
 	}
 	if strings.ToLower(chapterRes.Result) != "ok" {
-		return "", "", "", "", nil, fmt.Errorf("unexpected response")
+		return mangadexChapter{}, fmt.Errorf("unexpected response")
+	}
+
+	publishedAt, err := time.Parse(time.RFC3339, chapterRes.Data.Attributes.PublishAt)
+	if err != nil {
+		return mangadexChapter{}, err
 	}
 
 	imagesEndpoint := joinURL(m.apiBase, fmt.Sprintf("/at-home/server/%s", chapterID))
@@ -177,21 +200,23 @@ func (m *Mangadex) getChapter(chapterID string) (mangaID, volume, chapter, title
 	}
 
 	if err := fetchJSON(ctx, m.client, imagesEndpoint, &imagesRes); err != nil {
-		return "", "", "", "", nil, err
+		return mangadexChapter{}, err
 	}
 	if strings.ToLower(imagesRes.Result) != "ok" {
-		return "", "", "", "", nil, fmt.Errorf("unexpected response")
+		return mangadexChapter{}, fmt.Errorf("unexpected response")
 	}
 
+	var imageLinks []string
 	for _, file := range imagesRes.Chapter.Data {
 		imageURL := joinURL(m.uploadsBase, fmt.Sprintf("%s/%s", imagesRes.Chapter.Hash, file))
-		images = append(images, imageURL)
+		imageLinks = append(imageLinks, imageURL)
 	}
 
-	if m.options.Debug && len(images) > 0 && m.options.Logger != nil {
-		m.options.Logger.Debug(fmt.Sprintf("Image Links found: %s", strings.Join(images, " ")))
+	if m.options.Debug && len(imageLinks) > 0 && m.options.Logger != nil {
+		m.options.Logger.Debug(fmt.Sprintf("Image Links found: %s", strings.Join(imageLinks, " ")))
 	}
 
+	var mangaID string
 	for _, rel := range chapterRes.Data.Relationships {
 		if rel.Type == "manga" {
 			mangaID = rel.ID
@@ -199,7 +224,30 @@ func (m *Mangadex) getChapter(chapterID string) (mangaID, volume, chapter, title
 		}
 	}
 
-	return mangaID, chapterRes.Data.Attributes.Volume, chapterRes.Data.Attributes.Chapter, chapterRes.Data.Attributes.Title, images, nil
+	// just default them to empty string if not found
+	var chapterNumber string
+	var chapterTitle string
+	if chapterRes.Data.Attributes.Chapter != nil {
+		// TODO: consider defaulting to "oneshot"?
+		chapterNumber = *chapterRes.Data.Attributes.Chapter
+	}
+	if chapterRes.Data.Attributes.Title != nil {
+		chapterTitle = *chapterRes.Data.Attributes.Title
+	}
+
+	return mangadexChapter{
+		ChapterID:     chapterRes.Data.ID,
+		ChapterNumber: chapterNumber,
+		ChapterTitle:  chapterTitle,
+		Volume:        chapterRes.Data.Attributes.Volume,
+
+		TranslatedLanguage: chapterRes.Data.Attributes.TranslatedLanguage,
+		PublishAt:          publishedAt,
+
+		MangaID: mangaID,
+
+		ImageLinks: imageLinks,
+	}, nil
 }
 
 // RetrieveIssueLinks retrieve the issue links for the given comic.
@@ -226,19 +274,28 @@ func (m *Mangadex) GetInfo(urlValue string) (string, string) {
 	}
 	switch parts[3] {
 	case "chapter":
-		mangaID, volume, chapter, title, _, err := m.getChapter(parts[4])
+		chapter, err := m.getChapter(parts[4])
 		if err != nil {
 			return "", ""
 		}
-		chapterTitle := fmt.Sprintf("Vol %s Chapter %s", volume, chapter)
-		if title != "" {
-			chapterTitle += fmt.Sprintf(", %s", title)
+
+		var chapterTitle string
+		if chapter.Volume != nil {
+			volume := *chapter.Volume
+			chapterTitle = fmt.Sprintf("Vol %s Chapter %s", volume, chapter.ChapterNumber)
+		} else {
+			chapterTitle = fmt.Sprintf("Chapter %s", chapter.ChapterNumber)
 		}
-		mangaTitle, err := m.getManga(mangaID)
+
+		if chapter.ChapterTitle != "" {
+			chapterTitle += fmt.Sprintf(", %s", chapter.ChapterTitle)
+		}
+		mangaTitle, err := m.getManga(chapter.MangaID)
 		if err != nil {
 			return "", chapterTitle
 		}
 		return mangaTitle, chapterTitle
+
 	case "title":
 		mangaTitle, err := m.getManga(parts[4])
 		if err != nil {
@@ -256,10 +313,18 @@ func (m *Mangadex) Initialize(comic *core.ComicIssue) error {
 	if len(parts) < 5 {
 		return fmt.Errorf("URL not supported")
 	}
-	_, _, _, _, images, err := m.getChapter(parts[4])
+	chapter, err := m.getChapter(parts[4])
 	if err != nil {
 		return err
 	}
-	comic.ImageLinks = images
+
+	// comic.Name = chapter.ChapterTitle // changing the title seems to break path resolving for some reason, probably because the folder has already been created by the time we get to this point, so we just keep the name as is until the metadata system is reworked
+	comic.IssueNumber = chapter.ChapterNumber
+	comic.Volume = chapter.Volume
+	comic.LanguageISO = &chapter.TranslatedLanguage
+	comic.ReleaseDate = &chapter.PublishAt
+
+	comic.ImageLinks = chapter.ImageLinks
+
 	return nil
 }

@@ -44,7 +44,7 @@ func setupMangadexServer() *httptest.Server {
 			fmt.Fprint(w, `{
 				"result":"ok",
 				"data":{
-					"attributes":{"volume":"1","chapter":"1","title":"Start"},
+					"attributes":{"volume":"1","chapter":"1","title":"Start","publishAt":"2026-03-06T14:03:52.000Z","translatedLanguage":"en"},
 					"relationships":[{"id":"series-1","type":"manga"}]
 				}
 			}`)
