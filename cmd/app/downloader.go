@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -126,7 +127,11 @@ func (r *Runner) download(base config.Options) {
 
 	isNewVersionAvailable, newVersionLink, err := version.IsNewAvailable(ctx, opts.Client.HTTPClient())
 	if err != nil {
-		opts.Logger.Error("There was an error while checking for a new comics-downloader version")
+		if errors.Is(err, version.ErrInvalidSemverTag) {
+			opts.Logger.Debugf("Skipping version check: %v", err)
+		} else {
+			opts.Logger.Errorf("There was an error while checking for a new comics-downloader version: %v", err)
+		}
 	}
 
 	if isNewVersionAvailable {
