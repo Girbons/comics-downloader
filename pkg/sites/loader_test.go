@@ -82,3 +82,85 @@ func TestNotInIssuesRange(t *testing.T) {
 		require.Equal(t, tc.skip, notInIssuesRange(tc.issue, tc.start, tc.end))
 	}
 }
+
+func TestVolumeIssuesRange(t *testing.T) {
+	tt := []struct {
+		name        string
+		input       string
+		start       float64
+		end         float64
+		returnValue bool
+	}{
+		// Volume 4, Issue 78-99 range tests (user specifies: -range=4.78-4.99)
+		{"v4-078 in range", "v4-078-2016", 4.78, 4.99, false},
+		{"v4-099 in range", "v4-099-2016", 4.78, 4.99, false},
+		{"v4-077 out of range (too low)", "v4-077-2016", 4.78, 4.99, true},
+		{"v4-100 out of range (too high)", "v4-100-2016", 4.78, 4.99, true},
+		{"v3-078 wrong volume", "v3-078-2016", 4.78, 4.99, true},
+		{"v5-078 wrong volume", "v5-078-2016", 4.78, 4.99, true},
+
+		// Volume 2, Issue 1-50 range tests (user specifies: -range=2.01-2.50)
+		{"v2-001 in range", "v2-001-1989", 2.01, 2.50, false},
+		{"v2-025 in range", "v2-025-1989", 2.01, 2.50, false},
+		{"v2-050 in range", "v2-050-1989", 2.01, 2.50, false},
+		{"v2-051 out of range", "v2-051-1989", 2.01, 2.50, true},
+
+		// Edge cases with different formats
+		{"v4-078 without year", "v4-078", 4.78, 4.99, false},
+		{"v4_078 with underscore", "v4_078", 4.78, 4.99, false},
+		{"v10-005 two-digit volume", "v10-005", 10.05, 10.10, false},
+
+		// Backwards compatibility with simple numeric issues
+		{"078 simple format", "078", 78, 99, false},
+		{"100 simple format out of range", "100", 78, 99, true},
+		{"issue-1 with prefix", "issue-1", 1, 3, false},
+		{"issue-5 with prefix out of range", "issue-5", 1, 3, true},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.name, func(t *testing.T) {
+			assert.Equal(t, tc.returnValue, notInIssuesRange(tc.input, tc.start, tc.end),
+				"Issue %s with range %.2f-%.2f", tc.input, tc.start, tc.end)
+		})
+	}
+}
+
+func TestExtractIssueNumberForRange(t *testing.T) {
+	tt := []struct {
+		name     string
+		input    string
+		expected float64
+	}{
+		// Volume and issue format
+		{"v4-078-2016", "v4-078-2016", 4.78},
+		{"v4-099-2016", "v4-099-2016", 4.99},
+		{"v2-075-1989", "v2-075-1989", 2.75},
+		{"v4-078 no year", "v4-078", 4.78},
+		{"v4_078 underscore", "v4_078", 4.78},
+		{"v10-005 two-digit volume", "v10-005", 10.05},
+
+		// Simple numeric format
+		{"078", "078", 78},
+		{"99", "99", 99},
+		{"1", "1", 1},
+
+		// Decimal format
+		{"20.5", "20.5", 20.5},
+		{"3.14", "3.14", 3.14},
+
+		// With prefixes
+		{"issue-1", "issue-1", 1},
+		{"issue-123", "issue-123", 123},
+
+		// Edge cases
+		{"empty", "", 0},
+		{"no numbers", "abc", 0},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.name, func(t *testing.T) {
+			assert.Equal(t, tc.expected, extractIssueNumberForRange(tc.input),
+				"Issue %s should extract to %.2f", tc.input, tc.expected)
+		})
+	}
+}
