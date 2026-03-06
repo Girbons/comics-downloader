@@ -24,10 +24,10 @@ func NewReadallcomics(options *config.Options) *Readallcomics {
 	}
 }
 
-func (r *Readallcomics) retrieveImageLinks(comic *core.Comic) ([]string, error) {
+func (r *Readallcomics) retrieveImageLinks(comic *core.ComicIssue) ([]string, error) {
 	var links []string
 
-	response, err := soup.Get(comic.URLSource)
+	response, err := soup.Get(comic.Source.URL)
 	if err != nil {
 		return links, err
 	}
@@ -403,7 +403,7 @@ func isNumeric(s string) bool {
 }
 
 // Initialize prepare the comic instance with links and images.
-func (r *Readallcomics) Initialize(comic *core.Comic) error {
+func (r *Readallcomics) Initialize(comic *core.ComicIssue) error {
 	links, err := r.retrieveImageLinks(comic)
 	comic.Links = links
 

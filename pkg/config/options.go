@@ -31,7 +31,7 @@ type Options struct {
 	CreateDefaultPath   bool
 	IssueNumberNameOnly bool
 	URL                 string
-	Source              string
+	SourceName          string
 	IssuesRange         string
 	IssueFolderName     string
 	UserAgents          []string

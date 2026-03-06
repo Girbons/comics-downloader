@@ -79,7 +79,9 @@ func TestMangatownScraper(t *testing.T) {
 
 	scraper := NewMangatown(opts)
 
-	comic := &core.Comic{URLSource: server.URL + mangatownIssuePath}
+	comic := &core.ComicIssue{
+		Source: &core.ComicSource{Name: "test-source", URL: server.URL + mangatownIssuePath},
+	}
 	require.NoError(t, scraper.Initialize(comic))
 	require.Equal(t, []string{
 		"https://cdn.example.com/naruto/001.jpg",

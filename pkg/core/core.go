@@ -41,16 +41,21 @@ const (
 	PDF  = "pdf"
 )
 
-// Comic struct contains all the informations about a comic
-type Comic struct {
+type ComicSource struct {
+	Name string
+	URL  string
+}
+
+// ComicIssue struct contains all the informations about a comic
+type ComicIssue struct {
 	Author       string
 	Name         string
 	IssueNumber  string
-	Source       string
-	URLSource    string
 	Links        []string
 	Format       string
 	ImagesFormat string
+
+	Source *ComicSource
 }
 
 // DownloadResult captures the outcome of downloading a comic's images.
@@ -67,7 +72,7 @@ func ensureClient(options *config.Options) *httpclient.ComicClient {
 }
 
 // makeEPUB creates the epub file.
-func (comic *Comic) makeEPUB(options *config.Options, images *DownloadResult) error {
+func (comic *ComicIssue) makeEPUB(options *config.Options, images *DownloadResult) error {
 	isCoverSet := false
 	imgTag := `<img src="%s" alt="Cover Image" />`
 	e := epub.NewEpub(comic.IssueNumber)
@@ -93,7 +98,7 @@ func (comic *Comic) makeEPUB(options *config.Options, images *DownloadResult) er
 		}
 	}
 
-	dir, err := util.PathSetup(options.CreateDefaultPath, options.OutputFolder, comic.Source, comic.Name)
+	dir, err := util.PathSetup(options.CreateDefaultPath, options.OutputFolder, comic.Source.Name, comic.Name)
 	if err != nil {
 		return err
 	}
@@ -109,7 +114,7 @@ func (comic *Comic) makeEPUB(options *config.Options, images *DownloadResult) er
 }
 
 // makePDF create the pdf file.
-func (comic *Comic) makePDF(options *config.Options, images *DownloadResult) error {
+func (comic *ComicIssue) makePDF(options *config.Options, images *DownloadResult) error {
 	var mmWd, mmHt float64
 	const px2mm = 0.2645833333
 
@@ -152,7 +157,7 @@ func (comic *Comic) makePDF(options *config.Options, images *DownloadResult) err
 		pdf.ImageOptions(path.Base(fileName), 0, 0, mmWd, mmHt, false, imageOptions, 0, "")
 	}
 
-	dir, err := util.PathSetup(options.CreateDefaultPath, options.OutputFolder, comic.Source, comic.Name)
+	dir, err := util.PathSetup(options.CreateDefaultPath, options.OutputFolder, comic.Source.Name, comic.Name)
 	if err != nil {
 		return err
 	}
@@ -169,8 +174,8 @@ func (comic *Comic) makePDF(options *config.Options, images *DownloadResult) err
 }
 
 // makeCBRZ will create the CBR/CBZ.
-func (comic *Comic) makeCBRZ(options *config.Options, images *DownloadResult) error {
-	dir, err := util.PathSetup(options.CreateDefaultPath, options.OutputFolder, comic.Source, comic.Name)
+func (comic *ComicIssue) makeCBRZ(options *config.Options, images *DownloadResult) error {
+	dir, err := util.PathSetup(options.CreateDefaultPath, options.OutputFolder, comic.Source.Name, comic.Name)
 	if err != nil {
 		return err
 	}
@@ -221,14 +226,14 @@ func (comic *Comic) makeCBRZ(options *config.Options, images *DownloadResult) er
 }
 
 // DownloadImages will download the comic/manga images.
-func (comic *Comic) DownloadImages(options *config.Options) (*DownloadResult, error) {
+func (comic *ComicIssue) DownloadImages(options *config.Options) (*DownloadResult, error) {
 	if len(comic.Links) == 0 {
-		return nil, fmt.Errorf("download failed, no links found for: %s", comic.URLSource)
+		return nil, fmt.Errorf("download failed, no links found for: %s", comic.Source.URL)
 	}
 
 	client := ensureClient(options)
 
-	dir, err := util.ImagesPathSetup(options.CreateDefaultPath, options.OutputFolder, comic.Source, comic.Name, options.IssueFolderName, comic.IssueNumber)
+	dir, err := util.ImagesPathSetup(options.CreateDefaultPath, options.OutputFolder, comic.Source.Name, comic.Name, options.IssueFolderName, comic.IssueNumber)
 	if err != nil {
 		return nil, err
 	}
@@ -312,7 +317,7 @@ func (comic *Comic) DownloadImages(options *config.Options) (*DownloadResult, er
 				time.Sleep(sleepDuration)
 			}
 
-			request, err := client.PrepareRequest(job.link, comic.Source)
+			request, err := client.PrepareRequest(job.link, comic.Source.Name)
 			if err != nil {
 				return err
 			}
@@ -443,7 +448,7 @@ func filterEmpty(items []string) []string {
 }
 
 // MakeComic will create the file based on the output format selected.
-func (comic *Comic) MakeComic(options *config.Options) error {
+func (comic *ComicIssue) MakeComic(options *config.Options) error {
 	result, err := comic.DownloadImages(options)
 	if err != nil {
 		return err

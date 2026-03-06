@@ -40,8 +40,8 @@ func MangaKakalotGetInfo(domain string, url string) (string, string) {
 	return name, issueNumber
 }
 
-func MangaKakalotInitialize(comic *core.Comic) error {
-	res, err := soup.Get(comic.URLSource)
+func MangaKakalotInitialize(comic *core.ComicIssue) error {
+	res, err := soup.Get(comic.Source.URL)
 	if err != nil {
 		return err
 	}

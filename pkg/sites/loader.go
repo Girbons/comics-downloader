@@ -12,8 +12,8 @@ import (
 	"github.com/Girbons/comics-downloader/pkg/util"
 )
 
-func initializeCollection(issues []string, options *config.Options, base BaseSite) ([]*core.Comic, error) {
-	var collection []*core.Comic
+func initializeCollection(issues []string, options *config.Options, base BaseSite) ([]*core.ComicIssue, error) {
+	var collection []*core.ComicIssue
 	var err error
 
 	if len(issues) == 0 {
@@ -42,18 +42,20 @@ func initializeCollection(issues []string, options *config.Options, base BaseSit
 			continue
 		}
 
-		dir, pathErr := util.PathSetup(options.CreateDefaultPath, options.OutputFolder, options.Source, name)
+		dir, pathErr := util.PathSetup(options.CreateDefaultPath, options.OutputFolder, options.SourceName, name)
 		if pathErr != nil {
 			return collection, pathErr
 		}
 		fileName := util.GetPathToFile(dir, name, issueNumber, options.Format, options.IssueNumberNameOnly)
 
 		if util.DirectoryOrFileDoesNotExist(fileName) || options.ImagesOnly {
-			comic := &core.Comic{
-				Name:         name,
-				IssueNumber:  issueNumber,
-				URLSource:    url,
-				Source:       options.Source,
+			comic := &core.ComicIssue{
+				Name:        name,
+				IssueNumber: issueNumber,
+				Source: &core.ComicSource{
+					Name: options.SourceName,
+					URL:  url,
+				},
 				Format:       options.Format,
 				ImagesFormat: options.ImagesFormat,
 			}
@@ -88,30 +90,30 @@ func notInIssuesRange(issueNumber string, start, end float64) bool {
 }
 
 // LoadComicFromSource will return an `comic` instance initialized based on the source
-func LoadComicFromSource(options *config.Options) ([]*core.Comic, error) {
+func LoadComicFromSource(options *config.Options) ([]*core.ComicIssue, error) {
 	var (
 		base       BaseSite
 		issues     []string
-		collection []*core.Comic
+		collection []*core.ComicIssue
 		err        error
 	)
 
 	switch {
-	case strings.Contains(options.Source, "readcomiconline"):
+	case strings.Contains(options.SourceName, "readcomiconline"):
 		base = NewReadComiconline(options)
-	case strings.Contains(options.Source, "comicextra"):
+	case strings.Contains(options.SourceName, "comicextra"):
 		base = NewComicextra(options)
-	case strings.Contains(options.Source, "mangareader"):
+	case strings.Contains(options.SourceName, "mangareader"):
 		base = NewMangareader(options)
-	case strings.Contains(options.Source, "mangatown"):
+	case strings.Contains(options.SourceName, "mangatown"):
 		base = NewMangatown(options)
-	case strings.Contains(options.Source, "mangadex"):
+	case strings.Contains(options.SourceName, "mangadex"):
 		base = NewMangadex(options)
-	case strings.Contains(options.Source, "readallcomics"):
+	case strings.Contains(options.SourceName, "readallcomics"):
 		base = NewReadallcomics(options)
-	case strings.Contains(options.Source, "mangakakalot"):
+	case strings.Contains(options.SourceName, "mangakakalot"):
 		base = NewMangaKakalot(options)
-	case strings.Contains(options.Source, "manganato"):
+	case strings.Contains(options.SourceName, "manganato"):
 		base = NewManganato(options)
 	default:
 		err = fmt.Errorf("source unknown")

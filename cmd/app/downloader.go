@@ -151,7 +151,7 @@ func (r *Runner) download(base config.Options) {
 		// check if the link is supported
 		source, check, isDisabled := detector.DetectComic(trimmedURL)
 
-		perURL.Source = source
+		perURL.SourceName = source
 
 		if !check {
 			perURL.Logger.Error("This site is not supported")

@@ -69,9 +69,9 @@ func TestMangaKakalotScraper(t *testing.T) {
 	defer server.Close()
 
 	opts := &config.Options{
-		URL:    server.URL + mangaKakalotListPath,
-		Source: "mangakakalot.com",
-		Logger: logger.NewLogger(false, nil),
+		URL:        server.URL + mangaKakalotListPath,
+		SourceName: "mangakakalot.com",
+		Logger:     logger.NewLogger(false, nil),
 	}
 	scraper := NewMangaKakalot(opts)
 
@@ -79,7 +79,9 @@ func TestMangaKakalotScraper(t *testing.T) {
 	require.Equal(t, "My Manga", title)
 	require.Equal(t, "2", issue)
 
-	comic := &core.Comic{URLSource: server.URL + mangaKakalotChapterPath}
+	comic := &core.ComicIssue{
+		Source: &core.ComicSource{Name: "test-source", URL: server.URL + mangaKakalotChapterPath},
+	}
 	require.NoError(t, scraper.Initialize(comic))
 	require.Equal(t, []string{
 		"https://cdn.example.com/manga-title/001.jpg",

@@ -66,9 +66,9 @@ func TestManganatoScraper(t *testing.T) {
 	defer server.Close()
 
 	opts := &config.Options{
-		URL:    server.URL + manganatoListPath,
-		Source: "manganato.com",
-		Logger: logger.NewLogger(false, nil),
+		URL:        server.URL + manganatoListPath,
+		SourceName: "manganato.com",
+		Logger:     logger.NewLogger(false, nil),
 	}
 
 	scraper := NewManganato(opts)
@@ -77,7 +77,9 @@ func TestManganatoScraper(t *testing.T) {
 	require.Equal(t, "My Manga", title)
 	require.Equal(t, "2", issue)
 
-	comic := &core.Comic{URLSource: server.URL + manganatoChapterPath}
+	comic := &core.ComicIssue{
+		Source: &core.ComicSource{Name: "test-source", URL: server.URL + manganatoChapterPath},
+	}
 	require.NoError(t, scraper.Initialize(comic))
 	require.Equal(t, []string{
 		"https://cdn.example.com/manga-title/001.jpg",

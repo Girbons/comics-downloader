@@ -11,11 +11,11 @@ import (
 
 type stubSite struct {
 	issues []string
-	comics map[string]*core.Comic
+	comics map[string]*core.ComicIssue
 }
 
-func (s *stubSite) Initialize(comic *core.Comic) error {
-	if stub, ok := s.comics[comic.URLSource]; ok {
+func (s *stubSite) Initialize(comic *core.ComicIssue) error {
+	if stub, ok := s.comics[comic.Source.URL]; ok {
 		*comic = *stub
 		return nil
 	}
@@ -35,7 +35,7 @@ func (s *stubSite) RetrieveIssueLinks() ([]string, error) {
 
 func TestInitializeCollectionFiltersIssues(t *testing.T) {
 	options := &config.Options{
-		Source:       "test-source",
+		SourceName:   "test-source",
 		Format:       "pdf",
 		ImagesFormat: "png",
 		IssuesRange:  "1-2",
@@ -44,10 +44,10 @@ func TestInitializeCollectionFiltersIssues(t *testing.T) {
 
 	site := &stubSite{
 		issues: []string{"url-1", "url-2", "url-3"},
-		comics: map[string]*core.Comic{
-			"url-1": {Name: "series", IssueNumber: "issue-1", URLSource: "url-1"},
-			"url-2": {Name: "series", IssueNumber: "issue-2", URLSource: "url-2"},
-			"url-3": {Name: "series", IssueNumber: "issue-3", URLSource: "url-3"},
+		comics: map[string]*core.ComicIssue{
+			"url-1": {Name: "series", IssueNumber: "issue-1", Source: &core.ComicSource{Name: "test-source", URL: "url-1"}},
+			"url-2": {Name: "series", IssueNumber: "issue-2", Source: &core.ComicSource{Name: "test-source", URL: "url-2"}},
+			"url-3": {Name: "series", IssueNumber: "issue-3", Source: &core.ComicSource{Name: "test-source", URL: "url-3"}},
 		},
 	}
 
@@ -59,7 +59,7 @@ func TestInitializeCollectionFiltersIssues(t *testing.T) {
 }
 
 func TestLoadComicFromSourceUnknown(t *testing.T) {
-	options := &config.Options{Source: "unknown"}
+	options := &config.Options{SourceName: "unknown"}
 	collection, err := LoadComicFromSource(options)
 	require.Error(t, err)
 	require.Empty(t, collection)

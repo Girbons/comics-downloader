@@ -22,10 +22,10 @@ func NewMangareader(options *config.Options) *Mangareader {
 	}
 }
 
-func (m *Mangareader) retrieveImageLinks(comic *core.Comic) ([]string, error) {
+func (m *Mangareader) retrieveImageLinks(comic *core.ComicIssue) ([]string, error) {
 	var links []string
 
-	response, err := soup.Get(comic.URLSource)
+	response, err := soup.Get(comic.Source.URL)
 
 	if err != nil {
 		return nil, err
@@ -116,8 +116,8 @@ func (m *Mangareader) GetInfo(url string) (string, string) {
 }
 
 // Initialize loads links and metadata from mangareader
-func (m *Mangareader) Initialize(comic *core.Comic) error {
-	name, issueNumber := m.GetInfo(comic.URLSource)
+func (m *Mangareader) Initialize(comic *core.ComicIssue) error {
+	name, issueNumber := m.GetInfo(comic.Source.URL)
 	comic.Name = name
 	comic.IssueNumber = issueNumber
 

@@ -71,11 +71,11 @@ func newTestMangadex(t *testing.T) (*Mangadex, func()) {
 	)
 
 	opts := &config.Options{
-		URL:     server.URL + "/title/series-1/naruto",
-		Country: "en",
-		Source:  "mangadex.org",
-		Logger:  logger.NewLogger(false, nil),
-		Client:  client,
+		URL:        server.URL + "/title/series-1/naruto",
+		Country:    "en",
+		SourceName: "mangadex.org",
+		Logger:     logger.NewLogger(false, nil),
+		Client:     client,
 	}
 
 	md := NewMangadex(opts)
@@ -105,7 +105,9 @@ func TestMangadexInitialize(t *testing.T) {
 	md, cleanup := newTestMangadex(t)
 	defer cleanup()
 
-	comic := &core.Comic{URLSource: md.chapterBase + "/chapter-1"}
+	comic := &core.ComicIssue{
+		Source: &core.ComicSource{Name: "test-source", URL: md.chapterBase + "/chapter-1"},
+	}
 	err := md.Initialize(comic)
 	require.NoError(t, err)
 	require.Equal(t, []string{

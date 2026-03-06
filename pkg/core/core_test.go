@@ -67,9 +67,9 @@ func TestDownloadImagesCreatesFiles(t *testing.T) {
 
 	opts := newTestOptions(t, server)
 
-	comic := &Comic{
+	comic := &ComicIssue{
 		Name:         "foo",
-		Source:       "test-source",
+		Source:       &ComicSource{Name: "test-source", URL: server.URL},
 		IssueNumber:  "1",
 		ImagesFormat: "png",
 		Links:        buildLinks(server, 3),
@@ -95,9 +95,9 @@ func TestMakeComicPDF(t *testing.T) {
 
 	opts := newTestOptions(t, server)
 
-	comic := &Comic{
+	comic := &ComicIssue{
 		Name:         "foo",
-		Source:       "test-source",
+		Source:       &ComicSource{Name: "test-source", URL: server.URL},
 		IssueNumber:  "1",
 		Format:       PDF,
 		ImagesFormat: "png",
@@ -106,7 +106,7 @@ func TestMakeComicPDF(t *testing.T) {
 
 	require.NoError(t, comic.MakeComic(opts))
 
-	output := filepath.Join(opts.OutputFolder, "comics", comic.Source, comic.Name, "foo-1.pdf")
+	output := filepath.Join(opts.OutputFolder, "comics", comic.Source.Name, comic.Name, "foo-1.pdf")
 	require.FileExists(t, output)
 }
 
@@ -116,9 +116,9 @@ func TestMakeComicEPUB(t *testing.T) {
 
 	opts := newTestOptions(t, server)
 
-	comic := &Comic{
+	comic := &ComicIssue{
 		Name:         "bar",
-		Source:       "test-source",
+		Source:       &ComicSource{Name: "test-source", URL: server.URL},
 		IssueNumber:  "42",
 		Author:       "Author",
 		Format:       EPUB,
@@ -128,7 +128,7 @@ func TestMakeComicEPUB(t *testing.T) {
 
 	require.NoError(t, comic.MakeComic(opts))
 
-	output := filepath.Join(opts.OutputFolder, "comics", comic.Source, comic.Name, "bar-42.epub")
+	output := filepath.Join(opts.OutputFolder, "comics", comic.Source.Name, comic.Name, "bar-42.epub")
 	require.FileExists(t, output)
 }
 
@@ -138,9 +138,9 @@ func TestMakeComicCBZ(t *testing.T) {
 
 	opts := newTestOptions(t, server)
 
-	comic := &Comic{
+	comic := &ComicIssue{
 		Name:         "baz",
-		Source:       "test-source",
+		Source:       &ComicSource{Name: "test-source", URL: server.URL},
 		IssueNumber:  "7",
 		Format:       CBZ,
 		ImagesFormat: "png",
@@ -149,7 +149,7 @@ func TestMakeComicCBZ(t *testing.T) {
 
 	require.NoError(t, comic.MakeComic(opts))
 
-	output := filepath.Join(opts.OutputFolder, "comics", comic.Source, comic.Name, "baz-7.cbz")
+	output := filepath.Join(opts.OutputFolder, "comics", comic.Source.Name, comic.Name, "baz-7.cbz")
 	require.FileExists(t, output)
 }
 

@@ -36,11 +36,11 @@ func (m *Mangatown) findPages(document *soup.Root) []string {
 	return pages
 }
 
-func (m *Mangatown) retrieveImageLinks(comic *core.Comic) ([]string, error) {
+func (m *Mangatown) retrieveImageLinks(comic *core.ComicIssue) ([]string, error) {
 	var links []string
 	var link string
 
-	response, err := soup.Get(comic.URLSource)
+	response, err := soup.Get(comic.Source.URL)
 
 	if err != nil {
 		return nil, err
@@ -50,7 +50,7 @@ func (m *Mangatown) retrieveImageLinks(comic *core.Comic) ([]string, error) {
 	pages := m.findPages(&document)
 
 	for _, page := range pages {
-		link = fmt.Sprintf("%s%s.html", comic.URLSource, page)
+		link = fmt.Sprintf("%s%s.html", comic.Source.URL, page)
 		response, err := soup.Get(link)
 
 		if err != nil {
@@ -139,7 +139,7 @@ func (m *Mangatown) GetInfo(url string) (string, string) {
 }
 
 // Initialize loads links and metadata from mangatown
-func (m *Mangatown) Initialize(comic *core.Comic) error {
+func (m *Mangatown) Initialize(comic *core.ComicIssue) error {
 	links, err := m.retrieveImageLinks(comic)
 	comic.Links = links
 

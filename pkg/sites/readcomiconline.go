@@ -61,12 +61,12 @@ func deobfuscateUrl(imageLink string) (string, error) {
 	return link, nil
 }
 
-func (c *ReadComicOnline) retrieveImageLinks(comic *core.Comic) ([]string, error) {
+func (c *ReadComicOnline) retrieveImageLinks(comic *core.ComicIssue) ([]string, error) {
 	var links []string
 	const debugSnippetLimit = 4096
 
-	comic.URLSource = strings.Split(comic.URLSource, "?")[0]
-	fetchURL := comic.URLSource + "?quality=hd&readType=1"
+	comic.Source.URL = strings.Split(comic.Source.URL, "?")[0]
+	fetchURL := comic.Source.URL + "?quality=hd&readType=1"
 
 	if c.options.Debug && c.options.Logger != nil {
 		c.options.Logger.Debugf("readcomiconline: fetching %s", fetchURL)
@@ -97,7 +97,7 @@ func (c *ReadComicOnline) retrieveImageLinks(comic *core.Comic) ([]string, error
 	}
 
 	if c.options.Debug && c.options.Logger != nil {
-		c.options.Logger.Debugf("readcomiconline: found %d obfuscated entries, %d valid links for %s", len(match), len(links), comic.URLSource)
+		c.options.Logger.Debugf("readcomiconline: found %d obfuscated entries, %d valid links for %s", len(match), len(links), comic.Source.URL)
 		snippet := response
 		if len(snippet) > debugSnippetLimit {
 			snippet = snippet[:debugSnippetLimit]
@@ -199,7 +199,7 @@ func (c *ReadComicOnline) GetInfo(url string) (string, string) {
 
 // Initialize will initialize the comic based
 // on ReadComicOnline.to
-func (c *ReadComicOnline) Initialize(comic *core.Comic) error {
+func (c *ReadComicOnline) Initialize(comic *core.ComicIssue) error {
 	links, err := c.retrieveImageLinks(comic)
 	comic.Links = links
 

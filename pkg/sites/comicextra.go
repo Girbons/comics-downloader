@@ -24,10 +24,10 @@ func NewComicextra(options *config.Options) *Comicextra {
 	}
 }
 
-func (c *Comicextra) retrieveImageLinks(comic *core.Comic) ([]string, error) {
+func (c *Comicextra) retrieveImageLinks(comic *core.ComicIssue) ([]string, error) {
 	var links []string
 
-	response, err := soup.Get(comic.URLSource)
+	response, err := soup.Get(comic.Source.URL)
 	if err != nil {
 		return nil, err
 	}
@@ -103,7 +103,7 @@ func (c *Comicextra) RetrieveIssueLinks() ([]string, error) {
 	}
 
 	if c.options.All && c.isSingleIssue(url) {
-		url = "https://" + c.options.Source + "/comic/" + comicName
+		url = "https://" + c.options.SourceName + "/comic/" + comicName
 	} else if c.isSingleIssue(url) {
 
 		if !strings.HasSuffix(url, "/full") {
@@ -160,7 +160,7 @@ func (c *Comicextra) GetInfo(url string) (string, string) {
 
 // Initialize will initialize the comic based
 // on comicextra.com
-func (c *Comicextra) Initialize(comic *core.Comic) error {
+func (c *Comicextra) Initialize(comic *core.ComicIssue) error {
 	links, err := c.retrieveImageLinks(comic)
 	comic.Links = links
 

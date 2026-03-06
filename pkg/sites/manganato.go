@@ -22,7 +22,7 @@ func (m *Manganato) GetInfo(url string) (string, string) {
 }
 
 // Initialize loads links and metadata from manganato
-func (m *Manganato) Initialize(comic *core.Comic) error {
+func (m *Manganato) Initialize(comic *core.ComicIssue) error {
 	return MangaKakalotInitialize(comic)
 }
 

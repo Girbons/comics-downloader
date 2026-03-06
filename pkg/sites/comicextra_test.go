@@ -69,7 +69,12 @@ func TestComicExtraScraper(t *testing.T) {
 
 	comicextra := NewComicextra(opts)
 
-	comic := &core.Comic{URLSource: server.URL + comicExtraIssueFullPath}
+	comic := &core.ComicIssue{
+		Source: &core.ComicSource{
+			Name: "test-source",
+			URL:  server.URL + comicExtraIssueFullPath,
+		},
+	}
 	require.NoError(t, comicextra.Initialize(comic))
 	require.Equal(t, []string{
 		"https://cdn.example.com/batman?page=1",

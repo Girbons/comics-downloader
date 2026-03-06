@@ -251,8 +251,8 @@ func (m *Mangadex) GetInfo(urlValue string) (string, string) {
 }
 
 // Initialize loads links and metadata from mangadex.
-func (m *Mangadex) Initialize(comic *core.Comic) error {
-	parts := util.TrimAndSplitURL(comic.URLSource)
+func (m *Mangadex) Initialize(comic *core.ComicIssue) error {
+	parts := util.TrimAndSplitURL(comic.Source.URL)
 	if len(parts) < 5 {
 		return fmt.Errorf("URL not supported")
 	}

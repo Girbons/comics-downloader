@@ -61,7 +61,9 @@ func TestReadComicOnlineScraper(t *testing.T) {
 
 	scraper := NewReadComiconline(opts)
 
-	comic := &core.Comic{URLSource: server.URL + rcoIssuePath}
+	comic := &core.ComicIssue{
+		Source: &core.ComicSource{Name: "test-source", URL: server.URL + rcoIssuePath},
+	}
 	require.NoError(t, scraper.Initialize(comic))
 	require.Equal(t, []string{
 		"https://2.bp.blogspot.com/abc123=s1600?",

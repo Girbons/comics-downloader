@@ -62,7 +62,9 @@ func TestReadAllComicsScraper(t *testing.T) {
 
 	scraper := NewReadallcomics(opts)
 
-	comic := &core.Comic{URLSource: server.URL + readAllIssuePath}
+	comic := &core.ComicIssue{
+		Source: &core.ComicSource{Name: "test-source", URL: server.URL + readAllIssuePath},
+	}
 	require.NoError(t, scraper.Initialize(comic))
 	require.Equal(t, []string{
 		"https://cdn.example.com/sandman/001.jpg",
