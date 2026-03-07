@@ -49,9 +49,10 @@ func ensureClient(options *config.Options) *httpclient.ComicClient {
 // makeEPUB creates the epub file.
 func (comic *ComicIssue) makeEPUB(options *config.Options, images *DownloadResult) error {
 	isCoverSet := false
-	imgTag := `<img src="%s" alt="Cover Image" />`
-	e := epub.NewEpub(comic.IssueNumber)
-	e.SetTitle(fmt.Sprintf("%s-%s", comic.Name, comic.IssueNumber))
+	imgTag := `<img src="%s" alt="Comic Page" />`
+
+	localizedTitle := comic.getLocalizedTitle(options)
+	e := epub.NewEpub(localizedTitle)
 
 	if len(comic.SeriesMetadata.Creators) > 0 {
 		setAuthor := false
@@ -75,7 +76,7 @@ func (comic *ComicIssue) makeEPUB(options *config.Options, images *DownloadResul
 		e.SetLang(*comic.LanguageISO)
 	}
 
-	comicDescription := comic.getDescriptionForLanguage(options, options.Country)
+	comicDescription := comic.getLocalizedDescription(options)
 	if comicDescription != "" {
 		e.SetDescription(comicDescription)
 	}

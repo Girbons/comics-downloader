@@ -31,11 +31,52 @@ func setupMangadexServer() *httptest.Server {
 			}`)
 		case strings.HasPrefix(r.URL.Path, "/manga/series-1"):
 			w.Header().Set("Content-Type", "application/json")
+			// TODO: add another series test where year, demographic, tags, etc are all missing. want to test minimum viable response
 			fmt.Fprint(w, `{
 				"result":"ok",
 				"data":{
 					"attributes":{
-						"title":{"en":"Test Manga","jp":"テスト"}
+						"title":{"jp":"テスト"},
+						"altTitles":[
+							{"en":"Test Manga"},
+							{"fr":"Manga de Test"},
+							{"zh": "测试漫画"}
+						],
+						"description":{"en":"Test manga description"},
+						"publicationDemographic":"shounen",
+						"contentRating":"safe",
+						"tags":[
+							{
+								"id":"tag-1",
+								"type":"tag",
+								"attributes":{
+									"name":{"en":"Romance"},
+									"group":"genre",
+									"version":1
+								}
+							},
+							{
+								"id":"tag-2",
+								"type":"tag",
+								"attributes":{
+									"name":{"en":"School Life"},
+									"group":"theme",
+									"version":1
+								}
+							},
+							{
+								"id":"tag-3",
+								"type":"tag",
+								"attributes":{
+									"name":{"en":"Doujinshi"},
+									"group":"format",
+									"version":1
+								}
+							}
+						],
+						"links":{
+							"al": "30642"
+						}
 					}
 				}
 			}`)
@@ -44,11 +85,64 @@ func setupMangadexServer() *httptest.Server {
 			fmt.Fprint(w, `{
 				"result":"ok",
 				"data":{
-					"attributes":{"volume":"1","chapter":"1","title":"Start","publishAt":"2026-03-06T14:03:52.000Z","translatedLanguage":"en"},
+					"attributes":{
+						"volume":"1",
+						"chapter":"1",
+						"title":"Start",
+						"publishAt":"2026-03-06T14:03:52.000Z",
+						"translatedLanguage":"en"
+					},
 					"relationships":[{"id":"series-1","type":"manga"}]
 				}
 			}`)
 		case strings.HasPrefix(r.URL.Path, "/at-home/server/chapter-1"):
+			w.Header().Set("Content-Type", "application/json")
+			fmt.Fprint(w, `{
+				"result":"ok",
+				"chapter":{"hash":"HASH","data":["001.png","002.png"]}
+			}`)
+		case strings.HasPrefix(r.URL.Path, "/manga/series-2/aggregate"):
+			w.Header().Set("Content-Type", "application/json")
+			fmt.Fprint(w, `{
+				"result":"ok",
+				"volumes":{
+					"1":{
+						"chapters":{
+							"1":{"id":"chapter-1","chapter":"1"}
+						}
+					}
+				}
+			}`)
+		case strings.HasPrefix(r.URL.Path, "/manga/series-2"):
+			w.Header().Set("Content-Type", "application/json")
+			// TODO: add another series test where year, demographic, tags, etc are all missing. want to test minimum viable response
+			fmt.Fprint(w, `{
+				"result":"ok",
+				"data":{
+					"attributes":{
+						"title":{"jp":"テスト"},
+						"altTitles":[
+							{"en":"Test Manga"}
+						],
+					}
+				}
+			}`)
+		case strings.HasPrefix(r.URL.Path, "/chapter/chapter-2"):
+			w.Header().Set("Content-Type", "application/json")
+			fmt.Fprint(w, `{
+				"result":"ok",
+				"data":{
+					"attributes":{
+						"volume":"1",
+						"chapter":"1",
+						"title":"Start",
+						"publishAt":"2026-03-06T14:03:52.000Z",
+						"translatedLanguage":"en"
+					},
+					"relationships":[{"id":"series-2","type":"manga"}]
+				}
+			}`)
+		case strings.HasPrefix(r.URL.Path, "/at-home/server/chapter-2"):
 			w.Header().Set("Content-Type", "application/json")
 			fmt.Fprint(w, `{
 				"result":"ok",
@@ -60,7 +154,7 @@ func setupMangadexServer() *httptest.Server {
 	}))
 }
 
-func newTestMangadex(t *testing.T) (*Mangadex, func()) {
+func newTestMangadex(t *testing.T, series, lang string) (*Mangadex, func()) {
 	t.Helper()
 
 	server := setupMangadexServer()
@@ -71,8 +165,8 @@ func newTestMangadex(t *testing.T) (*Mangadex, func()) {
 	)
 
 	opts := &config.Options{
-		URL:            server.URL + "/title/series-1/naruto",
-		Country:        "en",
+		URL:            server.URL + fmt.Sprintf("/title/%s/naruto", series),
+		Country:        lang,
 		SourceName:     "mangadex.org",
 		Logger:         logger.NewLogger(false, nil),
 		Client:         client,
@@ -92,7 +186,7 @@ func newTestMangadex(t *testing.T) (*Mangadex, func()) {
 }
 
 func TestMangadexRetrieveIssueLinks(t *testing.T) {
-	md, cleanup := newTestMangadex(t)
+	md, cleanup := newTestMangadex(t, "series-1", "en")
 	defer cleanup()
 
 	md.options.All = true
@@ -103,7 +197,7 @@ func TestMangadexRetrieveIssueLinks(t *testing.T) {
 }
 
 func TestMangadexInitialize(t *testing.T) {
-	md, cleanup := newTestMangadex(t)
+	md, cleanup := newTestMangadex(t, "series-1", "en")
 	defer cleanup()
 
 	comic := &core.ComicIssue{
@@ -117,11 +211,44 @@ func TestMangadexInitialize(t *testing.T) {
 	}, comic.ImageLinks)
 }
 
-func TestMangadexGetInfo(t *testing.T) {
-	md, cleanup := newTestMangadex(t)
+func TestMangadexInitializeMinimum(t *testing.T) {
+	md, cleanup := newTestMangadex(t, "series-2", "en")
+	defer cleanup()
+
+	comic := &core.ComicIssue{
+		Source: &core.ComicSource{Name: "test-source", URL: md.chapterBase + "/chapter-1"},
+	}
+	err := md.Initialize(comic)
+	require.NoError(t, err)
+	require.Equal(t, []string{
+		md.uploadsBase + "/HASH/001.png",
+		md.uploadsBase + "/HASH/002.png",
+	}, comic.ImageLinks)
+}
+
+func TestMangadexGetInfoEnglish(t *testing.T) {
+	md, cleanup := newTestMangadex(t, "series-1", "en")
 	defer cleanup()
 
 	title, chapter := md.GetInfo(md.chapterBase + "/chapter-1")
 	require.Equal(t, "Test Manga", title)
+	require.Equal(t, "Vol 1 Chapter 1, Start", chapter)
+}
+
+func TestMangadexGetInfoJapanese(t *testing.T) {
+	md, cleanup := newTestMangadex(t, "series-1", "jp")
+	defer cleanup()
+
+	title, chapter := md.GetInfo(md.chapterBase + "/chapter-1")
+	require.Equal(t, "テスト", title)
+	require.Equal(t, "Vol 1 Chapter 1, Start", chapter)
+}
+
+func TestMangadexGetInfoNoCountry(t *testing.T) {
+	md, cleanup := newTestMangadex(t, "series-1", "")
+	defer cleanup()
+
+	title, chapter := md.GetInfo(md.chapterBase + "/chapter-1")
+	require.Equal(t, "テスト", title)
 	require.Equal(t, "Vol 1 Chapter 1, Start", chapter)
 }

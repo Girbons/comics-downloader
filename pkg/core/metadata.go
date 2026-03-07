@@ -110,7 +110,7 @@ const (
 // 	}
 // }
 
-func (c *ComicIssue) getDescriptionForLanguage(options *config.Options, lang string) string {
+func (c *ComicIssue) getLocalizedDescription(options *config.Options) string {
 	if len(c.SeriesMetadata.Description) <= 0 {
 		return ""
 	}
@@ -127,4 +127,29 @@ func (c *ComicIssue) getDescriptionForLanguage(options *config.Options, lang str
 	}
 
 	return ""
+}
+
+func (c *ComicIssue) getLocalizedTitle(options *config.Options) string {
+	if len(c.SeriesMetadata.LocalizedTitle) <= 0 {
+		// fmt.Println("No localized titles")
+		return c.SeriesMetadata.Title
+	}
+
+	// for key, value := range c.SeriesMetadata.LocalizedTitle {
+	// 	options.Logger.Infof("%s: %s\n", key, value)
+	// }
+
+	for lang, title := range c.SeriesMetadata.LocalizedTitle {
+		if options.Country == "" || options.Country == strings.ToLower(lang) {
+			// options.Logger.Infof("Found desired title \"%s\" in the lang %s\n", title, lang)
+			return title
+		}
+	}
+
+	// if no title matching the country option is found, set the title to the first one in the map
+	for _, title := range c.SeriesMetadata.LocalizedTitle {
+		return title
+	}
+
+	return c.SeriesMetadata.Title
 }

@@ -18,7 +18,7 @@ func TestGetDescriptionForLanguage_MatchingLanguage(t *testing.T) {
 		},
 	}
 
-	desc := c.getDescriptionForLanguage(opts, "en")
+	desc := c.getLocalizedDescription(opts)
 	require.Equal(t, "English description", desc)
 }
 
@@ -32,7 +32,7 @@ func TestGetDescriptionForLanguage_FallbackSingleEntry(t *testing.T) {
 		},
 	}
 
-	desc := c.getDescriptionForLanguage(opts, "fr")
+	desc := c.getLocalizedDescription(opts)
 	require.Equal(t, "Spanish description", desc)
 }
 
@@ -44,6 +44,6 @@ func TestGetDescriptionForLanguage_Empty(t *testing.T) {
 		},
 	}
 
-	desc := c.getDescriptionForLanguage(opts, "en")
+	desc := c.getLocalizedDescription(opts)
 	require.Equal(t, "", desc)
 }

@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
+	"strconv"
 	"strings"
 	"time"
 
@@ -51,7 +52,24 @@ func joinURL(base, suffix string) string {
 	return strings.TrimRight(base, "/") + "/" + strings.TrimLeft(suffix, "/")
 }
 
-func (m *Mangadex) getManga(mangaID string) (string, error) {
+type mangadexSeries struct {
+	ID string
+
+	Title          string // the title we want to use for the series, which may be localized based on the country option
+	LocalizedTitle map[string]string
+	Description    map[string]string
+	IsManga        bool
+
+	OriginalLanguage string
+	Year             *int
+
+	ContentRating core.AgeRating
+	Tags          []string
+	Genres        []string
+	WebLinks      []string
+}
+
+func (m *Mangadex) getMangaInfo(mangaID string) (mangadexSeries, error) {
 	ctx, cancel := m.requestContext()
 	defer cancel()
 
@@ -60,32 +78,163 @@ func (m *Mangadex) getManga(mangaID string) (string, error) {
 		Result string `json:"result"`
 		Data   struct {
 			Attributes struct {
-				Titles map[string]string `json:"title"`
+				Title                  map[string]string   `json:"title"`
+				AltTitles              []map[string]string `json:"altTitles"`
+				Description            map[string]string   `json:"description"`
+				Links                  map[string]string   `json:"links"`
+				OriginalLanguage       string              `json:"originalLanguage"`
+				Year                   *int                `json:"year"`
+				ContentRating          string              `json:"contentRating"`
+				PublicationDemographic *string             `json:"publicationDemographic"`
+				Tags                   []struct {
+					ID         string `json:"id"`
+					Type       string `json:"type"` // should be "tag"
+					Attributes struct {
+						Name        map[string]string `json:"name"`
+						Description map[string]string `json:"description"`
+						Group       string            `json:"group"`
+						Version     int               `json:"version"`
+					} `json:"attributes"`
+				} `json:"tags"`
+				// AvailableTranslatedLanguages []string `json:"availableTranslatedLanguages"`
 			} `json:"attributes"`
 		} `json:"data"`
 	}
 
 	if err := fetchJSON(ctx, m.client, endpoint, &mangaRes); err != nil {
-		return "", err
+		return mangadexSeries{}, err
 	}
 	if strings.ToLower(mangaRes.Result) != "ok" {
-		return "", fmt.Errorf("unexpected response")
+		return mangadexSeries{}, fmt.Errorf("unexpected response")
 	}
 
-	// TODO: set localized title based on country option instead of setting main title to that language
-	// then need to update how paths are generated to use the localized title instead of the main title if the country option is set
-	for lang, title := range mangaRes.Data.Attributes.Titles {
+	manga := mangadexSeries{
+		LocalizedTitle: mangaRes.Data.Attributes.Title,
+		Description:    mangaRes.Data.Attributes.Description,
+		IsManga:        true, // default to true since it's a manga site
+	}
+
+	// Set titles
+	foundTitle := false
+	for lang, title := range mangaRes.Data.Attributes.Title {
 		if m.country == "" || m.country == strings.ToLower(lang) {
-			return title, nil
+			// TODO: set localized title based on country option instead of main title
+			// need to update how paths are generated to use the localized title instead of the main title if the country option is set
+			manga.Title = title
+			foundTitle = true
+			break
+		}
+
+		// manga.LocalizedTitle[lang] = title
+	}
+
+	// try and fill in any missing localized titles
+	for _, grouping := range mangaRes.Data.Attributes.AltTitles {
+		for lang, title := range grouping {
+			if _, exists := manga.LocalizedTitle[lang]; !exists {
+				manga.LocalizedTitle[lang] = title
+			}
+
+			// if main title is missing, try to use the alt titles to fill it
+			if !foundTitle && (m.country == "" || m.country == strings.ToLower(lang)) {
+				manga.Title = title
+				foundTitle = true
+			}
 		}
 	}
 
-	// Fallback to any available title.
-	for _, title := range mangaRes.Data.Attributes.Titles {
-		return title, nil
+	if !foundTitle {
+		// If still haven't found anything fallback to any available title.
+		for _, title := range mangaRes.Data.Attributes.Title {
+			manga.Title = title
+		}
 	}
 
-	return "", fmt.Errorf("no title found for manga %s", mangaID)
+	// handle tags and genres
+	if mangaRes.Data.Attributes.PublicationDemographic != nil {
+		manga.Tags = append(manga.Tags, *mangaRes.Data.Attributes.PublicationDemographic)
+	}
+	for _, tag := range mangaRes.Data.Attributes.Tags {
+		// using English name for tags since they usally don't have localized names
+		name, ok := tag.Attributes.Name["en"]
+		if !ok {
+			// if no English name, try to use the first available name
+			for _, n := range tag.Attributes.Name {
+				name = n
+				break
+			}
+		}
+
+		if name != "" {
+			continue
+		}
+
+		switch tag.Attributes.Group {
+		case "genre":
+			manga.Genres = append(manga.Genres, name)
+		case "tag", "format":
+			manga.Tags = append(manga.Tags, name)
+		}
+	}
+
+	// see https://api.mangadex.org/docs/3-enumerations/#manga-content-rating
+	switch mangaRes.Data.Attributes.ContentRating {
+	case "safe":
+		manga.ContentRating = core.AgeRatingEveryone
+	case "suggestive", "erotica":
+		manga.ContentRating = core.AgeRatingMature
+	case "pornographic":
+		manga.ContentRating = core.AgeRatingAO18
+	default:
+		manga.ContentRating = core.AgeRatingEveryone
+	}
+
+	for key, link := range mangaRes.Data.Attributes.Links {
+		fullURL := m.mangaLinkToFullURL(key, link)
+		if fullURL != "" {
+			manga.WebLinks = append(manga.WebLinks, fullURL)
+		}
+	}
+	manga.OriginalLanguage = mangaRes.Data.Attributes.OriginalLanguage
+	manga.Year = mangaRes.Data.Attributes.Year
+
+	return manga, nil
+}
+
+func (m *Mangadex) mangaLinkToFullURL(key, link string) string {
+	switch key {
+	case "al":
+		return "https://www.anilist.co/manga/" + link
+	case "ap":
+		return "https://www.animeplanet.com/manga/" + link
+	case "bw":
+		return "https://www.bookwalker.jp/" + link
+	case "mu":
+		return "https://www.mangaupdates.com/series.html?id=" + link
+	case "nu":
+		return "https://www.novelupdates.com/series/" + link
+	case "kt":
+		// if int use id
+		if _, err := strconv.Atoi(link); err == nil {
+			return "https://kitsu.io/api/edge/manga/" + link
+		}
+		// else use slug
+		return "https://kitsu.io/api/edge/manga?filter[slug]=" + link
+	case "amz":
+		return link
+	case "ebj":
+		return link
+	case "mal":
+		return "https://myanimelist.net/manga/" + link
+	case "cdj":
+		return link
+	case "raw":
+		return link
+	case "engtl":
+		return link
+	default:
+		return ""
+	}
 }
 
 // getChapters fetches chapter URLs for the given manga.
@@ -148,8 +297,8 @@ type mangadexChapter struct {
 	ImageLinks []string
 }
 
-// getChapter retrieves metadata and image links for a single chapter.
-func (m *Mangadex) getChapter(chapterID string) (chapterInfo mangadexChapter, err error) {
+// getChapterInfo retrieves metadata and image links for a single chapter.
+func (m *Mangadex) getChapterInfo(chapterID string) (chapterInfo mangadexChapter, err error) {
 	ctx, cancel := m.requestContext()
 	defer cancel()
 
@@ -269,7 +418,7 @@ func (m *Mangadex) GetInfo(urlValue string) (string, string) {
 	}
 	switch parts[3] {
 	case "chapter":
-		chapter, err := m.getChapter(parts[4])
+		chapter, err := m.getChapterInfo(parts[4])
 		if err != nil {
 			return "", ""
 		}
@@ -285,18 +434,18 @@ func (m *Mangadex) GetInfo(urlValue string) (string, string) {
 		if chapter.ChapterTitle != "" {
 			chapterTitle += fmt.Sprintf(", %s", chapter.ChapterTitle)
 		}
-		mangaTitle, err := m.getManga(chapter.MangaID)
+		manga, err := m.getMangaInfo(chapter.MangaID)
 		if err != nil {
 			return "", chapterTitle
 		}
-		return mangaTitle, chapterTitle
+		return manga.Title, chapterTitle
 
 	case "title":
-		mangaTitle, err := m.getManga(parts[4])
+		manga, err := m.getMangaInfo(parts[4])
 		if err != nil {
 			return "", ""
 		}
-		return mangaTitle, ""
+		return manga.Title, ""
 	default:
 		return "", ""
 	}
@@ -304,11 +453,21 @@ func (m *Mangadex) GetInfo(urlValue string) (string, string) {
 
 // Initialize loads links and metadata from mangadex.
 func (m *Mangadex) Initialize(comic *core.ComicIssue) error {
+	if comic == nil {
+		return fmt.Errorf("comic is nil")
+	}
+	if comic.Source == nil {
+		return fmt.Errorf("comic source is nil")
+	}
 	parts := util.TrimAndSplitURL(comic.Source.URL)
 	if len(parts) < 5 {
 		return fmt.Errorf("URL not supported")
 	}
-	chapter, err := m.getChapter(parts[4])
+	chapter, err := m.getChapterInfo(parts[4])
+	if err != nil {
+		return err
+	}
+	manga, err := m.getMangaInfo(chapter.MangaID)
 	if err != nil {
 		return err
 	}
@@ -318,6 +477,18 @@ func (m *Mangadex) Initialize(comic *core.ComicIssue) error {
 	comic.Volume = chapter.Volume
 	comic.LanguageISO = &chapter.TranslatedLanguage
 	comic.ReleaseDate = &chapter.PublishAt
+
+	if comic.SeriesMetadata == nil {
+		comic.SeriesMetadata = &core.SeriesMetadata{}
+	}
+
+	comic.SeriesMetadata.AgeRating = &manga.ContentRating
+	comic.SeriesMetadata.Description = manga.Description
+	comic.SeriesMetadata.Genres = manga.Genres
+	comic.SeriesMetadata.Tags = manga.Tags
+	comic.SeriesMetadata.Title = manga.Title
+	comic.SeriesMetadata.WebLinks = manga.WebLinks
+	comic.SeriesMetadata.IsManga = &manga.IsManga
 
 	comic.ImageLinks = chapter.ImageLinks
 
