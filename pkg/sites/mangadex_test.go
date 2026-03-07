@@ -31,7 +31,6 @@ func setupMangadexServer() *httptest.Server {
 			}`)
 		case strings.HasPrefix(r.URL.Path, "/manga/series-1"):
 			w.Header().Set("Content-Type", "application/json")
-			// TODO: add another series test where year, demographic, tags, etc are all missing. want to test minimum viable response
 			fmt.Fprint(w, `{
 				"result":"ok",
 				"data":{
@@ -115,7 +114,6 @@ func setupMangadexServer() *httptest.Server {
 			}`)
 		case strings.HasPrefix(r.URL.Path, "/manga/series-2"):
 			w.Header().Set("Content-Type", "application/json")
-			// TODO: add another series test where year, demographic, tags, etc are all missing. want to test minimum viable response
 			fmt.Fprint(w, `{
 				"result":"ok",
 				"data":{

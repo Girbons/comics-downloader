@@ -118,8 +118,6 @@ func (m *Mangadex) getMangaInfo(mangaID string) (mangadexSeries, error) {
 	foundTitle := false
 	for lang, title := range mangaRes.Data.Attributes.Title {
 		if m.country == "" || m.country == strings.ToLower(lang) {
-			// TODO: set localized title based on country option instead of main title
-			// need to update how paths are generated to use the localized title instead of the main title if the country option is set
 			manga.Title = title
 			foundTitle = true
 			break

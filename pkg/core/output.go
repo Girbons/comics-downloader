@@ -164,7 +164,6 @@ func (comic *ComicIssue) makeComicInfoXML(options *config.Options, images *Downl
 			case CreatorRoleTranslator:
 				translators = append(translators, creator.Name)
 			}
-			// TODO: handle unknown roles
 		}
 		if len(writers) > 0 {
 			comicInfo.CreateElement("Writer").SetText(strings.Join(writers, ","))
