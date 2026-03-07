@@ -14,7 +14,7 @@
 - https://readcomiconline.li/  ⚠️
 - https://www.mangareader.tv/  ⚠️
 - https://www.mangatown.com/   ⚠️
-- https://mangadex.org/        ⚠️
+- https://mangadex.org/        
 - https://mangakakalot.com/    ⚠️
 - https://manganato.com/       ⚠️
 
