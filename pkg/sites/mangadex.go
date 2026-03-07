@@ -18,7 +18,8 @@ import (
 
 const (
 	mangadexAPIBase     = "https://api.mangadex.org"
-	mangadexChapterBase = "https://mangadex.org/chapter"
+	mangadexWebBase     = "https://mangadex.org"
+	mangadexChapterBase = mangadexWebBase + "/chapter"
 	mangadexUploadsBase = "https://uploads.mangadex.org/data"
 )
 
@@ -187,6 +188,9 @@ func (m *Mangadex) getMangaInfo(mangaID string) (mangadexSeries, error) {
 		manga.ContentRating = core.AgeRatingEveryone
 	}
 
+	// set link to main mangadex page for the manga
+	manga.WebLinks = append(manga.WebLinks, fmt.Sprintf("%s/title/%s", mangadexWebBase, mangaID))
+	// also add any additional links provided by mangadex
 	for key, link := range mangaRes.Data.Attributes.Links {
 		fullURL := m.mangaLinkToFullURL(key, link)
 		if fullURL != "" {
