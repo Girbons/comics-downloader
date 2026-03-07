@@ -106,7 +106,8 @@ func TestReadAllComicsGetInfoParsing(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		name, issue := scraper.GetInfo(tc.url)
+		name, issue, err := scraper.GetInfo(tc.url)
+		require.NoError(t, err)
 		require.Equal(t, tc.expectedName, name)
 		require.Equal(t, tc.expectedIssue, issue)
 	}

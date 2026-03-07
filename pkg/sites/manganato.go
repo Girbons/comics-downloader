@@ -17,14 +17,14 @@ func NewManganato(options *config.Options) *Manganato {
 }
 
 // GetInfo extracts the basic info from the given url.
-func (m *Manganato) GetInfo(url string) (string, string) {
+func (m *Manganato) GetInfo(url string) (string, string, error) {
 	name, issueNumber, err := MangaKakalotGetInfo(m.options, "manganato.com", url)
 	if err != nil {
-		m.options.Logger.Errorf("error getting info for url %q: %v", url, err)
-		return "", ""
+
+		return "", "", err
 	}
 
-	return name, issueNumber
+	return name, issueNumber, nil
 }
 
 // Initialize loads links and metadata from manganato

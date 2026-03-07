@@ -228,7 +228,8 @@ func TestMangadexGetInfoEnglish(t *testing.T) {
 	md, cleanup := newTestMangadex(t, "series-1", "en")
 	defer cleanup()
 
-	title, chapter := md.GetInfo(md.chapterBase + "/chapter-1")
+	title, chapter, err := md.GetInfo(md.chapterBase + "/chapter-1")
+	require.NoError(t, err)
 	require.Equal(t, "Test Manga", title)
 	require.Equal(t, "Vol 1 Chapter 1, Start", chapter)
 }
@@ -237,7 +238,8 @@ func TestMangadexGetInfoJapanese(t *testing.T) {
 	md, cleanup := newTestMangadex(t, "series-1", "jp")
 	defer cleanup()
 
-	title, chapter := md.GetInfo(md.chapterBase + "/chapter-1")
+	title, chapter, err := md.GetInfo(md.chapterBase + "/chapter-1")
+	require.NoError(t, err)
 	require.Equal(t, "テスト", title)
 	require.Equal(t, "Vol 1 Chapter 1, Start", chapter)
 }
@@ -246,7 +248,8 @@ func TestMangadexGetInfoNoCountry(t *testing.T) {
 	md, cleanup := newTestMangadex(t, "series-1", "")
 	defer cleanup()
 
-	title, chapter := md.GetInfo(md.chapterBase + "/chapter-1")
+	title, chapter, err := md.GetInfo(md.chapterBase + "/chapter-1")
+	require.NoError(t, err)
 	require.Equal(t, "テスト", title)
 	require.Equal(t, "Vol 1 Chapter 1, Start", chapter)
 }

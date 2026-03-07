@@ -74,7 +74,8 @@ func TestManganatoScraper(t *testing.T) {
 
 	scraper := NewManganato(opts)
 
-	title, issue := scraper.GetInfo(server.URL + manganatoChapterPath)
+	title, issue, err := scraper.GetInfo(server.URL + manganatoChapterPath)
+	require.NoError(t, err)
 	require.Equal(t, "My Manga", title)
 	require.Equal(t, "2", issue)
 

@@ -142,12 +142,12 @@ func (m *Mangatown) RetrieveIssueLinks() ([]string, error) {
 }
 
 // GetInfo extracts the basic info from the given URL.
-func (m *Mangatown) GetInfo(url string) (string, string) {
+func (m *Mangatown) GetInfo(url string) (string, string, error) {
 	parts := util.TrimAndSplitURL(url)
 	name := parts[4]
 	issueNumber := parts[len(parts)-1]
 
-	return name, issueNumber
+	return name, issueNumber, nil
 }
 
 // Initialize loads links and metadata from mangatown

@@ -9,7 +9,7 @@ type BaseSite interface {
 	Initialize(comic *core.ComicIssue) error
 
 	// GetInfo will return the comic name and issue number
-	GetInfo(url string) (string, string)
+	GetInfo(url string) (string, string, error)
 
 	// RetrieveIssueLinks will return the images links of a comic
 	RetrieveIssueLinks() ([]string, error)

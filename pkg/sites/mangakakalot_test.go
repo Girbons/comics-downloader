@@ -76,7 +76,7 @@ func TestMangaKakalotScraper(t *testing.T) {
 	}
 	scraper := NewMangaKakalot(opts)
 
-	title, issue := scraper.GetInfo(server.URL + mangaKakalotChapterPath)
+	title, issue, err := scraper.GetInfo(server.URL + mangaKakalotChapterPath)
 	require.Equal(t, "My Manga", title)
 	require.Equal(t, "2", issue)
 

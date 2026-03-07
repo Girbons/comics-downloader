@@ -409,16 +409,16 @@ func (m *Mangadex) RetrieveIssueLinks() ([]string, error) {
 }
 
 // GetInfo extracts the basic info from the given url.
-func (m *Mangadex) GetInfo(urlValue string) (string, string) {
+func (m *Mangadex) GetInfo(urlValue string) (string, string, error) {
 	parts := util.TrimAndSplitURL(urlValue)
 	if len(parts) < 5 {
-		return "", ""
+		return "", "", errors.New("URL not supported")
 	}
 	switch parts[3] {
 	case "chapter":
 		chapter, err := m.getChapterInfo(parts[4])
 		if err != nil {
-			return "", ""
+			return "", "", err
 		}
 
 		var chapterTitle string
@@ -434,18 +434,18 @@ func (m *Mangadex) GetInfo(urlValue string) (string, string) {
 		}
 		manga, err := m.getMangaInfo(chapter.MangaID)
 		if err != nil {
-			return "", chapterTitle
+			return "", "", err
 		}
-		return manga.Title, chapterTitle
+		return manga.Title, chapterTitle, nil
 
 	case "title":
 		manga, err := m.getMangaInfo(parts[4])
 		if err != nil {
-			return "", ""
+			return "", "", err
 		}
-		return manga.Title, ""
+		return manga.Title, "", nil
 	default:
-		return "", ""
+		return "", "", errors.New("URL not supported")
 	}
 }
 

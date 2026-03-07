@@ -200,12 +200,12 @@ func (c *ReadComicOnline) RetrieveIssueLinks() ([]string, error) {
 }
 
 // GetInfo extracts the basic info from the given url.
-func (c *ReadComicOnline) GetInfo(url string) (string, string) {
+func (c *ReadComicOnline) GetInfo(url string) (string, string, error) {
 	parts := util.TrimAndSplitURL(url)
 	name := parts[4]
 	issueNumber := strings.Split(strings.ReplaceAll(parts[5], "Issue-", ""), "?")[0]
 
-	return name, issueNumber
+	return name, issueNumber, nil
 }
 
 // Initialize will initialize the comic based

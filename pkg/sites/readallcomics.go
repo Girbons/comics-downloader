@@ -189,14 +189,15 @@ func (r *Readallcomics) RetrieveIssueLinks() ([]string, error) {
 }
 
 // GetInfo extracts the comic info from the given URL.
-func (r *Readallcomics) GetInfo(url string) (string, string) {
+func (r *Readallcomics) GetInfo(url string) (string, string, error) {
 	parts := util.TrimAndSplitURL(url)
 	lastPart := parts[len(parts)-1]
 	urlParts := strings.Split(lastPart, "-")
 
 	// Handle simple case with no hyphens
 	if len(urlParts) <= 1 {
-		return r.parseSimpleFormat(lastPart)
+		name, issueNumber := r.parseSimpleFormat(lastPart)
+		return name, issueNumber, nil
 	}
 
 	// Find potential issue number indices
@@ -207,16 +208,19 @@ func (r *Readallcomics) GetInfo(url string) (string, string) {
 
 	// Extract name and issue number based on split index
 	if splitIndex > 0 {
-		return r.extractInfoWithSplitIndex(urlParts, splitIndex)
+		name, issueNumber := r.extractInfoWithSplitIndex(urlParts, splitIndex)
+		return name, issueNumber, nil
 	}
 
 	// Handle year suffix pattern (e.g., "name-issue-year")
 	if r.hasYearSuffix(urlParts) {
-		return r.parseYearSuffixFormat(urlParts)
+		name, issueNumber := r.parseYearSuffixFormat(urlParts)
+		return name, issueNumber, nil
 	}
 
 	// Default fallback: last part is issue number
-	return r.parseDefaultFormat(urlParts)
+	name, issueNumber := r.parseDefaultFormat(urlParts)
+	return name, issueNumber, nil
 }
 
 // parseSimpleFormat handles URLs with no hyphens in the last part

@@ -32,7 +32,12 @@ func initializeCollection(issues []string, options *config.Options, base BaseSit
 	}
 
 	for _, url := range issues {
-		name, issueNumber := base.GetInfo(url)
+		name, issueNumber, err := base.GetInfo(url)
+		if err != nil {
+			options.Logger.Errorf("error getting info for url %q: %v", url, err)
+			continue
+		}
+
 		name = util.Parse(name)
 		if len(options.CustomComicName) > 0 {
 			name = options.CustomComicName

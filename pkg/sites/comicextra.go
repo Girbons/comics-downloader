@@ -162,13 +162,13 @@ func (c *Comicextra) RetrieveIssueLinks() ([]string, error) {
 }
 
 // GetInfo extracts the basic info from the given url.
-func (c *Comicextra) GetInfo(url string) (string, string) {
+func (c *Comicextra) GetInfo(url string) (string, string, error) {
 	parts := util.TrimAndSplitURL(url)
 
 	name := parts[3]
 	issueNumber := parts[4]
 
-	return name, issueNumber
+	return name, issueNumber, nil
 }
 
 // Initialize will initialize the comic based

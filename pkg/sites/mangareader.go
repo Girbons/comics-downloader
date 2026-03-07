@@ -118,17 +118,21 @@ func (m *Mangareader) RetrieveIssueLinks() ([]string, error) {
 }
 
 // GetInfo extracts the basic info from the given URL.
-func (m *Mangareader) GetInfo(url string) (string, string) {
+func (m *Mangareader) GetInfo(url string) (string, string, error) {
 	parts := util.TrimAndSplitURL(url)
 	name := parts[3]
 	issueNumber := parts[4]
 
-	return name, issueNumber
+	return name, issueNumber, nil
 }
 
 // Initialize loads links and metadata from mangareader
 func (m *Mangareader) Initialize(comic *core.ComicIssue) error {
-	name, issueNumber := m.GetInfo(comic.Source.URL)
+	name, issueNumber, err := m.GetInfo(comic.Source.URL)
+	if err != nil {
+		return err
+	}
+
 	comic.Name = name
 	comic.IssueNumber = issueNumber
 

@@ -23,11 +23,11 @@ func (s *stubSite) Initialize(comic *core.ComicIssue) error {
 	return errors.New("missing comic")
 }
 
-func (s *stubSite) GetInfo(url string) (string, string) {
+func (s *stubSite) GetInfo(url string) (string, string, error) {
 	if stub, ok := s.comics[url]; ok {
-		return stub.Name, stub.IssueNumber
+		return stub.Name, stub.IssueNumber, nil
 	}
-	return "", ""
+	return "", "", errors.New("missing comic")
 }
 
 func (s *stubSite) RetrieveIssueLinks() ([]string, error) {
