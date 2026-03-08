@@ -4,6 +4,7 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/Girbons/comics-downloader/internal/logger"
 	"github.com/Girbons/comics-downloader/pkg/config"
 	"github.com/Girbons/comics-downloader/pkg/core"
 	"github.com/stretchr/testify/assert"
@@ -41,6 +42,7 @@ func TestInitializeCollectionFiltersIssues(t *testing.T) {
 		ImagesFormat: "png",
 		IssuesRange:  "1-2",
 		All:          true,
+		Logger:       logger.NewLogger(false, nil),
 	}
 
 	site := &stubSite{
@@ -60,7 +62,7 @@ func TestInitializeCollectionFiltersIssues(t *testing.T) {
 }
 
 func TestLoadComicFromSourceUnknown(t *testing.T) {
-	options := &config.Options{SourceName: "unknown"}
+	options := &config.Options{SourceName: "unknown", Logger: logger.NewLogger(false, nil)}
 	collection, err := LoadComicFromSource(options)
 	require.Error(t, err)
 	require.Empty(t, collection)
