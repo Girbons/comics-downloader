@@ -83,9 +83,14 @@ func (comic *ComicIssue) makeComicInfoXML(options *config.Options, images *Downl
 	comicInfo.CreateElement("LocalizedSeries").SetText(localizedTitle)
 
 	comicDescription := comic.getLocalizedDescription(options)
-	comicInfo.CreateElement("Summary").SetText(comicDescription)
+	if comicDescription != "" {
+		comicInfo.CreateElement("Summary").SetText(comicDescription)
+	}
 
-	comicInfo.CreateElement("Number").SetText(comic.IssueNumber)
+	if comic.IssueNumber != "" {
+		comicInfo.CreateElement("Number").SetText(comic.IssueNumber)
+	}
+
 	if comic.Volume != nil {
 		comicInfo.CreateElement("Volume").SetText(*comic.Volume)
 	}
@@ -135,9 +140,6 @@ func (comic *ComicIssue) makeComicInfoXML(options *config.Options, images *Downl
 			cleanedWebLinks = append(cleanedWebLinks, url.QueryEscape(link))
 		}
 		comicInfo.CreateElement("WebLinks").SetText(strings.Join(cleanedWebLinks, " "))
-	}
-	if comic.SeriesMetadata.AgeRating != nil {
-		comicInfo.CreateElement("AgeRating").SetText(string(*comic.SeriesMetadata.AgeRating))
 	}
 	if len(comic.SeriesMetadata.Creators) > 0 {
 		var writers []string
