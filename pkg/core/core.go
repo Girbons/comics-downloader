@@ -255,7 +255,11 @@ func (comic *ComicIssue) DownloadImages(options *config.Options) (*DownloadResul
 		return nil, err
 	}
 
-	progress := progressbar.NewOptions(len(comic.ImageLinks), progressbar.OptionSetRenderBlankState(true))
+	var progress *progressbar.ProgressBar
+	if !options.Debug {
+		progress = progressbar.NewOptions(len(comic.ImageLinks), progressbar.OptionSetRenderBlankState(true))
+	}
+
 	format := util.ImageType(comic.ImagesFormat)
 
 	requestDelay := options.RequestDelay
@@ -303,8 +307,13 @@ func (comic *ComicIssue) DownloadImages(options *config.Options) (*DownloadResul
 		group.Go(func() error {
 			defer sem.Release(1)
 			defer func() {
-				if progressErr := progress.Add(1); progressErr != nil && options.Logger != nil {
-					options.Logger.Error(progressErr.Error())
+				if progress != nil {
+					err := progress.Add(1)
+					if err != nil && options.Logger != nil {
+						options.Logger.Error(err.Error())
+					}
+				} else if options.Logger != nil {
+					options.Logger.Infof("Downloaded image %d/%d", job.index+1, len(comic.ImageLinks))
 				}
 			}()
 

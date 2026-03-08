@@ -55,7 +55,7 @@ func (comic *ComicIssue) makeComicInfoXML(options *config.Options, images *Downl
 	}
 
 	comicInfoPath := filepath.Join(outputDir, "ComicInfo.xml")
-	options.Logger.Infof("ComicInfo.xml path: %s", comicInfoPath)
+	options.Logger.Debugf("ComicInfo.xml path: %s", comicInfoPath)
 
 	fo, err := os.Create(comicInfoPath)
 	if err != nil {
@@ -119,10 +119,14 @@ func (comic *ComicIssue) makeComicInfoXML(options *config.Options, images *Downl
 		comicInfo.CreateElement("CommunityRating").SetText(fmt.Sprintf("%.2f", *comic.SeriesMetadata.CommunityRating))
 	}
 	if len(comic.SeriesMetadata.Tags) > 0 {
-		comicInfo.CreateElement("Tags").SetText(strings.Join(comic.SeriesMetadata.Tags, ","))
+		tags := strings.Join(comic.SeriesMetadata.Tags, ",")
+		options.Logger.Debugf("Adding tags to ComicInfo.xml: %s", tags)
+		comicInfo.CreateElement("Tags").SetText(tags)
 	}
 	if len(comic.SeriesMetadata.Genres) > 0 {
-		comicInfo.CreateElement("Genres").SetText(strings.Join(comic.SeriesMetadata.Genres, ","))
+		genres := strings.Join(comic.SeriesMetadata.Genres, ",")
+		options.Logger.Debugf("Adding genres to ComicInfo.xml: %s", genres)
+		comicInfo.CreateElement("Genres").SetText(genres)
 	}
 	if len(comic.SeriesMetadata.WebLinks) > 0 {
 		var cleanedWebLinks []string

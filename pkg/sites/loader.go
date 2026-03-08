@@ -76,6 +76,7 @@ func initializeCollection(issues []string, options *config.Options, base BaseSit
 					Title: name,
 				},
 			}
+			options.Logger.Debugf("Initializing comic with URL: %s", comic.Source.URL)
 			if err = base.Initialize(comic); err != nil {
 				return collection, err
 			}
