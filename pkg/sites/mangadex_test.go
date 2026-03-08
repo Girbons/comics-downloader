@@ -253,3 +253,24 @@ func TestMangadexGetInfoNoCountry(t *testing.T) {
 	require.Equal(t, "テスト", title)
 	require.Equal(t, "Vol 1 Chapter 1, Start", chapter)
 }
+
+func TestMangadexInitializeMetadataTagsGenres(t *testing.T) {
+	md, cleanup := newTestMangadex(t, "series-1", "en")
+	defer cleanup()
+
+	comic := &core.ComicIssue{
+		Source: &core.ComicSource{Name: "test-source", URL: md.chapterBase + "/chapter-1"},
+	}
+	err := md.Initialize(comic)
+	require.NoError(t, err)
+
+	// ensure metadata exists and contains expected genres and tags
+	require.NotNil(t, comic.SeriesMetadata)
+	require.Contains(t, comic.SeriesMetadata.Genres, "Romance")
+	// publicationDemographic should be added to Tags
+	require.Contains(t, comic.SeriesMetadata.Tags, "shounen")
+	// format tag should include Doujinshi
+	require.Contains(t, comic.SeriesMetadata.Tags, "Doujinshi")
+	// theme tags like "School Life" are not classified to Tags/Genres by current logic
+	require.Contains(t, comic.SeriesMetadata.Tags, "School Life")
+}

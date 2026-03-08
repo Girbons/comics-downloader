@@ -164,14 +164,20 @@ func (m *Mangadex) getMangaInfo(mangaID string) (mangadexSeries, error) {
 			}
 		}
 
-		if name != "" {
+		if name == "" {
 			continue
 		}
 
+		// classify tag groups
 		switch tag.Attributes.Group {
 		case "genre":
 			manga.Genres = append(manga.Genres, name)
-		case "tag", "format":
+		case "tag", "content", "theme":
+			manga.Tags = append(manga.Tags, name)
+		case "format":
+			if name == "Oneshot" {
+				manga.IsOneShot = true
+			}
 			manga.Tags = append(manga.Tags, name)
 		}
 	}
