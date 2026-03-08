@@ -15,8 +15,20 @@ import (
 )
 
 func setupMangadexServer() *httptest.Server {
+	hasMangaParam := func(r *http.Request, series string) bool {
+		for _, id := range r.URL.Query()["manga[]"] {
+			if id == series {
+				return true
+			}
+		}
+		return false
+	}
+
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch {
+		case r.URL.Path == "/statistics/manga" && hasMangaParam(r, "series-1"):
+			w.Header().Set("Content-Type", "application/json")
+			fmt.Fprint(w, `{"result":"ok","statistics":{"series-1":{"rating":{"bayesian":4.5}}}}`)
 		case strings.HasPrefix(r.URL.Path, "/manga/series-1/aggregate"):
 			w.Header().Set("Content-Type", "application/json")
 			fmt.Fprint(w, `{
@@ -100,6 +112,9 @@ func setupMangadexServer() *httptest.Server {
 				"result":"ok",
 				"chapter":{"hash":"HASH","data":["001.png","002.png"]}
 			}`)
+		case r.URL.Path == "/statistics/manga" && hasMangaParam(r, "series-2"):
+			w.Header().Set("Content-Type", "application/json")
+			fmt.Fprint(w, `{"result":"ok","statistics":{"series-1":{"rating":{"bayesian":4.5}}}}`)
 		case strings.HasPrefix(r.URL.Path, "/manga/series-2/aggregate"):
 			w.Header().Set("Content-Type", "application/json")
 			fmt.Fprint(w, `{
@@ -273,6 +288,21 @@ func TestMangadexInitializeMetadataTagsGenres(t *testing.T) {
 	require.Contains(t, comic.SeriesMetadata.Tags, "Doujinshi")
 	// theme tags like "School Life" are not classified to Tags/Genres by current logic
 	require.Contains(t, comic.SeriesMetadata.Tags, "School Life")
+}
+
+func TestMangadexInitializeMetadataRating(t *testing.T) {
+	md, cleanup := newTestMangadex(t, "series-1", "en")
+	defer cleanup()
+
+	comic := &core.ComicIssue{
+		Source: &core.ComicSource{Name: "test-source", URL: md.chapterBase + "/chapter-1"},
+	}
+	err := md.Initialize(comic)
+	require.NoError(t, err)
+
+	require.NotNil(t, comic.SeriesMetadata)
+	require.NotNil(t, comic.SeriesMetadata.CommunityRating)
+	require.Equal(t, 4.5, *comic.SeriesMetadata.CommunityRating)
 }
 
 func TestMangadexGetAuthorInfo(t *testing.T) {

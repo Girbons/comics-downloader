@@ -68,6 +68,7 @@ type mangadexSeries struct {
 	OriginalLanguage string
 	Year             *int
 	CoverURL         *string
+	Rating           *float64
 
 	ContentRating core.AgeRating
 	Tags          []string
@@ -128,6 +129,36 @@ func (m *Mangadex) getAuthorInfo(authorID string) (string, error) {
 	return authorRes.Data.Attributes.Name, nil
 }
 
+func (m *Mangadex) getMangaRating(mangaID string) (float64, error) {
+	ctx, cancel := m.requestContext()
+	defer cancel()
+
+	// need to do weird [] syntax so it counts as an array to the mangadex API
+	endpoint := joinURL(m.apiBase, fmt.Sprintf("/statistics/manga?manga[]=%s", mangaID))
+	var ratingRes struct {
+		Result     string `json:"result"`
+		Statistics map[string]struct {
+			Rating struct {
+				Bayesian float64 `json:"bayesian"`
+			} `json:"rating"`
+		} `json:"statistics"`
+	}
+	if err := fetchJSON(ctx, m.client, endpoint, &ratingRes); err != nil {
+		return 0, err
+	}
+	if strings.ToLower(ratingRes.Result) != "ok" {
+		return 0, fmt.Errorf("unexpected response")
+	}
+
+	stats, exists := ratingRes.Statistics[mangaID]
+	if !exists {
+		return 0, fmt.Errorf("no statistics found for manga ID %s", mangaID)
+	}
+
+	return stats.Rating.Bayesian, nil
+
+}
+
 func (m *Mangadex) getMangaInfo(mangaID string) (mangadexSeries, error) {
 	ctx, cancel := m.requestContext()
 	defer cancel()
@@ -155,7 +186,7 @@ func (m *Mangadex) getMangaInfo(mangaID string) (mangadexSeries, error) {
 						Version     int               `json:"version"`
 					} `json:"attributes"`
 				} `json:"tags"`
-				// AvailableTranslatedLanguages []string `json:"availableTranslatedLanguages"`
+				AvailableTranslatedLanguages []string `json:"availableTranslatedLanguages"`
 			} `json:"attributes"`
 			Relationships []struct {
 				ID   string `json:"id"`
@@ -176,6 +207,46 @@ func (m *Mangadex) getMangaInfo(mangaID string) (mangadexSeries, error) {
 		Description:    mangaRes.Data.Attributes.Description,
 		IsManga:        true, // default to true since it's a manga site
 	}
+
+	// Set titles
+	foundTitle := false
+	for lang, title := range mangaRes.Data.Attributes.Title {
+		if m.country == "" || m.country == strings.ToLower(lang) {
+			manga.Title = title
+			foundTitle = true
+			break
+		}
+
+		// manga.LocalizedTitle[lang] = title
+	}
+
+	// try and fill in any missing localized titles
+	for _, grouping := range mangaRes.Data.Attributes.AltTitles {
+		for lang, title := range grouping {
+			if _, exists := manga.LocalizedTitle[lang]; !exists {
+				manga.LocalizedTitle[lang] = title
+			}
+
+			// if main title is missing, try to use the alt titles to fill it
+			if !foundTitle && (m.country == "" || m.country == strings.ToLower(lang)) {
+				manga.Title = title
+				foundTitle = true
+			}
+		}
+	}
+
+	if !foundTitle {
+		// If still haven't found anything fallback to any available title.
+		for _, title := range mangaRes.Data.Attributes.Title {
+			manga.Title = title
+		}
+	}
+
+	// TODO: should we error if the manga isn't available in the specified country?
+	// previously we have just let the process continue
+	// if m.country != "" && !slices.Contains(mangaRes.Data.Attributes.AvailableTranslatedLanguages, strings.ToLower(m.country)) {
+	// 	return mangadexSeries{}, fmt.Errorf("manga \"%s\" not available in country %s", manga.Title, m.country)
+	// }
 
 	// get author, artist, and cover info from relationships
 	cachedAuthors := map[string]string{} // cache author info to avoid duplicate requests
@@ -212,39 +283,12 @@ func (m *Mangadex) getMangaInfo(mangaID string) (mangadexSeries, error) {
 		}
 	}
 
-	// Set titles
-	foundTitle := false
-	for lang, title := range mangaRes.Data.Attributes.Title {
-		if m.country == "" || m.country == strings.ToLower(lang) {
-			manga.Title = title
-			foundTitle = true
-			break
-		}
-
-		// manga.LocalizedTitle[lang] = title
+	// get rating info
+	rating, err := m.getMangaRating(mangaID)
+	if err != nil {
+		return mangadexSeries{}, err
 	}
-
-	// try and fill in any missing localized titles
-	for _, grouping := range mangaRes.Data.Attributes.AltTitles {
-		for lang, title := range grouping {
-			if _, exists := manga.LocalizedTitle[lang]; !exists {
-				manga.LocalizedTitle[lang] = title
-			}
-
-			// if main title is missing, try to use the alt titles to fill it
-			if !foundTitle && (m.country == "" || m.country == strings.ToLower(lang)) {
-				manga.Title = title
-				foundTitle = true
-			}
-		}
-	}
-
-	if !foundTitle {
-		// If still haven't found anything fallback to any available title.
-		for _, title := range mangaRes.Data.Attributes.Title {
-			manga.Title = title
-		}
-	}
+	manga.Rating = &rating
 
 	// handle tags and genres
 	if mangaRes.Data.Attributes.PublicationDemographic != nil {
@@ -594,13 +638,15 @@ func (m *Mangadex) Initialize(comic *core.ComicIssue) error {
 		comic.SeriesMetadata = &core.SeriesMetadata{}
 	}
 
-	comic.SeriesMetadata.AgeRating = &manga.ContentRating
+	comic.SeriesMetadata.Title = manga.Title
+	comic.SeriesMetadata.LocalizedTitle = manga.LocalizedTitle
 	comic.SeriesMetadata.Description = manga.Description
 	comic.SeriesMetadata.Genres = manga.Genres
 	comic.SeriesMetadata.Tags = manga.Tags
-	comic.SeriesMetadata.Title = manga.Title
+	comic.SeriesMetadata.AgeRating = &manga.ContentRating
 	comic.SeriesMetadata.WebLinks = manga.WebLinks
 	comic.SeriesMetadata.IsManga = &manga.IsManga
+	comic.SeriesMetadata.CommunityRating = manga.Rating
 
 	if manga.IsOneShot {
 		format := core.ComicFormatOneShot
