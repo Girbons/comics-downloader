@@ -365,9 +365,12 @@ func (m *Mangadex) getChapters(mangaID string) ([]string, error) {
 	var chaptersRes struct {
 		Result  string `json:"result"`
 		Volumes map[string]struct {
+			Volume   string `json:"volume"` // volume name, or "none"
+			Count    int    `json:"count"`
 			Chapters map[string]struct {
-				ID   string `json:"id"`
-				Name string `json:"chapter"`
+				Chapter       string `json:"chapter"` // the chapter number, not the chapter name
+				ID            string `json:"id"`
+				IsUnavailable bool   `json:"isUnavailable"`
 			} `json:"chapters"`
 		} `json:"volumes"`
 	}
@@ -382,6 +385,10 @@ func (m *Mangadex) getChapters(mangaID string) ([]string, error) {
 	var ids []string
 	for _, v := range chaptersRes.Volumes {
 		for _, c := range v.Chapters {
+			if c.IsUnavailable {
+				continue
+			}
+
 			ids = append(ids, joinURL(m.chapterBase, c.ID))
 		}
 	}
@@ -613,6 +620,7 @@ func (m *Mangadex) Initialize(comic *core.ComicIssue) error {
 		})
 	}
 
+	comic.SeriesMetadata.CoverURL = manga.CoverURL
 	comic.ImageLinks = chapter.ImageLinks
 
 	return nil
