@@ -174,7 +174,7 @@ func newTestMangadex(t *testing.T, series, lang string) (*Mangadex, func()) {
 	md := NewMangadex(opts)
 	md.apiBase = server.URL
 	md.chapterBase = server.URL + "/chapter"
-	md.uploadsBase = server.URL + "/data"
+	md.uploadsData = server.URL + "/data"
 
 	cleanup := func() {
 		server.Close()
@@ -204,8 +204,8 @@ func TestMangadexInitialize(t *testing.T) {
 	err := md.Initialize(comic)
 	require.NoError(t, err)
 	require.Equal(t, []string{
-		md.uploadsBase + "/HASH/001.png",
-		md.uploadsBase + "/HASH/002.png",
+		md.uploadsData + "/HASH/001.png",
+		md.uploadsData + "/HASH/002.png",
 	}, comic.ImageLinks)
 }
 
@@ -219,8 +219,8 @@ func TestMangadexInitializeMinimum(t *testing.T) {
 	err := md.Initialize(comic)
 	require.NoError(t, err)
 	require.Equal(t, []string{
-		md.uploadsBase + "/HASH/001.png",
-		md.uploadsBase + "/HASH/002.png",
+		md.uploadsData + "/HASH/001.png",
+		md.uploadsData + "/HASH/002.png",
 	}, comic.ImageLinks)
 }
 
@@ -273,4 +273,38 @@ func TestMangadexInitializeMetadataTagsGenres(t *testing.T) {
 	require.Contains(t, comic.SeriesMetadata.Tags, "Doujinshi")
 	// theme tags like "School Life" are not classified to Tags/Genres by current logic
 	require.Contains(t, comic.SeriesMetadata.Tags, "School Life")
+}
+
+func TestMangadexGetAuthorInfo(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch {
+		case strings.HasPrefix(r.URL.Path, "/author/author-1"):
+			w.Header().Set("Content-Type", "application/json")
+			fmt.Fprint(w, `{"result":"ok","data":{"attributes":{"name":"John Doe"}}}`)
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer server.Close()
+
+	client := httpclient.NewComicClient(
+		httpclient.WithHTTPClient(server.Client()),
+		httpclient.WithRetry(0, 0),
+	)
+
+	opts := &config.Options{
+		URL:            server.URL,
+		Country:        "",
+		SourceName:     "mangadex.org",
+		Logger:         logger.NewLogger(false, nil),
+		Client:         client,
+		RequestTimeout: config.DefaulltRequestTimeout,
+	}
+
+	md := NewMangadex(opts)
+	md.apiBase = server.URL
+
+	name, err := md.getAuthorInfo("author-1")
+	require.NoError(t, err)
+	require.Equal(t, "John Doe", name)
 }

@@ -17,31 +17,35 @@ import (
 )
 
 const (
-	mangadexAPIBase     = "https://api.mangadex.org"
-	mangadexWebBase     = "https://mangadex.org"
-	mangadexChapterBase = mangadexWebBase + "/chapter"
-	mangadexUploadsBase = "https://uploads.mangadex.org/data"
+	mangadexWebBase       = "https://mangadex.org"
+	mangadexAPIBase       = "https://api.mangadex.org"
+	mangadexUploadsBase   = "https://uploads.mangadex.org"
+	mangadexChapterBase   = mangadexWebBase + "/chapter"
+	mangadexUploadsData   = mangadexUploadsBase + "/data"
+	mangadexUploadsCovers = mangadexUploadsBase + "/covers"
 )
 
 // Mangadex represents a mangadex instance.
 type Mangadex struct {
-	country     string
-	options     *config.Options
-	client      *httpclient.ComicClient
-	apiBase     string
-	chapterBase string
-	uploadsBase string
+	country       string
+	options       *config.Options
+	client        *httpclient.ComicClient
+	apiBase       string
+	chapterBase   string
+	uploadsData   string
+	uploadsCovers string
 }
 
 // NewMangadex returns a Mangadex instance.
 func NewMangadex(options *config.Options) *Mangadex {
 	return &Mangadex{
-		country:     strings.ToLower(options.Country),
-		options:     options,
-		client:      options.Client,
-		apiBase:     mangadexAPIBase,
-		chapterBase: mangadexChapterBase,
-		uploadsBase: mangadexUploadsBase,
+		country:       strings.ToLower(options.Country),
+		options:       options,
+		client:        options.Client,
+		apiBase:       mangadexAPIBase,
+		chapterBase:   mangadexChapterBase,
+		uploadsData:   mangadexUploadsData,
+		uploadsCovers: mangadexUploadsCovers,
 	}
 }
 
@@ -59,17 +63,69 @@ type mangadexSeries struct {
 	Title          string // the title we want to use for the series, which may be localized based on the country option
 	LocalizedTitle map[string]string
 	Description    map[string]string
-	IsManga        bool
 
+	IsManga          bool
 	OriginalLanguage string
 	Year             *int
+	CoverURL         *string
 
 	ContentRating core.AgeRating
 	Tags          []string
 	Genres        []string
 	WebLinks      []string
 
+	Authors []string
+	Artists []string
+
 	IsOneShot bool
+}
+
+func (m *Mangadex) getMangaCoverURL(mangaID, coverID string) (string, error) {
+	ctx, cancel := m.requestContext()
+	defer cancel()
+
+	endpoint := joinURL(m.apiBase, fmt.Sprintf("/cover/%s", coverID))
+	var coverRes struct {
+		Result string `json:"result"`
+		Data   struct {
+			Attributes struct {
+				FileName string `json:"fileName"`
+			} `json:"attributes"`
+		} `json:"data"`
+	}
+
+	if err := fetchJSON(ctx, m.client, endpoint, &coverRes); err != nil {
+		return "", err
+	}
+	if strings.ToLower(coverRes.Result) != "ok" {
+		return "", fmt.Errorf("unexpected response")
+	}
+
+	return joinURL(m.uploadsCovers, fmt.Sprintf("%s/%s", mangaID, coverRes.Data.Attributes.FileName)), nil
+}
+
+func (m *Mangadex) getAuthorInfo(authorID string) (string, error) {
+	ctx, cancel := m.requestContext()
+	defer cancel()
+
+	endpoint := joinURL(m.apiBase, fmt.Sprintf("/author/%s", authorID))
+	var authorRes struct {
+		Result string `json:"result"`
+		Data   struct {
+			Attributes struct {
+				Name string `json:"name"`
+			} `json:"attributes"`
+		} `json:"data"`
+	}
+
+	if err := fetchJSON(ctx, m.client, endpoint, &authorRes); err != nil {
+		return "", err
+	}
+	if strings.ToLower(authorRes.Result) != "ok" {
+		return "", fmt.Errorf("unexpected response")
+	}
+
+	return authorRes.Data.Attributes.Name, nil
 }
 
 func (m *Mangadex) getMangaInfo(mangaID string) (mangadexSeries, error) {
@@ -119,6 +175,41 @@ func (m *Mangadex) getMangaInfo(mangaID string) (mangadexSeries, error) {
 		LocalizedTitle: mangaRes.Data.Attributes.Title,
 		Description:    mangaRes.Data.Attributes.Description,
 		IsManga:        true, // default to true since it's a manga site
+	}
+
+	// get author, artist, and cover info from relationships
+	cachedAuthors := map[string]string{} // cache author info to avoid duplicate requests
+	for _, rel := range mangaRes.Data.Relationships {
+		switch rel.Type {
+		case "cover_art":
+			coverURL, err := m.getMangaCoverURL(mangaID, rel.ID)
+			if err != nil {
+				return mangadexSeries{}, err
+			}
+			manga.CoverURL = &coverURL
+		case "author":
+			var err error
+			authorName, ok := cachedAuthors[rel.ID]
+			if !ok {
+				authorName, err = m.getAuthorInfo(rel.ID)
+				if err != nil {
+					return mangadexSeries{}, err
+				}
+			}
+			manga.Authors = append(manga.Authors, authorName)
+			cachedAuthors[rel.ID] = authorName
+		case "artist":
+			var err error
+			artistName, ok := cachedAuthors[rel.ID]
+			if !ok {
+				artistName, err = m.getAuthorInfo(rel.ID)
+				if err != nil {
+					return mangadexSeries{}, err
+				}
+			}
+			manga.Artists = append(manga.Artists, artistName)
+			cachedAuthors[rel.ID] = artistName
+		}
 	}
 
 	// Set titles
@@ -366,7 +457,7 @@ func (m *Mangadex) getChapterInfo(chapterID string) (chapterInfo mangadexChapter
 
 	var imageLinks []string
 	for _, file := range imagesRes.Chapter.Data {
-		imageURL := joinURL(m.uploadsBase, fmt.Sprintf("%s/%s", imagesRes.Chapter.Hash, file))
+		imageURL := joinURL(m.uploadsData, fmt.Sprintf("%s/%s", imagesRes.Chapter.Hash, file))
 		imageLinks = append(imageLinks, imageURL)
 	}
 
@@ -507,6 +598,19 @@ func (m *Mangadex) Initialize(comic *core.ComicIssue) error {
 	if manga.IsOneShot {
 		format := core.ComicFormatOneShot
 		comic.ComicFormat = &format
+	}
+
+	for _, author := range manga.Authors {
+		comic.SeriesMetadata.Creators = append(comic.SeriesMetadata.Creators, core.SeriesCreator{
+			Name: author,
+			Role: core.CreatorRoleWriter,
+		})
+	}
+	for _, artist := range manga.Artists {
+		comic.SeriesMetadata.Creators = append(comic.SeriesMetadata.Creators, core.SeriesCreator{
+			Name: artist,
+			Role: core.CreatorRolePenciller,
+		})
 	}
 
 	comic.ImageLinks = chapter.ImageLinks

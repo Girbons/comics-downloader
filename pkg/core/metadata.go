@@ -68,6 +68,7 @@ type SeriesMetadata struct {
 	LocalizedTitle map[string]string // Map of language code to localized title, e.g. {"en": "One Piece", "jp": "ワンピース"}
 	Description    map[string]string // Map of language code to description, e.g. {"en": "A story about pirates...", "jp": "海賊の物語..."}
 	Creators       []SeriesCreator
+	CoverURL       *string
 
 	IsManga *bool // True if it's a manga, false if it's a comic
 	IsRTL   *bool // True if the comic/manga is read right-to-left, false if left-to-right. Only relevant for manga, but some comics may also be RTL.
