@@ -197,6 +197,9 @@ func (comic *ComicIssue) makeComicInfoXML(options *config.Options, images *Downl
 		}
 	}
 	comicInfo.CreateElement("PageCount").SetText(fmt.Sprintf("%d", len(images.FilePaths)))
+	if comic.ComicFormat != nil {
+		comicInfo.CreateElement("Format").SetText(string(*comic.ComicFormat))
+	}
 
 	doc.Indent(2)
 	_, err = doc.WriteTo(fo)

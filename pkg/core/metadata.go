@@ -28,6 +28,29 @@ const (
 	AgeRatingX18            AgeRating = "X18+"
 )
 
+type ComicFormat string
+
+// Common comic formats
+const (
+	ComicFormatSpecial        ComicFormat = "Special"
+	ComicFormatReference      ComicFormat = "Reference"
+	ComicFormatDirectorsCut   ComicFormat = "Director's Cut"
+	ComicFormatBoxSet         ComicFormat = "Box Set"
+	ComicFormatAnnual         ComicFormat = "Annual"
+	ComicFormatAnthology      ComicFormat = "Anthology"
+	ComicFormatEpilogue       ComicFormat = "Epilogue"
+	ComicFormatOneShot        ComicFormat = "One-Shot"
+	ComicForamtPrologue       ComicFormat = "Prologue"
+	ComicFormatTPB            ComicFormat = "TPB"
+	ComicFormatTradePaperback ComicFormat = "Trade Paper Back"
+	ComicFormatOmnibus        ComicFormat = "Omnibus"
+	ComicFormatCompendium     ComicFormat = "Compendium"
+	ComicFormatAbsolute       ComicFormat = "Absolute"
+	ComicFormatGraphicNovel   ComicFormat = "Graphic Novel"
+	ComicFormatGN             ComicFormat = "GN"
+	ComicFormatFCB            ComicFormat = "FCB"
+)
+
 type ComicSource struct {
 	Name string
 	URL  string // URL of the comic/manga issue
@@ -65,6 +88,7 @@ type ComicIssue struct {
 	Volume      *string
 	LanguageISO *string // IETF language tag
 	ReleaseDate *time.Time
+	ComicFormat *ComicFormat
 
 	ImageLinks   []string
 	OutputFormat ComicOutputFormat

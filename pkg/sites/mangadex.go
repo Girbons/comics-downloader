@@ -68,6 +68,8 @@ type mangadexSeries struct {
 	Tags          []string
 	Genres        []string
 	WebLinks      []string
+
+	IsOneShot bool
 }
 
 func (m *Mangadex) getMangaInfo(mangaID string) (mangadexSeries, error) {
@@ -99,6 +101,10 @@ func (m *Mangadex) getMangaInfo(mangaID string) (mangadexSeries, error) {
 				} `json:"tags"`
 				// AvailableTranslatedLanguages []string `json:"availableTranslatedLanguages"`
 			} `json:"attributes"`
+			Relationships []struct {
+				ID   string `json:"id"`
+				Type string `json:"type"` // e.g. "author", "artist", "cover_art"
+			} `json:"relationships"`
 		} `json:"data"`
 	}
 
@@ -380,7 +386,6 @@ func (m *Mangadex) getChapterInfo(chapterID string) (chapterInfo mangadexChapter
 	var chapterNumber string
 	var chapterTitle string
 	if chapterRes.Data.Attributes.Chapter != nil {
-		// TODO: consider defaulting to "oneshot"?
 		chapterNumber = *chapterRes.Data.Attributes.Chapter
 	}
 	if chapterRes.Data.Attributes.Title != nil {
@@ -486,6 +491,7 @@ func (m *Mangadex) Initialize(comic *core.ComicIssue) error {
 	comic.LanguageISO = &chapter.TranslatedLanguage
 	comic.ReleaseDate = &chapter.PublishAt
 
+	// ensure metadata object exists
 	if comic.SeriesMetadata == nil {
 		comic.SeriesMetadata = &core.SeriesMetadata{}
 	}
@@ -497,6 +503,11 @@ func (m *Mangadex) Initialize(comic *core.ComicIssue) error {
 	comic.SeriesMetadata.Title = manga.Title
 	comic.SeriesMetadata.WebLinks = manga.WebLinks
 	comic.SeriesMetadata.IsManga = &manga.IsManga
+
+	if manga.IsOneShot {
+		format := core.ComicFormatOneShot
+		comic.ComicFormat = &format
+	}
 
 	comic.ImageLinks = chapter.ImageLinks
 
