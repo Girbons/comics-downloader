@@ -3,7 +3,6 @@ package core
 import (
 	"errors"
 	"fmt"
-	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -134,12 +133,7 @@ func (comic *ComicIssue) makeComicInfoXML(options *config.Options, images *Downl
 		comicInfo.CreateElement("Genres").SetText(genres)
 	}
 	if len(comic.SeriesMetadata.WebLinks) > 0 {
-		var cleanedWebLinks []string
-		for _, link := range comic.SeriesMetadata.WebLinks {
-			// the links must be URL-encoded as spaces are the separator
-			cleanedWebLinks = append(cleanedWebLinks, url.QueryEscape(link))
-		}
-		comicInfo.CreateElement("Web").SetText(strings.Join(cleanedWebLinks, " "))
+		comicInfo.CreateElement("Web").SetText(strings.Join(comic.SeriesMetadata.WebLinks, " "))
 	}
 	if len(comic.SeriesMetadata.Creators) > 0 {
 		var writers []string
