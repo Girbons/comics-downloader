@@ -139,7 +139,7 @@ func (comic *ComicIssue) makeComicInfoXML(options *config.Options, images *Downl
 			// the links must be URL-encoded as spaces are the separator
 			cleanedWebLinks = append(cleanedWebLinks, url.QueryEscape(link))
 		}
-		comicInfo.CreateElement("WebLinks").SetText(strings.Join(cleanedWebLinks, " "))
+		comicInfo.CreateElement("Web").SetText(strings.Join(cleanedWebLinks, " "))
 	}
 	if len(comic.SeriesMetadata.Creators) > 0 {
 		var writers []string
