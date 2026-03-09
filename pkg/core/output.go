@@ -130,7 +130,7 @@ func (comic *ComicIssue) makeComicInfoXML(options *config.Options, images *Downl
 	if len(comic.SeriesMetadata.Genres) > 0 {
 		genres := strings.Join(comic.SeriesMetadata.Genres, ",")
 		options.Logger.Debugf("Adding genres to ComicInfo.xml: %s", genres)
-		comicInfo.CreateElement("Genres").SetText(genres)
+		comicInfo.CreateElement("Genre").SetText(genres)
 	}
 	if len(comic.SeriesMetadata.WebLinks) > 0 {
 		comicInfo.CreateElement("Web").SetText(strings.Join(comic.SeriesMetadata.WebLinks, " "))
