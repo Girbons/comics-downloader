@@ -163,7 +163,7 @@ func (r *Runner) download(base config.Options) {
 			continue
 		}
 
-		perURL.Logger.Info("Downloading...")
+		perURL.Logger.Info("Downloading... " + trimmedURL)
 		collection, err := sites.LoadComicFromSource(&perURL)
 		if err != nil {
 			perURL.Logger.Error(err.Error())

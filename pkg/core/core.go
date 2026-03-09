@@ -257,7 +257,7 @@ func (comic *ComicIssue) DownloadImages(options *config.Options) (*DownloadResul
 
 	var progress *progressbar.ProgressBar
 	if !options.Debug {
-		progress = progressbar.NewOptions(len(comic.ImageLinks), progressbar.OptionSetRenderBlankState(true))
+		progress = progressbar.NewOptions(len(comic.ImageLinks), progressbar.OptionSetRenderBlankState(true), progressbar.OptionSetDescription(fmt.Sprintf("#%s", comic.IssueNumber)))
 	}
 
 	format := util.ImageType(comic.ImagesFormat)
