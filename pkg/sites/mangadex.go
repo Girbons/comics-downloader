@@ -412,9 +412,11 @@ func (m *Mangadex) getChapters(mangaID string) ([]string, error) {
 			Volume   string `json:"volume"` // volume name, or "none"
 			Count    int    `json:"count"`
 			Chapters map[string]struct {
-				Chapter       string `json:"chapter"` // the chapter number, not the chapter name
-				ID            string `json:"id"`
-				IsUnavailable bool   `json:"isUnavailable"`
+				Chapter       string   `json:"chapter"` // the chapter number, not the chapter name
+				ID            string   `json:"id"`
+				IsUnavailable bool     `json:"isUnavailable"`
+				Others        []string `json:"others"` // list of alternative chapter IDs for the same chapter (e.g. for different languages)
+				// TODO: add check to try and find target language in others if the main chapter is not what we want
 			} `json:"chapters"`
 		} `json:"volumes"`
 	}
@@ -457,6 +459,10 @@ type mangadexChapter struct {
 func (m *Mangadex) getChapterInfo(chapterID string) (chapterInfo mangadexChapter, err error) {
 	ctx, cancel := m.requestContext()
 	defer cancel()
+
+	// TODO: set total number of chapters available in the manga
+	// ~~TODO: set volume number in metadata if available~~ Seems to be a non-issue??
+	// ~~TODO: set issue number to chapterNum~~ again seesm to be a non-issue?
 
 	endpoint := joinURL(m.apiBase, fmt.Sprintf("/chapter/%s", chapterID))
 	var chapterRes struct {
@@ -608,12 +614,17 @@ func (m *Mangadex) GetInfo(urlValue string) (string, string, error) {
 
 // Initialize loads links and metadata from mangadex.
 func (m *Mangadex) Initialize(comic *core.ComicIssue) error {
+
+	// TODO: fix localized title being set as "Series Title" in metadata
+	// TODO: fix chapter title being set to a fs compatible sanatized version of the chapter name instead of the actual chapter name
+
 	if comic == nil {
 		return fmt.Errorf("comic is nil")
 	}
 	if comic.Source == nil {
 		return fmt.Errorf("comic source is nil")
 	}
+
 	parts := util.TrimAndSplitURL(comic.Source.URL)
 	if len(parts) < 5 {
 		return fmt.Errorf("URL not supported")
