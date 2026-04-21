@@ -17,6 +17,8 @@ func initializeCollection(issues []string, options *config.Options, base BaseSit
 	var collection []*core.ComicIssue
 	// var err error
 
+	options.Logger.Debugf("sites: initializing collection for %d issue(s)", len(issues))
+
 	if len(issues) == 0 {
 		return collection, fmt.Errorf("no issues found for URL %q; ensure it points to a specific comic or chapter page", options.URL)
 	}
@@ -45,6 +47,7 @@ func initializeCollection(issues []string, options *config.Options, base BaseSit
 		issueNumber = util.Parse(issueNumber)
 
 		if notInIssuesRange(issueNumber, startRange, endRange) {
+			options.Logger.Debugf("Skipping issue %q as it is outside the specified range %q", issueNumber, options.IssuesRange)
 			continue
 		}
 
@@ -60,6 +63,7 @@ func initializeCollection(issues []string, options *config.Options, base BaseSit
 		fileName := util.GetPathToFile(dir, name, issueNumber, outputFormat.String(), options.IssueNumberNameOnly)
 
 		if util.DirectoryOrFileDoesNotExist(fileName) || options.ImagesOnly {
+			options.Logger.Debugf("Adding issue %q to collection with URL: %s", issueNumber, url)
 
 			comic := &core.ComicIssue{
 				Name:        name,
@@ -80,9 +84,12 @@ func initializeCollection(issues []string, options *config.Options, base BaseSit
 			}
 			options.Logger.Debugf("Initializing comic with URL: %s", comic.Source.URL)
 			if err = base.Initialize(comic); err != nil {
+				options.Logger.Errorf("error initializing comic for url %q: %v", url, err)
 				return collection, err
 			}
 			collection = append(collection, comic)
+		} else {
+			options.Logger.Debugf("Skipping issue %q as it already exists at path: %s", issueNumber, fileName)
 		}
 	}
 
