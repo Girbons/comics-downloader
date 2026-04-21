@@ -32,6 +32,35 @@ go build -o comics-downloader-gui ./cmd/gui
 if you don't want to install extra dependencies to build the GUI version you could use [fyne-cross](https://github.com/lucor/fyne-cross)
 which requires [Docker](https://www.docker.com/get-started).
 
+### Optional: libjpeg backend for JPEG encode/decode
+
+Comics Downloader supports an optional JPEG backend using [go-libjpeg](https://github.com/pixiv/go-libjpeg).
+The default behavior is to use the Go standard library unless you pass the `libjpeg` build tag.
+
+Additional requirements for `libjpeg` builds:
+
+- libjpeg development headers and libraries (for example `libjpeg-dev` or `libjpeg-turbo-devel`)
+
+Examples:
+
+```bash
+# CLI
+go build -tags libjpeg -o comics-downloader ./cmd/downloader
+
+# GUI
+go build -tags libjpeg -o comics-downloader-gui ./cmd/gui
+```
+
+Using Makefile targets with build tags:
+
+```bash
+# Build all release artifacts using libjpeg backend
+make builds BUILD_TAGS=libjpeg
+
+# Build a specific target with libjpeg backend
+make linux-x86-64-build BUILD_TAGS=libjpeg
+```
+
 ## Run Tests
 
 ```

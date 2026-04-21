@@ -7,13 +7,14 @@ require (
 	github.com/anaskhan96/soup v1.2.5
 	github.com/beevik/etree v1.6.0
 	github.com/bmaupin/go-epub v1.1.0
+	github.com/chai2010/webp v1.4.0
 	github.com/dlclark/regexp2 v1.10.0
 	github.com/jung-kurt/gofpdf v1.16.2
 	github.com/mholt/archives v0.1.2
+	github.com/pixiv/go-libjpeg v0.0.0-20190822045933-3da21a74767d
 	github.com/schollz/progressbar/v2 v2.15.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.11.1
-	golang.org/x/image v0.39.0
 	golang.org/x/mod v0.35.0
 	golang.org/x/sync v0.20.0
 )
@@ -24,7 +25,6 @@ require (
 	github.com/bodgit/plumbing v1.3.0 // indirect
 	github.com/bodgit/sevenzip v1.6.0 // indirect
 	github.com/bodgit/windows v1.0.1 // indirect
-	github.com/chai2010/webp v1.4.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dsnet/compress v0.0.2-0.20230904184137-39efe44ab707 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
@@ -53,6 +53,7 @@ require (
 	github.com/ulikunitz/xz v0.5.12 // indirect
 	github.com/vincent-petithory/dataurl v0.0.0-20191104211930-d1553a71de50 // indirect
 	go4.org v0.0.0-20230225012048-214862532bf5 // indirect
+	golang.org/x/image v0.39.0 // indirect
 	golang.org/x/net v0.47.0 // indirect
 	golang.org/x/sys v0.38.0 // indirect
 	golang.org/x/text v0.36.0 // indirect

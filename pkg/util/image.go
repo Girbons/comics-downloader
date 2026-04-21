@@ -1,10 +1,10 @@
 package util
 
 import (
+	"bufio"
 	"errors"
 	"image"
 	"image/gif"
-	"image/jpeg"
 	"image/png"
 	"io"
 	"strings"
@@ -57,14 +57,15 @@ func SaveImage(w io.Writer, content io.Reader, outputFormat ImageFormat, provide
 		err error
 	)
 
+	if strings.EqualFold(outputFormat.String(), ImgFormatIMG.String()) {
+		_, err = io.Copy(w, content)
+		return err
+	}
+
 	// TODO: we can optimize this by only decoding the image if the output format is different from the input format, otherwise we can just copy the content to the writer without decoding and encoding again
 	// TODO: add avif support
 
-	if providedImageFormat == ImgFormatWEBP {
-		img, err = webp.Decode(content)
-	} else {
-		img, _, err = image.Decode(content)
-	}
+	img, err = decodeInputImage(content, providedImageFormat)
 
 	if err != nil {
 		return err
@@ -77,7 +78,7 @@ func SaveImage(w io.Writer, content io.Reader, outputFormat ImageFormat, provide
 	case "gif":
 		return gif.Encode(w, img, nil)
 	case "jpg", "jpeg":
-		return jpeg.Encode(w, img, &jpeg.Options{Quality: 100})
+		return encodeJPEG(w, img)
 	case "png":
 		pngEncoder := png.Encoder{CompressionLevel: png.BestCompression}
 		return pngEncoder.Encode(w, img)
@@ -86,4 +87,27 @@ func SaveImage(w io.Writer, content io.Reader, outputFormat ImageFormat, provide
 	default:
 		return errors.New("format not found")
 	}
+}
+
+func decodeInputImage(content io.Reader, providedImageFormat ImageFormat) (image.Image, error) {
+	if providedImageFormat == ImgFormatWEBP {
+		return webp.Decode(content)
+	}
+
+	bufferedContent := bufio.NewReader(content)
+	if isJPEGStream(bufferedContent) {
+		return decodeJPEG(bufferedContent)
+	}
+
+	img, _, err := image.Decode(bufferedContent)
+	return img, err
+}
+
+func isJPEGStream(content *bufio.Reader) bool {
+	header, err := content.Peek(3)
+	if err != nil {
+		return false
+	}
+
+	return header[0] == 0xFF && header[1] == 0xD8 && header[2] == 0xFF
 }
