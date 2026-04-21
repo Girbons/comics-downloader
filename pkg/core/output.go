@@ -94,7 +94,8 @@ func (comic *ComicIssue) GetImagesOutputDir(options *config.Options) (string, er
 // makeComicInfoXML generates a ComicInfo.xml file for the given comic issue and saves it to the output directory. It returns the path to the generated ComicInfo.xml file.
 // Based on the ComicInfo.xml https://anansi-project.github.io/docs/comicinfo/schemas/v2.1
 func (comic *ComicIssue) makeComicInfoXML(options *config.Options, images *DownloadResult) (string, error) {
-	outputDir, err := comic.GetOutputDir(options)
+	// save to images dir as that will be cleaned up after the comic is made
+	outputDir, err := comic.GetImagesOutputDir(options)
 	if err != nil {
 		return "", err
 	}
