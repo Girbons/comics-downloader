@@ -26,7 +26,7 @@ func initializeCollection(issues []string, options *config.Options, base BaseSit
 	var collection []*core.ComicIssue
 	// var err error
 
-	options.Logger.Debugf("sites: initializing collection for %d issue(s)", len(issues))
+	options.Logger.Infof("Initializing metadata for %d issue(s)...", len(issues))
 
 	if len(issues) == 0 {
 		return collection, fmt.Errorf("no issues found for URL %q; ensure it points to a specific comic or chapter page", options.URL)
@@ -86,25 +86,26 @@ func initializeCollection(issues []string, options *config.Options, base BaseSit
 			comic.SeriesMetadata.Description = make(map[string]string)
 		}
 
-		// clean up name
-		name := util.Parse(comic.ChapterName)
-		if name == "" {
-			name = util.Parse(comic.SeriesMetadata.Title)
+		// clean up cleaedChapterName
+		cleaedChapterName := util.Parse(comic.ChapterName)
+		if cleaedChapterName == "" {
+			cleaedChapterName = util.Parse(comic.SeriesMetadata.Title)
 		}
 		if len(options.CustomComicName) > 0 {
-			name = options.CustomComicName
+			cleaedChapterName = options.CustomComicName
 		}
-		if name == "" {
-			name = util.Parse(options.SourceName)
+		cleanedSeriesTitle := util.Parse(comic.SeriesMetadata.Title)
+		if cleanedSeriesTitle != "" {
+			comic.SeriesMetadata.TitleCleaned = cleanedSeriesTitle
 		}
 
 		// attempt to extract issue number for range filtering
 		issueNumber := util.Parse(comic.IssueNumber)
 
-		comic.ChapterName = name
+		comic.ChapterNameCleaned = cleaedChapterName
 		comic.IssueNumber = issueNumber
 		if comic.SeriesMetadata.Title == "" {
-			comic.SeriesMetadata.Title = name
+			comic.SeriesMetadata.Title = cleaedChapterName
 		}
 
 		if notInIssuesRange(issueNumber, startRange, endRange) {
@@ -112,11 +113,10 @@ func initializeCollection(issues []string, options *config.Options, base BaseSit
 			continue
 		}
 
-		dir, pathErr := util.PathSetup(options.CreateDefaultPath, options.OutputFolder, options.SourceName, comic.SeriesMetadata.Title)
-		if pathErr != nil {
-			return collection, pathErr
+		fileName, err := comic.GetOutputFilePath(options)
+		if err != nil {
+			return nil, err
 		}
-		fileName := util.GetPathToFile(dir, name, comic.GetIssueNumAndVolume(), outputFormat.String(), options.IssueNumberNameOnly)
 
 		if util.DirectoryOrFileDoesNotExist(fileName) || options.ImagesOnly {
 			options.Logger.Debugf("Adding issue %q to collection with URL: %s", comic.GetIssueNumAndVolume(), url)

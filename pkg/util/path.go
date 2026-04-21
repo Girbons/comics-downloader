@@ -32,10 +32,10 @@ func TrimNameLength(name string) string {
 	return name
 }
 
-// PathSetup creates the folders where the comic will be saved.
+// OutputPathSetup creates the folders where the comic will be saved.
 // when `createDefaultPath` is false the comic is stored without prepending
 // the default folder path `comics/source/name/[comic.format]`.
-func PathSetup(createDefaultPath bool, outputFolder, source, seriesName string) (string, error) {
+func OutputPathSetup(createDefaultPath bool, outputFolder, source, seriesName string) (string, error) {
 	path := fmt.Sprintf("%s/comics/%s/%s/", outputFolder, source, strings.TrimSpace(TrimNameLength(seriesName)))
 
 	if !createDefaultPath {
@@ -48,8 +48,8 @@ func PathSetup(createDefaultPath bool, outputFolder, source, seriesName string) 
 // ImagesPathSetup creates the folders for the images to be saved.
 // when `createDefaultPath` is false the images are stored without prepending
 // the default folder path `comics/source/name/[comic.format]`.
-func ImagesPathSetup(createDefaultPath bool, outputFolder, source, comicName, issueFolderName, issueNumber string) (string, error) {
-	path := fmt.Sprintf("%s/comics/%s/%s/images-%s/", outputFolder, source, strings.TrimSpace(TrimNameLength(comicName)), strings.TrimSpace(TrimNameLength(issueNumber)))
+func ImagesPathSetup(createDefaultPath bool, outputFolder, source, seriesName, issueFolderName, issueNumber string) (string, error) {
+	path := fmt.Sprintf("%s/comics/%s/%s/images-%s/", outputFolder, source, strings.TrimSpace(TrimNameLength(seriesName)), strings.TrimSpace(TrimNameLength(issueNumber)))
 
 	if !createDefaultPath {
 		path = fmt.Sprintf("%s/%s", outputFolder, strings.TrimSpace(TrimNameLength(issueFolderName+issueNumber)))

@@ -96,12 +96,12 @@ func (comic *ComicIssue) makeEPUB(options *config.Options, images *DownloadResul
 		}
 	}
 
-	dir, err := util.PathSetup(options.CreateDefaultPath, options.OutputFolder, comic.Source.Name, comic.SeriesMetadata.Title)
+	outputFilePath, err := comic.GetOutputFilePath(options)
 	if err != nil {
 		return err
 	}
 
-	if err = e.Write(util.GetPathToFile(dir, comic.ChapterName, comic.GetIssueNumAndVolume(), comic.OutputFormat.String(), options.IssueNumberNameOnly)); err != nil {
+	if err = e.Write(outputFilePath); err != nil {
 		return err
 	}
 
@@ -155,12 +155,11 @@ func (comic *ComicIssue) makePDF(options *config.Options, images *DownloadResult
 		pdf.ImageOptions(path.Base(fileName), 0, 0, mmWd, mmHt, false, imageOptions, 0, "")
 	}
 
-	dir, err := util.PathSetup(options.CreateDefaultPath, options.OutputFolder, comic.Source.Name, comic.SeriesMetadata.Title)
+	filePath, err := comic.GetOutputFilePath(options)
 	if err != nil {
 		return err
 	}
 
-	filePath := util.GetPathToFile(dir, comic.ChapterName, comic.GetIssueNumAndVolume(), comic.OutputFormat.String(), options.IssueNumberNameOnly)
 	if err = pdf.OutputFileAndClose(filePath); err != nil {
 		return err
 	}
@@ -173,7 +172,7 @@ func (comic *ComicIssue) makePDF(options *config.Options, images *DownloadResult
 
 // makeCBRZ will create the CBR/CBZ.
 func (comic *ComicIssue) makeCBRZ(options *config.Options, images *DownloadResult) error {
-	dir, err := util.PathSetup(options.CreateDefaultPath, options.OutputFolder, comic.Source.Name, comic.SeriesMetadata.Title)
+	dir, err := comic.GetOutputDir(options)
 	if err != nil {
 		return err
 	}
@@ -183,7 +182,13 @@ func (comic *ComicIssue) makeCBRZ(options *config.Options, images *DownloadResul
 		return err
 	}
 
-	newName := util.GetPathToFile(dir, comic.ChapterName, comic.GetIssueNumAndVolume(), comic.OutputFormat.String(), options.IssueNumberNameOnly)
+	newName, err := comic.GetOutputFilePath(options)
+	if err != nil {
+		return err
+	}
+
+	// check if file already exists to avoid creating the archive again
+	// this is a final sanity check
 	if _, statErr := os.Stat(newName); statErr == nil {
 		if options.Logger != nil {
 			options.Logger.Infof("Skipping %s because it already exists: %s", strings.ToUpper(comic.OutputFormat.String()), newName)
@@ -250,7 +255,7 @@ func (comic *ComicIssue) DownloadImages(options *config.Options) (*DownloadResul
 
 	client := ensureClient(options)
 
-	dir, err := util.ImagesPathSetup(options.CreateDefaultPath, options.OutputFolder, comic.Source.Name, comic.SeriesMetadata.Title, options.IssueFolderName, comic.IssueNumber)
+	dir, err := comic.GetImagesOutputDir(options)
 	if err != nil {
 		return nil, err
 	}

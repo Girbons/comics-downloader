@@ -100,19 +100,21 @@ func TestMakeComicPDF(t *testing.T) {
 
 	comic := &ComicIssue{
 		ChapterName:        "foo",
+		ChapterNameCleaned: "foo",
 		Source:             &ComicSource{Name: "test-source", URL: server.URL},
 		IssueNumber:        "1",
 		OutputFormat:       PDF,
 		OutputImagesFormat: "png",
 		ImageLinks:         buildLinks(server, 2),
 		SeriesMetadata: &SeriesMetadata{
-			Title: "foo",
+			Title:        "foo",
+			TitleCleaned: "foo",
 		},
 	}
 
 	require.NoError(t, comic.MakeComic(opts))
 
-	output := filepath.Join(opts.OutputFolder, "comics", comic.Source.Name, comic.ChapterName, "foo - c1.pdf")
+	output := filepath.Join(opts.OutputFolder, "comics", comic.Source.Name, comic.ChapterNameCleaned, "foo - c1.pdf")
 	require.FileExists(t, output)
 }
 
@@ -124,13 +126,15 @@ func TestMakeComicEPUB(t *testing.T) {
 
 	comic := &ComicIssue{
 		ChapterName:        "bar",
+		ChapterNameCleaned: "bar",
 		Source:             &ComicSource{Name: "test-source", URL: server.URL},
 		IssueNumber:        "42",
 		OutputFormat:       EPUB,
 		OutputImagesFormat: "png",
 		ImageLinks:         buildLinks(server, 2),
 		SeriesMetadata: &SeriesMetadata{
-			Title: "foo",
+			Title:        "foo",
+			TitleCleaned: "foo",
 		},
 	}
 
@@ -147,8 +151,8 @@ func TestMakeComicCBZ(t *testing.T) {
 	opts := newTestOptions(t, server)
 
 	comic := &ComicIssue{
-		ChapterName: "baz",
-
+		ChapterName:        "baz",
+		ChapterNameCleaned: "baz",
 		IssueNumber:        "7",
 		OutputFormat:       CBZ,
 		OutputImagesFormat: "png",
@@ -156,7 +160,8 @@ func TestMakeComicCBZ(t *testing.T) {
 
 		Source: &ComicSource{Name: "test-source", URL: server.URL},
 		SeriesMetadata: &SeriesMetadata{
-			Title: "Baz Series",
+			Title:        "Baz Series",
+			TitleCleaned: "Baz Series",
 		},
 	}
 

@@ -45,10 +45,56 @@ func ToComicOutputFormat(format string) (ComicOutputFormat, error) {
 	}
 }
 
+// GetOutputDir returns the output directory for the comic issue
+func (comic *ComicIssue) GetOutputDir(options *config.Options) (string, error) {
+	dir, err := util.OutputPathSetup(
+		options.CreateDefaultPath,
+		options.OutputFolder,
+		comic.Source.Name,
+		comic.SeriesMetadata.TitleCleaned,
+	)
+	if err != nil {
+		return "", err
+	}
+
+	return dir, nil
+}
+
+// GetOutputFilePath returns the output file path for the comic issue
+func (comic *ComicIssue) GetOutputFilePath(options *config.Options) (string, error) {
+	dir, err := comic.GetOutputDir(options)
+	if err != nil {
+		return "", err
+	}
+
+	return util.GetPathToFile(dir,
+		comic.ChapterNameCleaned,
+		comic.GetIssueNumAndVolume(),
+		comic.OutputFormat.String(),
+		options.IssueNumberNameOnly,
+	), nil
+}
+
+// GetImagesOutputDir returns the output directory for the comic issue's images
+func (comic *ComicIssue) GetImagesOutputDir(options *config.Options) (string, error) {
+	outputDir, err := util.ImagesPathSetup(
+		options.CreateDefaultPath,
+		options.OutputFolder,
+		comic.Source.Name,
+		comic.SeriesMetadata.TitleCleaned,
+		options.IssueFolderName,
+		comic.IssueNumber,
+	)
+	if err != nil {
+		return "", err
+	}
+	return outputDir, nil
+}
+
 // makeComicInfoXML generates a ComicInfo.xml file for the given comic issue and saves it to the output directory. It returns the path to the generated ComicInfo.xml file.
 // Based on the ComicInfo.xml https://anansi-project.github.io/docs/comicinfo/schemas/v2.1
 func (comic *ComicIssue) makeComicInfoXML(options *config.Options, images *DownloadResult) (string, error) {
-	outputDir, err := util.ImagesPathSetup(options.CreateDefaultPath, options.OutputFolder, comic.Source.Name, comic.ChapterName, options.IssueFolderName, comic.IssueNumber)
+	outputDir, err := comic.GetOutputDir(options)
 	if err != nil {
 		return "", err
 	}

@@ -11,7 +11,7 @@ import (
 )
 
 func TestPathSetup(t *testing.T) {
-	result, err := PathSetup(true, filepath.Dir(os.Args[0]), "example-source", "comic-name")
+	result, err := OutputPathSetup(true, filepath.Dir(os.Args[0]), "example-source", "comic-name")
 
 	assert.Nil(t, err)
 	assert.Contains(t, result, "example-source")
@@ -49,7 +49,7 @@ func TestPathSetupTrimsComicName(t *testing.T) {
 	outputFolder := t.TempDir()
 	longComicName := strings.Repeat("comic", 30)
 
-	result, err := PathSetup(true, outputFolder, "example-source", longComicName)
+	result, err := OutputPathSetup(true, outputFolder, "example-source", longComicName)
 
 	assert.Nil(t, err)
 	assert.Contains(t, result, filepath.Join("comics", "example-source"))

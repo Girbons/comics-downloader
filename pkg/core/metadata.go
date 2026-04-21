@@ -65,6 +65,7 @@ type SeriesCreator struct {
 
 type SeriesMetadata struct {
 	Title          string            // Series title, should be in the native language of the comic/manga when possible
+	TitleCleaned   string            // Cleaned series title with special characters removed, used for file naming
 	LocalizedTitle map[string]string // Map of language code to localized title, e.g. {"en": "One Piece", "jp": "ワンピース"}
 	Description    map[string]string // Map of language code to description, e.g. {"en": "A story about pirates...", "jp": "海賊の物語..."}
 	Creators       []SeriesCreator
@@ -83,7 +84,8 @@ type SeriesMetadata struct {
 
 // ComicIssue struct contains all the informations about a comic
 type ComicIssue struct {
-	ChapterName string // Issue name/title
+	ChapterName        string // Issue name/title
+	ChapterNameCleaned string // Cleaned issue name/title with special characters removed, used for file naming
 
 	IssueNumber string
 	Volume      *string
