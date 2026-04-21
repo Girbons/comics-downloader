@@ -634,7 +634,7 @@ func (m *Mangadex) Initialize(comic *core.ComicIssue) error {
 		return err
 	}
 
-	// comic.Name = chapter.ChapterTitle // changing the title seems to break path resolving for some reason, probably because the folder has already been created by the time we get to this point, so we just keep the name as is until the metadata system is reworked
+	comic.ChapterName = chapter.ChapterTitle // changing the title seems to break path resolving for some reason, probably because the folder has already been created by the time we get to this point, so we just keep the name as is until the metadata system is reworked
 	comic.IssueNumber = chapter.ChapterNumber
 	comic.Volume = chapter.Volume
 	comic.LanguageISO = &chapter.TranslatedLanguage

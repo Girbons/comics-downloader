@@ -135,13 +135,16 @@ func (m *Mangareader) GetInfo(url string) (string, string, error) {
 
 // Initialize loads links and metadata from mangareader
 func (m *Mangareader) Initialize(comic *core.ComicIssue) error {
-	name, issueNumber, err := m.GetInfo(comic.Source.URL)
-	if err != nil {
-		return err
+	if comic.SeriesMetadata == nil {
+		comic.SeriesMetadata = &core.SeriesMetadata{}
 	}
 
-	comic.Name = name
-	comic.IssueNumber = issueNumber
+	parts := util.TrimAndSplitURL(comic.Source.URL)
+	if len(parts) >= 5 {
+		comic.ChapterName = parts[3]
+		comic.SeriesMetadata.Title = parts[3]
+		comic.IssueNumber = parts[4]
+	}
 
 	links, err := m.retrieveImageLinks(comic)
 	comic.ImageLinks = links

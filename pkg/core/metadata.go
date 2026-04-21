@@ -83,7 +83,7 @@ type SeriesMetadata struct {
 
 // ComicIssue struct contains all the informations about a comic
 type ComicIssue struct {
-	Name string // Issue name/title
+	ChapterName string // Issue name/title
 
 	IssueNumber string
 	Volume      *string

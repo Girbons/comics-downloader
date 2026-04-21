@@ -197,6 +197,10 @@ func (r *Readallcomics) RetrieveIssueLinks() ([]string, error) {
 
 // GetInfo extracts the comic info from the given URL.
 func (r *Readallcomics) GetInfo(url string) (string, string, error) {
+	return r.extractInfoFromURL(url)
+}
+
+func (r *Readallcomics) extractInfoFromURL(url string) (string, string, error) {
 	parts := util.TrimAndSplitURL(url)
 	lastPart := parts[len(parts)-1]
 	urlParts := strings.Split(lastPart, "-")
@@ -425,8 +429,24 @@ func isNumeric(s string) bool {
 
 // Initialize prepare the comic instance with links and images.
 func (r *Readallcomics) Initialize(comic *core.ComicIssue) error {
+	name, issueNumber, err := r.extractInfoFromURL(comic.Source.URL)
+	if err != nil {
+		return err
+	}
+
 	links, err := r.retrieveImageLinks(comic)
+	if err != nil {
+		return err
+	}
+
+	if comic.SeriesMetadata == nil {
+		comic.SeriesMetadata = &core.SeriesMetadata{}
+	}
+
+	comic.ChapterName = name
+	comic.SeriesMetadata.Title = name
+	comic.IssueNumber = issueNumber
 	comic.ImageLinks = links
 
-	return err
+	return nil
 }

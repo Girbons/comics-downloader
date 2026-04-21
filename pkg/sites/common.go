@@ -2,6 +2,7 @@ package sites
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/Girbons/comics-downloader/pkg/config"
@@ -26,27 +27,48 @@ func MangaKakalotGetInfo(options *config.Options, domain string, url string) (na
 		return "", "", err
 	}
 
-	// get chapter name
-	doc := soup.HTMLParse(res)
+	return extractMangaKakalotInfo(domain, url, res)
+}
+
+func extractMangaKakalotInfo(domain, url, html string) (name, issueNumber string, err error) {
+	doc := soup.HTMLParse(html)
 	f := doc.Find("div", "class", breadcrumbClassName(domain))
 	switch {
 	case strings.Contains(domain, "mangakakalot"):
 		f = f.Find("p")
 		items := f.FindAll("span", "itemprop", "itemListElement")
+		if len(items) == 0 {
+			return "", "", fmt.Errorf("could not find mangakakalot breadcrumb entries")
+		}
 		f = items[len(items)-1]
 		f = f.Find("a").Find("span")
 	case strings.Contains(domain, "manganato"):
 		items := f.FindAll("a", "class", "a-h")
+		if len(items) == 0 {
+			return "", "", fmt.Errorf("could not find manganato breadcrumb entries")
+		}
 		f = items[len(items)-1]
+	default:
+		return "", "", fmt.Errorf("unsupported domain for metadata extraction: %s", domain)
 	}
+
 	name = f.Text()
 	name, err = regexp2.MustCompile("(Vol\\.[0-9]{1,3} )?(Chapter [0-9]{1,3}(\\.[0-9])?) ?: ", 0).Replace(name, "", 0, 1)
 	if err != nil {
 		return "", "", err
 	}
-	// parse number from url
+
 	parts := util.TrimAndSplitURL(url)
-	issueNumber = strings.Split(parts[len(parts)-1], "-")[1]
+	if len(parts) == 0 {
+		return "", "", fmt.Errorf("invalid URL: %s", url)
+	}
+	lastPart := parts[len(parts)-1]
+	chapterParts := strings.Split(lastPart, "-")
+	if len(chapterParts) < 2 {
+		return name, "", nil
+	}
+
+	issueNumber = chapterParts[1]
 	return name, issueNumber, nil
 }
 
@@ -57,6 +79,17 @@ func MangaKakalotInitialize(options *config.Options, comic *core.ComicIssue) err
 	res, err := options.Client.FetchHTML(ctx, comic.Source.URL)
 	if err != nil {
 		return err
+	}
+
+	if comic.SeriesMetadata == nil {
+		comic.SeriesMetadata = &core.SeriesMetadata{}
+	}
+
+	name, issueNumber, err := extractMangaKakalotInfo(options.SourceName, comic.Source.URL, res)
+	if err == nil {
+		comic.ChapterName = name
+		comic.SeriesMetadata.Title = name
+		comic.IssueNumber = issueNumber
 	}
 
 	doc := soup.HTMLParse(res)

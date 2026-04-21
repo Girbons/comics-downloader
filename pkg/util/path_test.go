@@ -20,7 +20,7 @@ func TestPathSetup(t *testing.T) {
 
 func TestGenerateFileName(t *testing.T) {
 	result := GetPathToFile("path/to/something", "comic-name", "invalid_character", "pdf", false)
-	assert.Equal(t, "path/to/something/comic-name-invalid_character.pdf", result)
+	assert.Equal(t, "path/to/something/comic-name - invalid_character.pdf", result)
 	result = GetPathToFile("path/to/something", "comic-name", "invalid_character", "pdf", true)
 	assert.Equal(t, "path/to/something/invalid_character.pdf", result)
 }
@@ -87,7 +87,7 @@ func TestGetPathToFileTrimsNameAndIssueNumber(t *testing.T) {
 	longIssueNumber := strings.Repeat("i", NameLength+15)
 
 	result := GetPathToFile(dir, longName, longIssueNumber, "pdf", false)
-	expected := fmt.Sprintf("%s/%s-%s.pdf", dir, strings.Repeat("n", NameLength), strings.Repeat("i", NameLength))
+	expected := fmt.Sprintf("%s/%s - %s.pdf", dir, strings.Repeat("n", NameLength), strings.Repeat("i", NameLength))
 	assert.Equal(t, expected, result)
 
 	resultIssueOnly := GetPathToFile(dir, longName, longIssueNumber, "pdf", true)

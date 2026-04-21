@@ -26,7 +26,7 @@ func (s *stubSite) Initialize(comic *core.ComicIssue) error {
 
 func (s *stubSite) GetInfo(url string) (string, string, error) {
 	if stub, ok := s.comics[url]; ok {
-		return stub.Name, stub.IssueNumber, nil
+		return stub.ChapterName, stub.IssueNumber, nil
 	}
 	return "", "", errors.New("missing comic")
 }
@@ -48,9 +48,9 @@ func TestInitializeCollectionFiltersIssues(t *testing.T) {
 	site := &stubSite{
 		issues: []string{"url-1", "url-2", "url-3"},
 		comics: map[string]*core.ComicIssue{
-			"url-1": {Name: "series", IssueNumber: "issue-1", Source: &core.ComicSource{Name: "test-source", URL: "url-1"}},
-			"url-2": {Name: "series", IssueNumber: "issue-2", Source: &core.ComicSource{Name: "test-source", URL: "url-2"}},
-			"url-3": {Name: "series", IssueNumber: "issue-3", Source: &core.ComicSource{Name: "test-source", URL: "url-3"}},
+			"url-1": {ChapterName: "series", IssueNumber: "issue-1", Source: &core.ComicSource{Name: "test-source", URL: "url-1"}},
+			"url-2": {ChapterName: "series", IssueNumber: "issue-2", Source: &core.ComicSource{Name: "test-source", URL: "url-2"}},
+			"url-3": {ChapterName: "series", IssueNumber: "issue-3", Source: &core.ComicSource{Name: "test-source", URL: "url-3"}},
 		},
 	}
 
@@ -182,8 +182,8 @@ func TestLoadComicFromSourceWithRegistry(t *testing.T) {
 	testSite := &stubSite{
 		issues: []string{"url-1", "url-2"},
 		comics: map[string]*core.ComicIssue{
-			"url-1": {Name: "test-series", IssueNumber: "1", Source: &core.ComicSource{Name: "test-site", URL: "url-1"}},
-			"url-2": {Name: "test-series", IssueNumber: "2", Source: &core.ComicSource{Name: "test-site", URL: "url-2"}},
+			"url-1": {ChapterName: "test-series", IssueNumber: "1", Source: &core.ComicSource{Name: "test-site", URL: "url-1"}},
+			"url-2": {ChapterName: "test-series", IssueNumber: "2", Source: &core.ComicSource{Name: "test-site", URL: "url-2"}},
 		},
 	}
 
@@ -206,9 +206,9 @@ func TestLoadComicFromSourceWithRegistry(t *testing.T) {
 	collection, err := LoadComicFromSource(options)
 	require.NoError(t, err)
 	require.Len(t, collection, 2)
-	assert.Equal(t, "test-series", collection[0].Name)
+	assert.Equal(t, "test-series", collection[0].ChapterName)
 	assert.Equal(t, "1", collection[0].IssueNumber)
-	assert.Equal(t, "test-series", collection[1].Name)
+	assert.Equal(t, "test-series", collection[1].ChapterName)
 	assert.Equal(t, "2", collection[1].IssueNumber)
 }
 
@@ -226,7 +226,7 @@ func TestLoadComicFromSourceDisabledSite(t *testing.T) {
 	testSite := &stubSite{
 		issues: []string{"url-1"},
 		comics: map[string]*core.ComicIssue{
-			"url-1": {Name: "test-series", IssueNumber: "1", Source: &core.ComicSource{Name: "disabled-test-site", URL: "url-1"}},
+			"url-1": {ChapterName: "test-series", IssueNumber: "1", Source: &core.ComicSource{Name: "disabled-test-site", URL: "url-1"}},
 		},
 	}
 
@@ -262,7 +262,7 @@ func TestLoadComicFromSourcePartialMatch(t *testing.T) {
 	testSite := &stubSite{
 		issues: []string{"url-1"},
 		comics: map[string]*core.ComicIssue{
-			"url-1": {Name: "my-comic", IssueNumber: "42", Source: &core.ComicSource{Name: "mysite.com", URL: "url-1"}},
+			"url-1": {ChapterName: "my-comic", IssueNumber: "42", Source: &core.ComicSource{Name: "mysite.com", URL: "url-1"}},
 		},
 	}
 
@@ -285,7 +285,7 @@ func TestLoadComicFromSourcePartialMatch(t *testing.T) {
 	collection, err := LoadComicFromSource(options)
 	require.NoError(t, err)
 	require.Len(t, collection, 1)
-	assert.Equal(t, "my-comic", collection[0].Name)
+	assert.Equal(t, "my-comic", collection[0].ChapterName)
 	assert.Equal(t, "42", collection[0].IssueNumber)
 }
 

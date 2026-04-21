@@ -35,8 +35,8 @@ func TrimNameLength(name string) string {
 // PathSetup creates the folders where the comic will be saved.
 // when `createDefaultPath` is false the comic is stored without prepending
 // the default folder path `comics/source/name/[comic.format]`.
-func PathSetup(createDefaultPath bool, outputFolder, source, name string) (string, error) {
-	path := fmt.Sprintf("%s/comics/%s/%s/", outputFolder, source, strings.TrimSpace(TrimNameLength(name)))
+func PathSetup(createDefaultPath bool, outputFolder, source, seriesName string) (string, error) {
+	path := fmt.Sprintf("%s/comics/%s/%s/", outputFolder, source, strings.TrimSpace(TrimNameLength(seriesName)))
 
 	if !createDefaultPath {
 		path = fmt.Sprintf("%s/", outputFolder)
@@ -48,8 +48,8 @@ func PathSetup(createDefaultPath bool, outputFolder, source, name string) (strin
 // ImagesPathSetup creates the folders for the images to be saved.
 // when `createDefaultPath` is false the images are stored without prepending
 // the default folder path `comics/source/name/[comic.format]`.
-func ImagesPathSetup(createDefaultPath bool, outputFolder, source, name, issueFolderName, issueNumber string) (string, error) {
-	path := fmt.Sprintf("%s/comics/%s/%s/images-%s/", outputFolder, source, strings.TrimSpace(TrimNameLength(name)), strings.TrimSpace(TrimNameLength(issueNumber)))
+func ImagesPathSetup(createDefaultPath bool, outputFolder, source, comicName, issueFolderName, issueNumber string) (string, error) {
+	path := fmt.Sprintf("%s/comics/%s/%s/images-%s/", outputFolder, source, strings.TrimSpace(TrimNameLength(comicName)), strings.TrimSpace(TrimNameLength(issueNumber)))
 
 	if !createDefaultPath {
 		path = fmt.Sprintf("%s/%s", outputFolder, strings.TrimSpace(TrimNameLength(issueFolderName+issueNumber)))
@@ -75,9 +75,9 @@ func DirectoryOrFileDoesNotExist(filePath string) bool {
 }
 
 // GetPathToFile returns the path where the file should be saved.
-func GetPathToFile(dir, name, issueNumber, format string, issueNumberOnly bool) string {
+func GetPathToFile(dir, comicName, issueNumber, format string, issueNumberOnly bool) string {
 	if issueNumberOnly {
 		return fmt.Sprintf("%s/%s.%s", dir, strings.TrimSpace(TrimNameLength(issueNumber)), format)
 	}
-	return fmt.Sprintf("%s/%s-%s.%s", dir, strings.TrimSpace(TrimNameLength(name)), strings.TrimSpace(TrimNameLength(issueNumber)), format)
+	return fmt.Sprintf("%s/%s - %s.%s", dir, strings.TrimSpace(TrimNameLength(comicName)), strings.TrimSpace(TrimNameLength(issueNumber)), format)
 }

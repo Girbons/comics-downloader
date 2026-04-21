@@ -32,6 +32,11 @@ func initializeCollection(issues []string, options *config.Options, base BaseSit
 		return collection, fmt.Errorf("no issues found for URL %q; ensure it points to a specific comic or chapter page", options.URL)
 	}
 
+	outputFormat, err := core.ToComicOutputFormat(options.OutputFormat)
+	if err != nil {
+		return collection, err
+	}
+
 	var startRange, endRange float64
 	if options.All && options.IssuesRange != "" {
 		start, end, err := parser.ParseIssuesRange(options.IssuesRange)
@@ -43,62 +48,81 @@ func initializeCollection(issues []string, options *config.Options, base BaseSit
 	}
 
 	for _, url := range issues {
-		name, issueNumber, err := base.GetInfo(url)
-		if err != nil {
-			options.Logger.Errorf("error getting info for url %q: %v", url, err)
-			continue
+		comic := &core.ComicIssue{
+			OutputFormat:       outputFormat,
+			OutputImagesFormat: options.OutputImagesFormat,
+
+			Source: &core.ComicSource{
+				Name: options.SourceName,
+				URL:  url,
+			},
+			SeriesMetadata: &core.SeriesMetadata{
+				LocalizedTitle: make(map[string]string),
+				Description:    make(map[string]string),
+			},
 		}
 
-		name = util.Parse(name)
-		if len(options.CustomComicName) > 0 {
-			name = options.CustomComicName
-		}
-		issueNumber = util.Parse(issueNumber)
-
-		if notInIssuesRange(issueNumber, startRange, endRange) {
-			options.Logger.Debugf("Skipping issue %q as it is outside the specified range %q", issueNumber, options.IssuesRange)
-			continue
-		}
-
-		outputFormat, err := core.ToComicOutputFormat(options.OutputFormat)
-		if err != nil {
+		options.Logger.Debugf("Initializing comic with URL: %s", comic.Source.URL)
+		if err = base.Initialize(comic); err != nil {
+			options.Logger.Errorf("error initializing comic for url %q: %v", url, err)
 			return collection, err
 		}
 
-		dir, pathErr := util.PathSetup(options.CreateDefaultPath, options.OutputFolder, options.SourceName, name)
+		comic.OutputFormat = outputFormat
+		comic.OutputImagesFormat = options.OutputImagesFormat
+		if comic.Source == nil {
+			comic.Source = &core.ComicSource{}
+		}
+		comic.Source.Name = options.SourceName
+		comic.Source.URL = url
+
+		if comic.SeriesMetadata == nil {
+			comic.SeriesMetadata = &core.SeriesMetadata{}
+		}
+		if comic.SeriesMetadata.LocalizedTitle == nil {
+			comic.SeriesMetadata.LocalizedTitle = make(map[string]string)
+		}
+		if comic.SeriesMetadata.Description == nil {
+			comic.SeriesMetadata.Description = make(map[string]string)
+		}
+
+		// clean up name
+		name := util.Parse(comic.ChapterName)
+		if name == "" {
+			name = util.Parse(comic.SeriesMetadata.Title)
+		}
+		if len(options.CustomComicName) > 0 {
+			name = options.CustomComicName
+		}
+		if name == "" {
+			name = util.Parse(options.SourceName)
+		}
+
+		// attempt to extract issue number for range filtering
+		issueNumber := util.Parse(comic.IssueNumber)
+
+		comic.ChapterName = name
+		comic.IssueNumber = issueNumber
+		if comic.SeriesMetadata.Title == "" {
+			comic.SeriesMetadata.Title = name
+		}
+
+		if notInIssuesRange(issueNumber, startRange, endRange) {
+			options.Logger.Debugf("Skipping issue %q as it is outside the specified range %q", comic.GetIssueNumAndVolume(), options.IssuesRange)
+			continue
+		}
+
+		dir, pathErr := util.PathSetup(options.CreateDefaultPath, options.OutputFolder, options.SourceName, comic.SeriesMetadata.Title)
 		if pathErr != nil {
 			return collection, pathErr
 		}
-		fileName := util.GetPathToFile(dir, name, issueNumber, outputFormat.String(), options.IssueNumberNameOnly)
+		fileName := util.GetPathToFile(dir, name, comic.GetIssueNumAndVolume(), outputFormat.String(), options.IssueNumberNameOnly)
 
 		if util.DirectoryOrFileDoesNotExist(fileName) || options.ImagesOnly {
-			options.Logger.Debugf("Adding issue %q to collection with URL: %s", issueNumber, url)
-
-			comic := &core.ComicIssue{
-				Name:        name,
-				IssueNumber: issueNumber,
-
-				OutputFormat:       outputFormat,
-				OutputImagesFormat: options.OutputImagesFormat,
-
-				Source: &core.ComicSource{
-					Name: options.SourceName,
-					URL:  url,
-				},
-				SeriesMetadata: &core.SeriesMetadata{
-					Title:          name,
-					LocalizedTitle: make(map[string]string),
-					Description:    make(map[string]string),
-				},
-			}
-			options.Logger.Debugf("Initializing comic with URL: %s", comic.Source.URL)
-			if err = base.Initialize(comic); err != nil {
-				options.Logger.Errorf("error initializing comic for url %q: %v", url, err)
-				return collection, err
-			}
+			options.Logger.Debugf("Adding issue %q to collection with URL: %s", comic.GetIssueNumAndVolume(), url)
 			collection = append(collection, comic)
 		} else {
-			options.Logger.Debugf("Skipping issue %q as it already exists at path: %s", issueNumber, fileName)
+			options.Logger.Debugf("Skipping issue %q as it already exists at path: %s", comic.GetIssueNumAndVolume(), fileName)
 		}
 	}
 

@@ -218,6 +218,17 @@ func (c *ReadComicOnline) GetInfo(url string) (string, string, error) {
 // Initialize will initialize the comic based
 // on ReadComicOnline.to
 func (c *ReadComicOnline) Initialize(comic *core.ComicIssue) error {
+	if comic.SeriesMetadata == nil {
+		comic.SeriesMetadata = &core.SeriesMetadata{}
+	}
+
+	parts := util.TrimAndSplitURL(comic.Source.URL)
+	if len(parts) >= 6 {
+		comic.ChapterName = parts[4]
+		comic.SeriesMetadata.Title = parts[4]
+		comic.IssueNumber = strings.Split(strings.ReplaceAll(parts[5], "Issue-", ""), "?")[0]
+	}
+
 	links, err := c.retrieveImageLinks(comic)
 	comic.ImageLinks = links
 

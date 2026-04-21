@@ -181,6 +181,17 @@ func (c *Comicextra) GetInfo(url string) (string, string, error) {
 // Initialize will initialize the comic based
 // on comicextra.com
 func (c *Comicextra) Initialize(comic *core.ComicIssue) error {
+	if comic.SeriesMetadata == nil {
+		comic.SeriesMetadata = &core.SeriesMetadata{}
+	}
+
+	parts := util.TrimAndSplitURL(comic.Source.URL)
+	if len(parts) >= 5 {
+		comic.ChapterName = parts[3]
+		comic.SeriesMetadata.Title = parts[3]
+		comic.IssueNumber = parts[4]
+	}
+
 	links, err := c.retrieveImageLinks(comic)
 	comic.ImageLinks = links
 

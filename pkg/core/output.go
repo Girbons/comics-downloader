@@ -48,7 +48,7 @@ func ToComicOutputFormat(format string) (ComicOutputFormat, error) {
 // makeComicInfoXML generates a ComicInfo.xml file for the given comic issue and saves it to the output directory. It returns the path to the generated ComicInfo.xml file.
 // Based on the ComicInfo.xml https://anansi-project.github.io/docs/comicinfo/schemas/v2.1
 func (comic *ComicIssue) makeComicInfoXML(options *config.Options, images *DownloadResult) (string, error) {
-	outputDir, err := util.ImagesPathSetup(options.CreateDefaultPath, options.OutputFolder, comic.Source.Name, comic.Name, options.IssueFolderName, comic.IssueNumber)
+	outputDir, err := util.ImagesPathSetup(options.CreateDefaultPath, options.OutputFolder, comic.Source.Name, comic.ChapterName, options.IssueFolderName, comic.IssueNumber)
 	if err != nil {
 		return "", err
 	}
@@ -76,7 +76,7 @@ func (comic *ComicIssue) makeComicInfoXML(options *config.Options, images *Downl
 	comicInfo.CreateElement("Notes").SetText(fmt.Sprintf("Tagged by comics-downloader version %s using info from %s at %s", version.Tag, comic.Source.Name, time.Now().Format(time.RFC3339)))
 
 	comicInfo.CreateElement("Series").SetText(comic.SeriesMetadata.Title)
-	comicInfo.CreateElement("Title").SetText(comic.Name)
+	comicInfo.CreateElement("Title").SetText(comic.ChapterName)
 
 	localizedTitle := comic.getLocalizedTitle(options)
 	comicInfo.CreateElement("LocalizedSeries").SetText(localizedTitle)
