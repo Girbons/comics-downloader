@@ -1,0 +1,7 @@
+{
+    "gopls": {
+        "build.buildFlags": [
+            // "-tags=libjpeg"
+        ]
+    },
+}
