@@ -40,9 +40,9 @@ func TestTrimNameLength(t *testing.T) {
 	exactLengthName := strings.Repeat("a", NameLength)
 	longName := strings.Repeat("b", NameLength+10)
 
-	assert.Equal(t, shortName, trimNameLength(shortName))
-	assert.Equal(t, exactLengthName, trimNameLength(exactLengthName))
-	assert.Equal(t, strings.Repeat("b", NameLength), trimNameLength(longName))
+	assert.Equal(t, shortName, TrimNameLength(shortName))
+	assert.Equal(t, exactLengthName, TrimNameLength(exactLengthName))
+	assert.Equal(t, strings.Repeat("b", NameLength), TrimNameLength(longName))
 }
 
 func TestPathSetupTrimsComicName(t *testing.T) {
