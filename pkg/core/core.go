@@ -119,7 +119,7 @@ func (comic *ComicIssue) makePDF(options *config.Options, images *DownloadResult
 
 	pdf := gofpdf.New("P", "mm", "A4", "")
 
-	imageOptions := gofpdf.ImageOptions{ImageType: util.ImageType(comic.OutputImagesFormat), ReadDpi: true, AllowNegativePosition: false}
+	imageOptions := gofpdf.ImageOptions{ImageType: util.ImageType(comic.OutputImagesFormat).String(), ReadDpi: true, AllowNegativePosition: false}
 	for _, fileName := range images.FilePaths {
 		mmWd = 210.0
 		mmHt = 297.0
