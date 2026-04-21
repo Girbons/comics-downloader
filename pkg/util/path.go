@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 )
 
+const NameLength = 100
+
 // createPath create folders given the path.
 func createPath(path string) (string, error) {
 	err := os.MkdirAll(path, os.ModePerm)
@@ -21,11 +23,19 @@ func createPath(path string) (string, error) {
 	return dir, err
 }
 
+// TrimNameLength trims the name to a maximum length defined by NameLength constant
+func trimNameLength(name string) string {
+	if len(name) > NameLength {
+		return name[:NameLength]
+	}
+	return name
+}
+
 // PathSetup creates the folders where the comic will be saved.
 // when `createDefaultPath` is false the comic is stored without prepending
 // the default folder path `comics/source/name/[comic.format]`.
 func PathSetup(createDefaultPath bool, outputFolder, source, name string) (string, error) {
-	path := fmt.Sprintf("%s/comics/%s/%s/", outputFolder, source, name)
+	path := fmt.Sprintf("%s/comics/%s/%s/", outputFolder, source, trimNameLength(name))
 
 	if !createDefaultPath {
 		path = fmt.Sprintf("%s/", outputFolder)
@@ -38,10 +48,10 @@ func PathSetup(createDefaultPath bool, outputFolder, source, name string) (strin
 // when `createDefaultPath` is false the images are stored without prepending
 // the default folder path `comics/source/name/[comic.format]`.
 func ImagesPathSetup(createDefaultPath bool, outputFolder, source, name, issueFolderName, issueNumber string) (string, error) {
-	path := fmt.Sprintf("%s/comics/%s/%s/images-%s/", outputFolder, source, name, issueNumber)
+	path := fmt.Sprintf("%s/comics/%s/%s/images-%s/", outputFolder, source, trimNameLength(name), trimNameLength(issueNumber))
 
 	if !createDefaultPath {
-		path = fmt.Sprintf("%s/%s%s", outputFolder, issueFolderName, issueNumber)
+		path = fmt.Sprintf("%s/%s", outputFolder, trimNameLength(issueFolderName+issueNumber))
 	}
 
 	return createPath(path)
@@ -66,7 +76,7 @@ func DirectoryOrFileDoesNotExist(filePath string) bool {
 // GetPathToFile returns the path where the file should be saved.
 func GetPathToFile(dir, name, issueNumber, format string, issueNumberOnly bool) string {
 	if issueNumberOnly {
-		return fmt.Sprintf("%s/%s.%s", dir, issueNumber, format)
+		return fmt.Sprintf("%s/%s.%s", dir, trimNameLength(issueNumber), format)
 	}
-	return fmt.Sprintf("%s/%s-%s.%s", dir, name, issueNumber, format)
+	return fmt.Sprintf("%s/%s-%s.%s", dir, trimNameLength(name), trimNameLength(issueNumber), format)
 }
