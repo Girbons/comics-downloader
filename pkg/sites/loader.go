@@ -73,7 +73,9 @@ func initializeCollection(issues []string, options *config.Options, base BaseSit
 					URL:  url,
 				},
 				SeriesMetadata: &core.SeriesMetadata{
-					Title: name,
+					Title:          name,
+					LocalizedTitle: make(map[string]string),
+					Description:    make(map[string]string),
 				},
 			}
 			options.Logger.Debugf("Initializing comic with URL: %s", comic.Source.URL)
