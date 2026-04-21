@@ -94,11 +94,17 @@ func TestComicExtraRetrieveIssueLinksAll(t *testing.T) {
 	server := newComicExtraServer()
 	defer server.Close()
 
+	client := httpclient.NewComicClient(
+		httpclient.WithHTTPClient(server.Client()),
+		httpclient.WithRetry(0, 0),
+	)
+
 	opts := &config.Options{
 		URL:            server.URL + comicExtraListPath,
 		All:            true,
 		Logger:         logger.NewLogger(false, nil),
 		RequestTimeout: config.DefaulltRequestTimeout,
+		Client:         client,
 	}
 
 	comicextra := NewComicextra(opts)
@@ -114,11 +120,17 @@ func TestComicExtraRetrieveLastIssue(t *testing.T) {
 	server := newComicExtraServer()
 	defer server.Close()
 
+	client := httpclient.NewComicClient(
+		httpclient.WithHTTPClient(server.Client()),
+		httpclient.WithRetry(0, 0),
+	)
+
 	opts := &config.Options{
 		URL:            server.URL + comicExtraLastIssuePath,
 		Last:           true,
 		Logger:         logger.NewLogger(false, nil),
 		RequestTimeout: config.DefaulltRequestTimeout,
+		Client:         client,
 	}
 
 	comicextra := NewComicextra(opts)
