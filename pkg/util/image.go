@@ -51,7 +51,7 @@ func ImageType(mimeStr string) (format ImageFormat) {
 }
 
 // SaveImage saves an image from a given format
-func SaveImage(w io.Writer, content io.Reader, outputFormat ImageFormat, isWebp bool) error {
+func SaveImage(w io.Writer, content io.Reader, outputFormat ImageFormat, providedImageFormat ImageFormat) error {
 	var (
 		img image.Image
 		err error
@@ -60,7 +60,7 @@ func SaveImage(w io.Writer, content io.Reader, outputFormat ImageFormat, isWebp 
 	// TODO: we can optimize this by only decoding the image if the output format is different from the input format, otherwise we can just copy the content to the writer without decoding and encoding again
 	// TODO: add avif support
 
-	if isWebp {
+	if providedImageFormat == ImgFormatWEBP {
 		img, err = webp.Decode(content)
 	} else {
 		img, _, err = image.Decode(content)

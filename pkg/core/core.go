@@ -394,13 +394,24 @@ func (comic *ComicIssue) DownloadImages(options *config.Options) (*DownloadResul
 			}
 
 			isWebp := strings.HasSuffix(strings.ToLower(job.link), ".webp") || strings.Contains(contentType, "image/webp")
-			if options.Logger != nil && contentType != "" && !strings.HasPrefix(contentType, "image/") {
-				reportLen := len(data)
-				if reportLen > sniffLimit {
-					reportLen = sniffLimit
+			var inputImageFormat util.ImageFormat
+			if isWebp {
+				inputImageFormat = util.ImgFormatWEBP
+			} else {
+				inputImageFormat = util.ImageType(contentType)
+			}
+			if options.Logger != nil {
+				// if the content type is present but does not indicate an image
+				if contentType != "" && !strings.HasPrefix(contentType, "image/") {
+					reportLen := len(data)
+					if reportLen > sniffLimit {
+						reportLen = sniffLimit
+					}
+					snippet := base64.StdEncoding.EncodeToString(data[:reportLen])
+					options.Logger.Errorf("Unexpected content type '%s' while downloading image number: %d - url: %s (bytes=%d, snippet_base64=%s)", contentType, job.index, job.link, len(data), snippet)
+				} else if inputImageFormat == util.ImgFormatUnknown {
+					options.Logger.Warningf("Could not determine image format for image number: %d - comic issue: %s, content type: '%s', url: %s", job.index, comic.IssueNumber, contentType, job.link)
 				}
-				snippet := base64.StdEncoding.EncodeToString(data[:reportLen])
-				options.Logger.Errorf("Unexpected content type '%s' while downloading image number: %d - url: %s (bytes=%d, snippet_base64=%s)", contentType, job.index, job.link, len(data), snippet)
 			}
 
 			fileName := fmt.Sprintf("%04d-image.%s", job.index, outputFormat)
@@ -411,7 +422,7 @@ func (comic *ComicIssue) DownloadImages(options *config.Options) (*DownloadResul
 			}
 
 			reader := bytes.NewReader(data)
-			if err := util.SaveImage(imgFile, reader, outputFormat, isWebp); err != nil {
+			if err := util.SaveImage(imgFile, reader, outputFormat, inputImageFormat); err != nil {
 				if options.Logger != nil {
 					reportLen := len(data)
 					if reportLen > sniffLimit {
