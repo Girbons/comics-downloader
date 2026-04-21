@@ -62,6 +62,7 @@ func Parse(s string) string {
 		";", "",
 		"!", "",
 		"?", "",
+		"...", "",
 	)
 
 	return strings.Trim(replacer.Replace(s), " ")
