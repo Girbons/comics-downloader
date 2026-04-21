@@ -102,7 +102,7 @@ func (comic *ComicIssue) makeEPUB(options *config.Options, images *DownloadResul
 		return err
 	}
 
-	if err = e.Write(util.GetPathToFile(dir, comic.Name, comic.IssueNumber, comic.OutputFormat.String(), options.IssueNumberNameOnly)); err != nil {
+	if err = e.Write(util.GetPathToFile(dir, comic.Name, comic.getIssueNumAndVolume(), comic.OutputFormat.String(), options.IssueNumberNameOnly)); err != nil {
 		return err
 	}
 
@@ -161,7 +161,7 @@ func (comic *ComicIssue) makePDF(options *config.Options, images *DownloadResult
 		return err
 	}
 
-	filePath := util.GetPathToFile(dir, comic.Name, comic.IssueNumber, comic.OutputFormat.String(), options.IssueNumberNameOnly)
+	filePath := util.GetPathToFile(dir, comic.Name, comic.getIssueNumAndVolume(), comic.OutputFormat.String(), options.IssueNumberNameOnly)
 	if err = pdf.OutputFileAndClose(filePath); err != nil {
 		return err
 	}
@@ -184,7 +184,7 @@ func (comic *ComicIssue) makeCBRZ(options *config.Options, images *DownloadResul
 		return err
 	}
 
-	newName := util.GetPathToFile(dir, comic.Name, comic.IssueNumber, comic.OutputFormat.String(), options.IssueNumberNameOnly)
+	newName := util.GetPathToFile(dir, comic.Name, comic.getIssueNumAndVolume(), comic.OutputFormat.String(), options.IssueNumberNameOnly)
 	if _, statErr := os.Stat(newName); statErr == nil {
 		if options.Logger != nil {
 			options.Logger.Infof("Skipping %s because it already exists: %s", strings.ToUpper(comic.OutputFormat.String()), newName)
@@ -457,6 +457,14 @@ func (comic *ComicIssue) DownloadImages(options *config.Options) (*DownloadResul
 	paths := filterEmpty(results)
 	sort.Strings(paths)
 	return &DownloadResult{Dir: dir, FilePaths: paths}, nil
+}
+
+func (comic *ComicIssue) getIssueNumAndVolume() string {
+	if comic.Volume == nil {
+		return fmt.Sprintf("c%s", comic.IssueNumber)
+	}
+
+	return fmt.Sprintf("v%s c%s", *comic.Volume, comic.IssueNumber)
 }
 
 func readExistingImages(dir string) ([]string, error) {

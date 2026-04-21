@@ -8,6 +8,7 @@ type BaseSite interface {
 	// Initialize will initialize the comic struct with the images link
 	Initialize(comic *core.ComicIssue) error
 
+	// TODO: remove GetInfo, just use Initialize for getting the comic name and issue number
 	// GetInfo will return the comic name and issue number
 	GetInfo(url string) (string, string, error)
 

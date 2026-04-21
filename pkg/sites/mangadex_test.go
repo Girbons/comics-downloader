@@ -246,7 +246,7 @@ func TestMangadexGetInfoEnglish(t *testing.T) {
 	title, chapter, err := md.GetInfo(md.chapterBase + "/chapter-1")
 	require.NoError(t, err)
 	require.Equal(t, "Test Manga", title)
-	require.Equal(t, "Vol 1 Chapter 1, Start", chapter)
+	require.Equal(t, "1", chapter)
 }
 
 func TestMangadexGetInfoJapanese(t *testing.T) {
@@ -256,7 +256,7 @@ func TestMangadexGetInfoJapanese(t *testing.T) {
 	title, chapter, err := md.GetInfo(md.chapterBase + "/chapter-1")
 	require.NoError(t, err)
 	require.Equal(t, "テスト", title)
-	require.Equal(t, "Vol 1 Chapter 1, Start", chapter)
+	require.Equal(t, "1", chapter)
 }
 
 func TestMangadexGetInfoNoCountry(t *testing.T) {
@@ -266,7 +266,7 @@ func TestMangadexGetInfoNoCountry(t *testing.T) {
 	title, chapter, err := md.GetInfo(md.chapterBase + "/chapter-1")
 	require.NoError(t, err)
 	require.Equal(t, "テスト", title)
-	require.Equal(t, "Vol 1 Chapter 1, Start", chapter)
+	require.Equal(t, "1", chapter)
 }
 
 func TestMangadexInitializeMetadataTagsGenres(t *testing.T) {
