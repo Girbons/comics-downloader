@@ -9,6 +9,7 @@ import (
 	"io"
 	"strings"
 
+	"github.com/Girbons/comics-downloader/internal/logger"
 	"github.com/chai2010/webp"
 )
 
@@ -32,8 +33,7 @@ const (
 
 // ImageType return the image type
 func ImageType(mimeStr string) (format ImageFormat) {
-	mimeStr = strings.ToLower(mimeStr)
-	switch mimeStr {
+	switch strings.ToLower(strings.TrimSpace(mimeStr)) {
 	case "image/png", "png":
 		format = ImgFormatPNG
 	case "image/jpg", "jpg", "image/jpeg", "jpeg":
@@ -51,7 +51,7 @@ func ImageType(mimeStr string) (format ImageFormat) {
 }
 
 // SaveImage saves an image from a given format
-func SaveImage(w io.Writer, content io.Reader, outputFormat ImageFormat, providedImageFormat ImageFormat) error {
+func SaveImage(logger *logger.Logger, w io.Writer, content io.Reader, outputFormat ImageFormat, providedImageFormat ImageFormat) error {
 	var (
 		img image.Image
 		err error
@@ -66,7 +66,6 @@ func SaveImage(w io.Writer, content io.Reader, outputFormat ImageFormat, provide
 	// TODO: add avif support
 
 	img, err = decodeInputImage(content, providedImageFormat)
-
 	if err != nil {
 		return err
 	}
@@ -95,19 +94,10 @@ func decodeInputImage(content io.Reader, providedImageFormat ImageFormat) (image
 	}
 
 	bufferedContent := bufio.NewReader(content)
-	if isJPEGStream(bufferedContent) {
+	if providedImageFormat == ImgFormatJPG {
 		return decodeJPEG(bufferedContent)
 	}
 
 	img, _, err := image.Decode(bufferedContent)
 	return img, err
-}
-
-func isJPEGStream(content *bufio.Reader) bool {
-	header, err := content.Peek(3)
-	if err != nil {
-		return false
-	}
-
-	return header[0] == 0xFF && header[1] == 0xD8 && header[2] == 0xFF
 }

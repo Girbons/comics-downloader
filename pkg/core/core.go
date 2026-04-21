@@ -422,7 +422,7 @@ func (comic *ComicIssue) DownloadImages(options *config.Options) (*DownloadResul
 			}
 
 			reader := bytes.NewReader(data)
-			if err := util.SaveImage(imgFile, reader, outputFormat, inputImageFormat); err != nil {
+			if err := util.SaveImage(options.Logger, imgFile, reader, outputFormat, inputImageFormat); err != nil {
 				if options.Logger != nil {
 					reportLen := len(data)
 					if reportLen > sniffLimit {
