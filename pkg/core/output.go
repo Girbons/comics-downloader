@@ -133,7 +133,7 @@ func (comic *ComicIssue) makeComicInfoXML(options *config.Options, images *Downl
 		comicInfo.CreateElement("Genre").SetText(genres)
 	}
 	if len(comic.SeriesMetadata.WebLinks) > 0 {
-		comicInfo.CreateElement("Web").SetText(strings.Join(comic.SeriesMetadata.WebLinks, " "))
+		comicInfo.CreateElement("Web").SetText(strings.Join(comic.SeriesMetadata.WebLinks, ","))
 	}
 	if len(comic.SeriesMetadata.Creators) > 0 {
 		var writers []string
