@@ -13,6 +13,15 @@ import (
 	"github.com/Girbons/comics-downloader/pkg/util"
 )
 
+type SupportedSite struct {
+	IsEnabled bool
+	Loader    func(*config.Options) BaseSite
+}
+
+// SupportedSites is a map of supported sites and their corresponding loader implementations.
+// The key is the site hostname and the value is a struct containing the enabled status and the loader instance.
+var SupportedSites = map[string]SupportedSite{}
+
 func initializeCollection(issues []string, options *config.Options, base BaseSite) ([]*core.ComicIssue, error) {
 	var collection []*core.ComicIssue
 	// var err error
@@ -156,26 +165,21 @@ func LoadComicFromSource(options *config.Options) ([]*core.ComicIssue, error) {
 		options.Client = httpclient.NewComicClient()
 	}
 
-	switch {
-	case strings.Contains(options.SourceName, "readcomiconline"):
-		base = NewReadComiconline(options)
-	case strings.Contains(options.SourceName, "comicextra"):
-		base = NewComicextra(options)
-	case strings.Contains(options.SourceName, "mangareader"):
-		base = NewMangareader(options)
-	case strings.Contains(options.SourceName, "mangatown"):
-		base = NewMangatown(options)
-	case strings.Contains(options.SourceName, "mangadex"):
-		base = NewMangadex(options)
-	case strings.Contains(options.SourceName, "readallcomics"):
-		base = NewReadallcomics(options)
-	case strings.Contains(options.SourceName, "mangakakalot"):
-		base = NewMangaKakalot(options)
-	case strings.Contains(options.SourceName, "manganato"):
-		base = NewManganato(options)
-	default:
-		err = fmt.Errorf("source unknown")
-		return collection, err
+	// Look up the site in the registry
+	var siteFound bool
+	for siteName, supportedSite := range SupportedSites {
+		if strings.Contains(options.SourceName, siteName) {
+			if !supportedSite.IsEnabled {
+				return collection, fmt.Errorf("source %q is disabled", siteName)
+			}
+			base = supportedSite.Loader(options)
+			siteFound = true
+			break
+		}
+	}
+
+	if !siteFound {
+		return collection, fmt.Errorf("source unknown")
 	}
 
 	if options.Logger != nil && options.Debug {

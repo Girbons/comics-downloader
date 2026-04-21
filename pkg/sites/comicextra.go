@@ -14,6 +14,13 @@ import (
 	"github.com/anaskhan96/soup"
 )
 
+func init() {
+	SupportedSites["comicextra"] = SupportedSite{
+		IsEnabled: true,
+		Loader:    func(opts *config.Options) BaseSite { return NewComicextra(opts) },
+	}
+}
+
 // Comicextra represents comicextra instance.
 type Comicextra struct {
 	options *config.Options

@@ -25,6 +25,13 @@ func NewReadallcomics(options *config.Options) *Readallcomics {
 	}
 }
 
+func init() {
+	SupportedSites["readallcomics"] = SupportedSite{
+		IsEnabled: true,
+		Loader:    func(opts *config.Options) BaseSite { return NewReadallcomics(opts) },
+	}
+}
+
 func (r *Readallcomics) requestContext() (context.Context, context.CancelFunc) {
 	return context.WithTimeout(context.Background(), r.options.RequestTimeout)
 }

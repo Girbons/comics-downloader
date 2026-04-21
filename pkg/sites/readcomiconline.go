@@ -26,6 +26,13 @@ func NewReadComiconline(options *config.Options) *ReadComicOnline {
 	}
 }
 
+func init() {
+	SupportedSites["readcomiconline"] = SupportedSite{
+		IsEnabled: true,
+		Loader:    func(opts *config.Options) BaseSite { return NewReadComiconline(opts) },
+	}
+}
+
 func (c *ReadComicOnline) requestContext() (context.Context, context.CancelFunc) {
 	return context.WithTimeout(context.Background(), c.options.RequestTimeout)
 }

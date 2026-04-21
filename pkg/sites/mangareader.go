@@ -23,6 +23,13 @@ func NewMangareader(options *config.Options) *Mangareader {
 	}
 }
 
+func init() {
+	SupportedSites["mangareader"] = SupportedSite{
+		IsEnabled: true,
+		Loader:    func(opts *config.Options) BaseSite { return NewMangareader(opts) },
+	}
+}
+
 func (m *Mangareader) requestContext() (context.Context, context.CancelFunc) {
 	return context.WithTimeout(context.Background(), m.options.RequestTimeout)
 }

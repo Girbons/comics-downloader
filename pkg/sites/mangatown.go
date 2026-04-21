@@ -23,6 +23,13 @@ func NewMangatown(options *config.Options) *Mangatown {
 	}
 }
 
+func init() {
+	SupportedSites["mangatown"] = SupportedSite{
+		IsEnabled: true,
+		Loader:    func(opts *config.Options) BaseSite { return NewMangatown(opts) },
+	}
+}
+
 func (m *Mangatown) requestContext() (context.Context, context.CancelFunc) {
 	return context.WithTimeout(context.Background(), m.options.RequestTimeout)
 }

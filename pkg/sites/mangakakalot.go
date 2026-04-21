@@ -16,6 +16,13 @@ func NewMangaKakalot(options *config.Options) *MangaKakalot {
 	}
 }
 
+func init() {
+	SupportedSites["mangakakalot"] = SupportedSite{
+		IsEnabled: true,
+		Loader:    func(opts *config.Options) BaseSite { return NewMangaKakalot(opts) },
+	}
+}
+
 // GetInfo extracts the basic info from the given url.
 func (m *MangaKakalot) GetInfo(url string) (string, string, error) {
 	name, issueNumber, err := MangaKakalotGetInfo(m.options, "mangakakalot.com", url)

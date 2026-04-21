@@ -49,6 +49,13 @@ func NewMangadex(options *config.Options) *Mangadex {
 	}
 }
 
+func init() {
+	SupportedSites["mangadex"] = SupportedSite{
+		IsEnabled: true,
+		Loader:    func(opts *config.Options) BaseSite { return NewMangadex(opts) },
+	}
+}
+
 func (m *Mangadex) requestContext() (context.Context, context.CancelFunc) {
 	return context.WithTimeout(context.Background(), m.options.RequestTimeout)
 }
