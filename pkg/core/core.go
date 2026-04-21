@@ -185,6 +185,7 @@ func (comic *ComicIssue) makeCBRZ(options *config.Options, images *DownloadResul
 	}
 
 	zipArchiveName := filepath.Join(dir, fmt.Sprintf("%s.zip", comic.IssueNumber))
+	// TODO: check if path exists and if the file already exists, to avoid overwriting existing files or creating duplicate files when the same issue is downloaded multiple times
 	newName := util.GetPathToFile(dir, comic.Name, comic.IssueNumber, comic.OutputFormat.String(), options.IssueNumberNameOnly)
 
 	out, err := os.Create(zipArchiveName)
@@ -257,7 +258,7 @@ func (comic *ComicIssue) DownloadImages(options *config.Options) (*DownloadResul
 
 	var progress *progressbar.ProgressBar
 	if !options.Debug {
-		progress = progressbar.NewOptions(len(comic.ImageLinks), progressbar.OptionSetRenderBlankState(true), progressbar.OptionSetDescription(fmt.Sprintf("#%s", util.TrimNameLength(comic.IssueNumber))))
+		progress = progressbar.NewOptions(len(comic.ImageLinks), progressbar.OptionSetRenderBlankState(true), progressbar.OptionSetDescription(fmt.Sprintf("#%s", comic.IssueNumber)))
 	}
 
 	format := util.ImageType(comic.ImagesFormat)
