@@ -14,6 +14,7 @@ import (
 	"github.com/Girbons/comics-downloader/pkg/detector"
 	httpclient "github.com/Girbons/comics-downloader/pkg/http"
 	"github.com/Girbons/comics-downloader/pkg/sites"
+	"github.com/Girbons/comics-downloader/pkg/util"
 	"github.com/sirupsen/logrus"
 )
 
@@ -138,17 +139,23 @@ func (r *Runner) download(base config.Options) {
 		opts.Logger.Infof("A new comics-downloader version is available at %s", newVersionLink)
 	}
 
-	for _, rawURL := range strings.Split(opts.URL, ",") {
-		trimmedURL := strings.TrimSpace(rawURL)
-		if trimmedURL == "" {
+	rawURLs := strings.Split(opts.URL, ",")
+	rawURLs = util.RemoveDuplicates(rawURLs)
+	if len(rawURLs) > 1 {
+		opts.Logger.Infof("Processing %d URLs", len(rawURLs))
+	}
+
+	for _, rawURL := range rawURLs {
+		cleanedURL := strings.TrimSpace(rawURL)
+		if cleanedURL == "" {
 			continue
 		}
 
 		perURL := opts
-		perURL.URL = trimmedURL
+		perURL.URL = cleanedURL
 		perURL.OutputFolder = outputFolder
 		// check if the link is supported
-		source, isSupported, isDisabled := detector.DetectSource(trimmedURL)
+		source, isSupported, isDisabled := detector.DetectSource(cleanedURL)
 
 		perURL.SourceName = source
 
@@ -162,7 +169,7 @@ func (r *Runner) download(base config.Options) {
 			continue
 		}
 
-		perURL.Logger.Info("Downloading... " + trimmedURL)
+		perURL.Logger.Info("Downloading... " + cleanedURL)
 		collection, err := sites.LoadComicFromSource(&perURL)
 		if err != nil {
 			perURL.Logger.Error(err.Error())
