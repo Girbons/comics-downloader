@@ -225,6 +225,11 @@ func buildClientOptions(base config.Options) []httpclient.Option {
 		opts = append(opts, httpclient.WithHTTPClient(proxyClient))
 	}
 
+	if base.RequestDelay > 0 || base.RequestDelayJitter > 0 {
+		limiter := httpclient.NewDelayRateLimiter(base.RequestDelay, base.RequestDelayJitter)
+		opts = append(opts, httpclient.WithRateLimiter(limiter))
+	}
+
 	return opts
 }
 
