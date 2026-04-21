@@ -14,7 +14,7 @@ const (
 	defaultTimeout    = 15 * time.Second
 	defaultRetryCount = 2
 	defaultRetryWait  = 500 * time.Millisecond
-	defaultUserAgent  = "comics-downloader-client"
+	defaultUserAgent  = "comics-downloader-client (https://github.com/Girbons/comics-downloader)"
 )
 
 // RateLimiter exposes a minimal interface for throttling outgoing requests.
