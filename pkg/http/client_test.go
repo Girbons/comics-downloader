@@ -121,3 +121,64 @@ func TestAdditionalHeadersApplied(t *testing.T) {
 	require.Equal(t, "cf_clearance=abc", req.Header.Get("Cookie"))
 	require.Equal(t, "123", req.Header.Get("X-Custom-Id"))
 }
+
+func TestExponentialBackoff(t *testing.T) {
+	baseRetryWait := 50 * time.Millisecond
+	var hits int32
+	hitsMu := &atomic.Value{}
+	hitsMu.Store([]time.Time{})
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		call := atomic.AddInt32(&hits, 1)
+		times := hitsMu.Load().([]time.Time)
+		times = append(times, time.Now())
+		hitsMu.Store(times)
+
+		// Only succeed on the third attempt
+		if call == 3 {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+		w.WriteHeader(http.StatusInternalServerError)
+	}))
+	defer server.Close()
+
+	client := NewComicClient(
+		WithHTTPClient(server.Client()),
+		WithRetry(2, baseRetryWait),
+	)
+
+	resp, err := client.Get(server.URL, "example.com")
+	require.NoError(t, err)
+	require.NotNil(t, resp)
+	require.Equal(t, int32(3), atomic.LoadInt32(&hits))
+
+	times := hitsMu.Load().([]time.Time)
+	require.Equal(t, 3, len(times))
+
+	// Verify exponential backoff pattern:
+	// First attempt at time T
+	// Second attempt at time T + baseRetryWait (2^0 * baseRetryWait)
+	// Third attempt at time T + baseRetryWait + 2*baseRetryWait = T + 3*baseRetryWait
+
+	firstToSecond := times[1].Sub(times[0])
+	secondToThird := times[2].Sub(times[1])
+
+	// First backoff should be approximately baseRetryWait * 2^0 = baseRetryWait
+	expectedFirstBackoff := baseRetryWait
+	if firstToSecond < expectedFirstBackoff {
+		t.Errorf("first backoff %v is less than expected %v", firstToSecond, expectedFirstBackoff)
+	}
+
+	// Second backoff should be approximately baseRetryWait * 2^1 = 2*baseRetryWait
+	expectedSecondBackoff := 2 * baseRetryWait
+	if secondToThird < expectedSecondBackoff {
+		t.Errorf("second backoff %v is less than expected %v", secondToThird, expectedSecondBackoff)
+	}
+
+	// The second backoff should be roughly double the first backoff
+	ratio := float64(secondToThird) / float64(firstToSecond)
+	if ratio < 1.5 || ratio > 2.5 {
+		t.Logf("backoff ratio %.2f is not close to 2x (may be due to timing variations)", ratio)
+	}
+}

@@ -194,8 +194,10 @@ func (c *ComicClient) DoRaw(req *http.Request) (*http.Response, error) {
 	var lastErr error
 	for attempt := 0; attempt < attempts; attempt++ {
 		if attempt > 0 && c.retryWait > 0 {
+			// Exponential backoff: retryWait * 2^(attempt-1)
+			backoffDuration := c.retryWait * time.Duration(1<<uint(attempt-1))
 			select {
-			case <-time.After(c.retryWait):
+			case <-time.After(backoffDuration):
 			case <-req.Context().Done():
 				return nil, req.Context().Err()
 			}
