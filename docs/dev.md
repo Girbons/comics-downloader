@@ -2,7 +2,10 @@
 
 ## Go
 
-You must have [go](https://golang.org/doc/install).
+You must have:
+
+- [go](https://golang.org/doc/install)
+- GCC or [MinGW](http://tdm-gcc.tdragon.net/download)
 
 ## Installing dependencies
 

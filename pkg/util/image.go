@@ -9,7 +9,7 @@ import (
 	"io"
 	"strings"
 
-	"golang.org/x/image/webp"
+	"github.com/chai2010/webp"
 )
 
 // IMAGEREGEX to extract the image html tag
@@ -64,6 +64,8 @@ func SaveImage(w io.Writer, content io.Reader, format string, isWebp bool) error
 	case "png":
 		pngEncoder := png.Encoder{CompressionLevel: png.BestCompression}
 		return pngEncoder.Encode(w, img)
+	case "webp":
+		return webp.Encode(w, img, &webp.Options{Lossless: true})
 	default:
 		return errors.New("format not found")
 	}
