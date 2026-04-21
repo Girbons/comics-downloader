@@ -591,22 +591,11 @@ func (m *Mangadex) GetInfo(urlValue string) (string, string, error) {
 			return "", "", err
 		}
 
-		var chapterTitle string
-		if chapter.Volume != nil {
-			volume := *chapter.Volume
-			chapterTitle = fmt.Sprintf("Vol %s Chapter %s", volume, chapter.ChapterNumber)
-		} else {
-			chapterTitle = fmt.Sprintf("Chapter %s", chapter.ChapterNumber)
-		}
-
-		if chapter.ChapterTitle != "" {
-			chapterTitle += fmt.Sprintf(", %s", chapter.ChapterTitle)
-		}
 		manga, err := m.getMangaInfo(chapter.MangaID)
 		if err != nil {
 			return "", "", err
 		}
-		return manga.Title, chapterTitle, nil
+		return manga.Title, chapter.ChapterNumber, nil
 
 	case "title":
 		manga, err := m.getMangaInfo(parts[4])
