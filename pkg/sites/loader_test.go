@@ -167,3 +167,149 @@ func TestExtractIssueNumberForRange(t *testing.T) {
 		})
 	}
 }
+
+func TestLoadComicFromSourceWithRegistry(t *testing.T) {
+	// Save original registry to restore it after the test
+	originalRegistry := make(map[string]SupportedSite)
+	for k, v := range SupportedSites {
+		originalRegistry[k] = v
+	}
+	defer func() {
+		SupportedSites = originalRegistry
+	}()
+
+	// Create a test site implementation
+	testSite := &stubSite{
+		issues: []string{"url-1", "url-2"},
+		comics: map[string]*core.ComicIssue{
+			"url-1": {Name: "test-series", IssueNumber: "1", Source: &core.ComicSource{Name: "test-site", URL: "url-1"}},
+			"url-2": {Name: "test-series", IssueNumber: "2", Source: &core.ComicSource{Name: "test-site", URL: "url-2"}},
+		},
+	}
+
+	// Register the test site in the registry
+	SupportedSites["test-site"] = SupportedSite{
+		IsEnabled: true,
+		Loader: func(opts *config.Options) BaseSite {
+			return testSite
+		},
+	}
+
+	options := &config.Options{
+		SourceName:   "test-site",
+		URL:          "http://test-site.com",
+		OutputFormat: "pdf",
+		ImagesFormat: "png",
+		Logger:       logger.NewLogger(false, nil),
+	}
+
+	collection, err := LoadComicFromSource(options)
+	require.NoError(t, err)
+	require.Len(t, collection, 2)
+	assert.Equal(t, "test-series", collection[0].Name)
+	assert.Equal(t, "1", collection[0].IssueNumber)
+	assert.Equal(t, "test-series", collection[1].Name)
+	assert.Equal(t, "2", collection[1].IssueNumber)
+}
+
+func TestLoadComicFromSourceDisabledSite(t *testing.T) {
+	// Save original registry
+	originalRegistry := make(map[string]SupportedSite)
+	for k, v := range SupportedSites {
+		originalRegistry[k] = v
+	}
+	defer func() {
+		SupportedSites = originalRegistry
+	}()
+
+	// Register a disabled test site
+	testSite := &stubSite{
+		issues: []string{"url-1"},
+		comics: map[string]*core.ComicIssue{
+			"url-1": {Name: "test-series", IssueNumber: "1", Source: &core.ComicSource{Name: "disabled-test-site", URL: "url-1"}},
+		},
+	}
+
+	SupportedSites["disabled-test-site"] = SupportedSite{
+		IsEnabled: false,
+		Loader: func(opts *config.Options) BaseSite {
+			return testSite
+		},
+	}
+
+	options := &config.Options{
+		SourceName: "disabled-test-site",
+		URL:        "http://disabled-test-site.com",
+		Logger:     logger.NewLogger(false, nil),
+	}
+
+	collection, err := LoadComicFromSource(options)
+	require.Error(t, err)
+	require.Empty(t, collection)
+	assert.Contains(t, err.Error(), "disabled")
+}
+
+func TestLoadComicFromSourcePartialMatch(t *testing.T) {
+	// Save original registry
+	originalRegistry := make(map[string]SupportedSite)
+	for k, v := range SupportedSites {
+		originalRegistry[k] = v
+	}
+	defer func() {
+		SupportedSites = originalRegistry
+	}()
+
+	testSite := &stubSite{
+		issues: []string{"url-1"},
+		comics: map[string]*core.ComicIssue{
+			"url-1": {Name: "my-comic", IssueNumber: "42", Source: &core.ComicSource{Name: "mysite.com", URL: "url-1"}},
+		},
+	}
+
+	SupportedSites["mysite"] = SupportedSite{
+		IsEnabled: true,
+		Loader: func(opts *config.Options) BaseSite {
+			return testSite
+		},
+	}
+
+	// Test with full domain name to verify partial matching works
+	options := &config.Options{
+		SourceName:   "mysite.com",
+		URL:          "http://mysite.com/comic",
+		OutputFormat: "pdf",
+		ImagesFormat: "png",
+		Logger:       logger.NewLogger(false, nil),
+	}
+
+	collection, err := LoadComicFromSource(options)
+	require.NoError(t, err)
+	require.Len(t, collection, 1)
+	assert.Equal(t, "my-comic", collection[0].Name)
+	assert.Equal(t, "42", collection[0].IssueNumber)
+}
+
+func TestLoadComicFromSourceUnsupportedSite(t *testing.T) {
+	// Save original registry
+	originalRegistry := make(map[string]SupportedSite)
+	for k, v := range SupportedSites {
+		originalRegistry[k] = v
+	}
+	defer func() {
+		SupportedSites = originalRegistry
+	}()
+
+	// Clear registry to ensure no sites are registered
+	SupportedSites = make(map[string]SupportedSite)
+
+	options := &config.Options{
+		SourceName: "unsupported-site.com",
+		URL:        "http://unsupported-site.com/comic",
+		Logger:     logger.NewLogger(false, nil),
+	}
+
+	collection, err := LoadComicFromSource(options)
+	require.Error(t, err)
+	require.Empty(t, collection)
+	assert.Contains(t, err.Error(), "unknown")
+}
