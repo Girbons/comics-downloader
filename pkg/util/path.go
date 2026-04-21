@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 const NameLength = 100
@@ -35,7 +36,7 @@ func TrimNameLength(name string) string {
 // when `createDefaultPath` is false the comic is stored without prepending
 // the default folder path `comics/source/name/[comic.format]`.
 func PathSetup(createDefaultPath bool, outputFolder, source, name string) (string, error) {
-	path := fmt.Sprintf("%s/comics/%s/%s/", outputFolder, source, TrimNameLength(name))
+	path := fmt.Sprintf("%s/comics/%s/%s/", outputFolder, source, strings.TrimSpace(TrimNameLength(name)))
 
 	if !createDefaultPath {
 		path = fmt.Sprintf("%s/", outputFolder)
@@ -48,10 +49,10 @@ func PathSetup(createDefaultPath bool, outputFolder, source, name string) (strin
 // when `createDefaultPath` is false the images are stored without prepending
 // the default folder path `comics/source/name/[comic.format]`.
 func ImagesPathSetup(createDefaultPath bool, outputFolder, source, name, issueFolderName, issueNumber string) (string, error) {
-	path := fmt.Sprintf("%s/comics/%s/%s/images-%s/", outputFolder, source, TrimNameLength(name), TrimNameLength(issueNumber))
+	path := fmt.Sprintf("%s/comics/%s/%s/images-%s/", outputFolder, source, strings.TrimSpace(TrimNameLength(name)), strings.TrimSpace(TrimNameLength(issueNumber)))
 
 	if !createDefaultPath {
-		path = fmt.Sprintf("%s/%s", outputFolder, TrimNameLength(issueFolderName+issueNumber))
+		path = fmt.Sprintf("%s/%s", outputFolder, strings.TrimSpace(TrimNameLength(issueFolderName+issueNumber)))
 	}
 
 	return createPath(path)
@@ -76,7 +77,7 @@ func DirectoryOrFileDoesNotExist(filePath string) bool {
 // GetPathToFile returns the path where the file should be saved.
 func GetPathToFile(dir, name, issueNumber, format string, issueNumberOnly bool) string {
 	if issueNumberOnly {
-		return fmt.Sprintf("%s/%s.%s", dir, TrimNameLength(issueNumber), format)
+		return fmt.Sprintf("%s/%s.%s", dir, strings.TrimSpace(TrimNameLength(issueNumber)), format)
 	}
-	return fmt.Sprintf("%s/%s-%s.%s", dir, TrimNameLength(name), TrimNameLength(issueNumber), format)
+	return fmt.Sprintf("%s/%s-%s.%s", dir, strings.TrimSpace(TrimNameLength(name)), strings.TrimSpace(TrimNameLength(issueNumber)), format)
 }
