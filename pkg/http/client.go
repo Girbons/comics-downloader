@@ -81,6 +81,7 @@ func WithHeaders(headers map[string]string) Option {
 			if strings.TrimSpace(key) == "" || strings.TrimSpace(value) == "" {
 				continue
 			}
+			key = strings.ToLower(key)
 			cc.headers[key] = value
 		}
 	}
@@ -137,6 +138,9 @@ func (c *ComicClient) PrepareRequest(link, hostname string) (*http.Request, erro
 	req, err := http.NewRequest(http.MethodGet, link, nil)
 	if err != nil {
 		return nil, err
+	}
+	if req == nil {
+		return nil, errors.New("request nil")
 	}
 
 	if strings.Contains(hostname, "manganato") || strings.Contains(hostname, "mangakakalot") {

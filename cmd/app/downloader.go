@@ -147,13 +147,12 @@ func (r *Runner) download(base config.Options) {
 		perURL := opts
 		perURL.URL = trimmedURL
 		perURL.OutputFolder = outputFolder
-
 		// check if the link is supported
-		source, check, isDisabled := detector.DetectComic(trimmedURL)
+		source, isSupported, isDisabled := detector.DetectSource(trimmedURL)
 
 		perURL.SourceName = source
 
-		if !check {
+		if !isSupported {
 			perURL.Logger.Error("This site is not supported")
 			continue
 		}

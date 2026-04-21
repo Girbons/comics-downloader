@@ -7,7 +7,7 @@ import (
 )
 
 func TestUnsupportedSource(t *testing.T) {
-	_, check, isDisabled := DetectComic("http://example.com")
+	_, check, isDisabled := DetectSource("http://example.com")
 
 	assert.False(t, check)
 	assert.False(t, isDisabled)

@@ -19,8 +19,8 @@ var SupportedSites = map[string]map[string]bool{
 	"readcomiconline": {"isDisabled": false},
 }
 
-// DetectComic will look for the url source to check if a source is supported.
-func DetectComic(url string) (string, bool, bool) {
+// DetectSource will look for the url source to check if a source is supported.
+func DetectSource(url string) (string, bool, bool) {
 	var (
 		isSupported bool
 		isDisabled  bool
