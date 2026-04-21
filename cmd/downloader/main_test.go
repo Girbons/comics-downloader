@@ -25,6 +25,7 @@ func TestBuildOptionsCopiesGlobals(t *testing.T) {
 		issueFolderName     string
 		userAgentsCSV       string
 		sessionCookie       string
+		httpProxy           string
 		noCache             bool
 	}{
 		debug:               debug,
@@ -46,6 +47,7 @@ func TestBuildOptionsCopiesGlobals(t *testing.T) {
 		issueFolderName:     issueFolderName,
 		userAgentsCSV:       userAgentsCSV,
 		sessionCookie:       sessionCookie,
+		httpProxy:           httpProxy,
 		noCache:             noCache,
 	}
 	defer func() {
@@ -68,6 +70,7 @@ func TestBuildOptionsCopiesGlobals(t *testing.T) {
 		issueFolderName = prev.issueFolderName
 		userAgentsCSV = prev.userAgentsCSV
 		sessionCookie = prev.sessionCookie
+		httpProxy = prev.httpProxy
 		noCache = prev.noCache
 	}()
 
@@ -90,6 +93,7 @@ func TestBuildOptionsCopiesGlobals(t *testing.T) {
 	issueFolderName = "chapter-"
 	userAgentsCSV = "UA1, UA2 ,"
 	sessionCookie = "cf_clearance=abc123; other=value"
+	httpProxy = "http://127.0.0.1:8080"
 	noCache = true
 
 	opts := buildOptions()
@@ -124,6 +128,10 @@ func TestBuildOptionsCopiesGlobals(t *testing.T) {
 
 	if opts.SessionCookie != "cf_clearance=abc123; other=value" {
 		t.Fatalf("expected session cookie to be copied, got %q", opts.SessionCookie)
+	}
+
+	if opts.HTTPProxy != "http://127.0.0.1:8080" {
+		t.Fatalf("expected http proxy to be copied, got %q", opts.HTTPProxy)
 	}
 
 	if !opts.NoCache {

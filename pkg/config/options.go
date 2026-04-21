@@ -39,6 +39,7 @@ type Options struct {
 
 	UserAgents         []string
 	SessionCookie      string
+	HTTPProxy          string
 	NoCache            bool
 	RequestDelay       time.Duration
 	RequestDelayJitter time.Duration

@@ -47,6 +47,7 @@ var (
 	// request customization
 	userAgentsCSV  string
 	sessionCookie  string
+	httpProxy      string
 	noCache        bool
 	requestTimeout time.Duration
 	// throttling
@@ -74,6 +75,7 @@ func init() {
 	flag.StringVar(&issueFolderName, "issue-folder-name", "issue-", "Folder name where each issue/chapter will be saved, default 'issue-#'")
 	flag.StringVar(&userAgentsCSV, "user-agents", "", "Comma-separated list of alternative User-Agent values to rotate per request")
 	flag.StringVar(&sessionCookie, "session-cookie", "", "Custom Cookie header value (e.g., cf_clearance=...; other=...) for protected sources")
+	flag.StringVar(&httpProxy, "http-proxy", "", "HTTP/HTTPS proxy URL used for outbound requests (e.g., http://127.0.0.1:8080)")
 	flag.BoolVar(&noCache, "no-cache", false, "Disable in-memory metadata request caching")
 	flag.DurationVar(&requestTimeout, "request-timeout", config.DefaulltRequestTimeout, "Timeout for HTTP requests (e.g., 8s)")
 	flag.DurationVar(&requestDelay, "request-delay", config.DefaultRequestDelay, "Base delay inserted before downloading each image (e.g. 500ms)")
@@ -103,6 +105,7 @@ func buildOptions() config.Options {
 		IssueFolderName:     issueFolderName,
 		UserAgents:          splitAndTrim(userAgentsCSV),
 		SessionCookie:       strings.TrimSpace(sessionCookie),
+		HTTPProxy:           strings.TrimSpace(httpProxy),
 		NoCache:             noCache,
 		RequestTimeout:      requestTimeout,
 		RequestDelay:        requestDelay,

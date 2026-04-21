@@ -1,6 +1,8 @@
 package app
 
 import (
+	"net/http"
+	"net/url"
 	"strings"
 	"testing"
 
@@ -56,5 +58,43 @@ func TestBuildClientOptionsCacheToggle(t *testing.T) {
 	clientWithoutCache := httpclient.NewComicClient(buildClientOptions(config.Options{NoCache: true})...)
 	if clientWithoutCache.ResponseCache() != nil {
 		t.Fatalf("expected response cache to be disabled when no-cache is set")
+	}
+}
+
+func TestBuildClientOptionsProxy(t *testing.T) {
+	client := httpclient.NewComicClient(buildClientOptions(config.Options{HTTPProxy: "http://127.0.0.1:8080"})...)
+
+	transport, ok := client.HTTPClient().Transport.(*http.Transport)
+	if !ok {
+		t.Fatalf("expected *http.Transport, got %T", client.HTTPClient().Transport)
+	}
+	if transport.Proxy == nil {
+		t.Fatalf("expected proxy function to be configured")
+	}
+
+	reqURL, err := url.Parse("https://example.com")
+	if err != nil {
+		t.Fatalf("failed to parse test URL: %v", err)
+	}
+
+	proxyURL, err := transport.Proxy(&http.Request{URL: reqURL})
+	if err != nil {
+		t.Fatalf("unexpected proxy resolution error: %v", err)
+	}
+	if proxyURL == nil {
+		t.Fatalf("expected resolved proxy URL")
+	}
+	if proxyURL.String() != "http://127.0.0.1:8080" {
+		t.Fatalf("expected proxy URL %q, got %q", "http://127.0.0.1:8080", proxyURL.String())
+	}
+}
+
+func TestProxyHTTPClientRejectsInvalidValue(t *testing.T) {
+	client, ok := proxyHTTPClient("not-a-url")
+	if ok {
+		t.Fatalf("expected invalid proxy to be rejected")
+	}
+	if client != nil {
+		t.Fatalf("expected nil client for invalid proxy")
 	}
 }

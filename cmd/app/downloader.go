@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/http"
+	urlpkg "net/url"
 	"os"
 	"strings"
 	"time"
@@ -219,7 +221,33 @@ func buildClientOptions(base config.Options) []httpclient.Option {
 		}))
 	}
 
+	if proxyClient, ok := proxyHTTPClient(base.HTTPProxy); ok {
+		opts = append(opts, httpclient.WithHTTPClient(proxyClient))
+	}
+
 	return opts
+}
+
+func proxyHTTPClient(rawProxy string) (*http.Client, bool) {
+	trimmed := strings.TrimSpace(rawProxy)
+	if trimmed == "" {
+		return nil, false
+	}
+
+	proxyURL, err := urlpkg.Parse(trimmed)
+	if err != nil || proxyURL.Scheme == "" || proxyURL.Host == "" {
+		return nil, false
+	}
+
+	baseTransport, ok := http.DefaultTransport.(*http.Transport)
+	if !ok {
+		return nil, false
+	}
+
+	transport := baseTransport.Clone()
+	transport.Proxy = http.ProxyURL(proxyURL)
+
+	return &http.Client{Transport: transport}, true
 }
 
 func mergeUserAgents(defaultAgent string, provided []string) []string {
