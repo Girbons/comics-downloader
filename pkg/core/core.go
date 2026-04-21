@@ -184,18 +184,30 @@ func (comic *ComicIssue) makeCBRZ(options *config.Options, images *DownloadResul
 		return err
 	}
 
-	zipArchiveName := filepath.Join(dir, fmt.Sprintf("%s.zip", comic.IssueNumber))
-	// TODO: check if path exists and if the file already exists, to avoid overwriting existing files or creating duplicate files when the same issue is downloaded multiple times
 	newName := util.GetPathToFile(dir, comic.Name, comic.IssueNumber, comic.OutputFormat.String(), options.IssueNumberNameOnly)
+	if _, statErr := os.Stat(newName); statErr == nil {
+		if options.Logger != nil {
+			options.Logger.Infof("Skipping %s because it already exists: %s", strings.ToUpper(comic.OutputFormat.String()), newName)
+		}
+		return nil
+	} else if !os.IsNotExist(statErr) {
+		return statErr
+	}
 
-	out, err := os.Create(zipArchiveName)
+	out, err := os.CreateTemp(dir, fmt.Sprintf("%s-*.zip", comic.IssueNumber))
 	if err != nil {
 		return err
 	}
+	zipArchiveName := out.Name()
 	defer func() {
 		if out != nil {
 			if closeErr := out.Close(); closeErr != nil && options.Logger != nil {
 				options.Logger.Errorf("failed to close archive %s: %v", zipArchiveName, closeErr)
+			}
+		}
+		if zipArchiveName != "" {
+			if removeErr := os.Remove(zipArchiveName); removeErr != nil && !os.IsNotExist(removeErr) && options.Logger != nil {
+				options.Logger.Errorf("failed to cleanup temp archive %s: %v", zipArchiveName, removeErr)
 			}
 		}
 	}()
