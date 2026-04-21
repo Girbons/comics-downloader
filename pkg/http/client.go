@@ -53,6 +53,13 @@ func WithRateLimiter(limiter RateLimiter) Option {
 	}
 }
 
+// WithResponseCache sets a response cache for metadata requests.
+func WithResponseCache(cache ResponseCache) Option {
+	return func(cc *ComicClient) {
+		cc.responseCache = cache
+	}
+}
+
 // WithUserAgent overrides the default user-agent header with a single value.
 func WithUserAgent(agent string) Option {
 	return WithUserAgents([]string{agent})
@@ -89,13 +96,14 @@ func WithHeaders(headers map[string]string) Option {
 
 // ComicClient is the custom HTTP helper used across the downloader.
 type ComicClient struct {
-	client      *http.Client
-	retryCount  int
-	retryWait   time.Duration
-	rateLimiter RateLimiter
-	userAgents  []string
-	headers     map[string]string
-	uaCounter   uint32
+	client        *http.Client
+	retryCount    int
+	retryWait     time.Duration
+	rateLimiter   RateLimiter
+	responseCache ResponseCache
+	userAgents    []string
+	headers       map[string]string
+	uaCounter     uint32
 }
 
 // NewComicClient returns a ComicClient instance with sane defaults.
@@ -131,6 +139,14 @@ func (c *ComicClient) HTTPClient() *http.Client {
 		return nil
 	}
 	return c.client
+}
+
+// ResponseCache exposes the configured metadata response cache.
+func (c *ComicClient) ResponseCache() ResponseCache {
+	if c == nil {
+		return nil
+	}
+	return c.responseCache
 }
 
 // PrepareRequest setup a `GET` request with custom headers.

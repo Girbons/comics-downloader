@@ -39,6 +39,7 @@ type Options struct {
 
 	UserAgents         []string
 	SessionCookie      string
+	NoCache            bool
 	RequestDelay       time.Duration
 	RequestDelayJitter time.Duration
 	RequestTimeout     time.Duration

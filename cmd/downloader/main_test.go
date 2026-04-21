@@ -25,6 +25,7 @@ func TestBuildOptionsCopiesGlobals(t *testing.T) {
 		issueFolderName     string
 		userAgentsCSV       string
 		sessionCookie       string
+		noCache             bool
 	}{
 		debug:               debug,
 		all:                 all,
@@ -45,6 +46,7 @@ func TestBuildOptionsCopiesGlobals(t *testing.T) {
 		issueFolderName:     issueFolderName,
 		userAgentsCSV:       userAgentsCSV,
 		sessionCookie:       sessionCookie,
+		noCache:             noCache,
 	}
 	defer func() {
 		debug = prev.debug
@@ -66,6 +68,7 @@ func TestBuildOptionsCopiesGlobals(t *testing.T) {
 		issueFolderName = prev.issueFolderName
 		userAgentsCSV = prev.userAgentsCSV
 		sessionCookie = prev.sessionCookie
+		noCache = prev.noCache
 	}()
 
 	debug = true
@@ -87,6 +90,7 @@ func TestBuildOptionsCopiesGlobals(t *testing.T) {
 	issueFolderName = "chapter-"
 	userAgentsCSV = "UA1, UA2 ,"
 	sessionCookie = "cf_clearance=abc123; other=value"
+	noCache = true
 
 	opts := buildOptions()
 
@@ -120,5 +124,9 @@ func TestBuildOptionsCopiesGlobals(t *testing.T) {
 
 	if opts.SessionCookie != "cf_clearance=abc123; other=value" {
 		t.Fatalf("expected session cookie to be copied, got %q", opts.SessionCookie)
+	}
+
+	if !opts.NoCache {
+		t.Fatalf("expected no-cache option to be copied, got %+v", opts)
 	}
 }

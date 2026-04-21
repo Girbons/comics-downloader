@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/Girbons/comics-downloader/pkg/config"
+	httpclient "github.com/Girbons/comics-downloader/pkg/http"
 )
 
 func TestRunnerPrepareOptionsProvidesDependencies(t *testing.T) {
@@ -43,5 +44,17 @@ func TestRunnerRunRequiresURL(t *testing.T) {
 		}
 	default:
 		t.Fatalf("expected an error message to be sent")
+	}
+}
+
+func TestBuildClientOptionsCacheToggle(t *testing.T) {
+	clientWithCache := httpclient.NewComicClient(buildClientOptions(config.Options{})...)
+	if clientWithCache.ResponseCache() == nil {
+		t.Fatalf("expected response cache to be enabled by default")
+	}
+
+	clientWithoutCache := httpclient.NewComicClient(buildClientOptions(config.Options{NoCache: true})...)
+	if clientWithoutCache.ResponseCache() != nil {
+		t.Fatalf("expected response cache to be disabled when no-cache is set")
 	}
 }

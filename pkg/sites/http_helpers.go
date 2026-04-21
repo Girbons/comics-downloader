@@ -107,6 +107,18 @@ func fetchBytes(ctx context.Context, client *httpclient.ComicClient, link string
 		return nil, err
 	}
 
+	cache := cc.ResponseCache()
+	cacheKey := ""
+	if cache != nil {
+		cacheKey = httpclient.MetadataCacheKey(req)
+		if cacheKey != "" {
+			if cached, ok := cache.Get(cacheKey); ok {
+				// log.Printf("Cache hit for request %s (%s)\n", req.URL.String(), cacheKey)
+				return cached, nil
+			}
+		}
+	}
+
 	resp, err := cc.Do(req)
 	if err != nil {
 		return nil, err
@@ -124,6 +136,10 @@ func fetchBytes(ctx context.Context, client *httpclient.ComicClient, link string
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
+	}
+
+	if cache != nil && cacheKey != "" {
+		cache.Set(cacheKey, body)
 	}
 	return body, nil
 }

@@ -209,6 +209,9 @@ func buildClientOptions(base config.Options) []httpclient.Option {
 	defaultUA := fmt.Sprintf("comics-downloader/%s", version.Tag)
 	agents := mergeUserAgents(defaultUA, base.UserAgents)
 	opts := []httpclient.Option{httpclient.WithUserAgents(agents)}
+	if !base.NoCache {
+		opts = append(opts, httpclient.WithResponseCache(httpclient.NewInMemoryResponseCache(0)))
+	}
 
 	if strings.TrimSpace(base.SessionCookie) != "" {
 		opts = append(opts, httpclient.WithHeaders(map[string]string{
