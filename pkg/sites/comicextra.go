@@ -36,7 +36,7 @@ func (c *Comicextra) retrieveImageLinks(comic *core.ComicIssue) ([]string, error
 	ctx, cancel := c.requestContext()
 	defer cancel()
 
-	response, err := fetchHTML(ctx, c.client, comic.Source.URL)
+	response, err := c.client.FetchHTML(ctx, comic.Source.URL)
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +67,7 @@ func (c *Comicextra) retrieveLastIssue(url string) (string, error) {
 	ctx, cancel := c.requestContext()
 	defer cancel()
 
-	response, err := fetchHTML(ctx, c.client, url)
+	response, err := c.client.FetchHTML(ctx, url)
 	if err != nil {
 		return "", err
 	}
@@ -131,7 +131,7 @@ func (c *Comicextra) RetrieveIssueLinks() ([]string, error) {
 	ctx, cancel := c.requestContext()
 	defer cancel()
 
-	response, err := fetchHTML(ctx, c.client, url)
+	response, err := c.client.FetchHTML(ctx, url)
 	if err != nil {
 		return nil, err
 	}

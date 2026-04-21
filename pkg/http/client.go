@@ -176,8 +176,9 @@ func (c *ComicClient) PrepareRequest(link, hostname string) (*http.Request, erro
 	return req, nil
 }
 
-// Do executes an HTTP request applying retry, timeout, and rate limiting policies.
-func (c *ComicClient) Do(req *http.Request) (*http.Response, error) {
+// DoRaw executes an HTTP request applying retry, timeout, and rate limiting policies.
+// It is recommended to use the higher-level FetchHTML or FetchJSON methods instead of DoRaw for automatic response handling.
+func (c *ComicClient) DoRaw(req *http.Request) (*http.Response, error) {
 	if c == nil {
 		return nil, errors.New("comic client is nil")
 	}
@@ -236,7 +237,7 @@ func (c *ComicClient) Get(link, hostname string) (*http.Response, error) {
 		return nil, err
 	}
 
-	return c.Do(request)
+	return c.DoRaw(request)
 }
 
 func (c *ComicClient) wait(ctx context.Context) error {

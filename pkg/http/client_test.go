@@ -84,7 +84,7 @@ func TestRateLimiterInvoked(t *testing.T) {
 	require.NoError(t, err)
 
 	req = req.WithContext(ctx)
-	_, err = client.Do(req)
+	_, err = client.DoRaw(req)
 	require.NoError(t, err)
 	require.Equal(t, int32(1), atomic.LoadInt32(&limiter.count))
 }

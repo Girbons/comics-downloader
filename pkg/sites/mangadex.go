@@ -95,7 +95,7 @@ func (m *Mangadex) getMangaCoverURL(mangaID, coverID string) (string, error) {
 		} `json:"data"`
 	}
 
-	if err := fetchJSON(ctx, m.client, endpoint, &coverRes); err != nil {
+	if err := m.client.FetchJSON(ctx, endpoint, &coverRes); err != nil {
 		return "", err
 	}
 	if strings.ToLower(coverRes.Result) != "ok" {
@@ -119,7 +119,7 @@ func (m *Mangadex) getAuthorInfo(authorID string) (string, error) {
 		} `json:"data"`
 	}
 
-	if err := fetchJSON(ctx, m.client, endpoint, &authorRes); err != nil {
+	if err := m.client.FetchJSON(ctx, endpoint, &authorRes); err != nil {
 		return "", err
 	}
 	if strings.ToLower(authorRes.Result) != "ok" {
@@ -143,7 +143,7 @@ func (m *Mangadex) getMangaRating(mangaID string) (float64, error) {
 			} `json:"rating"`
 		} `json:"statistics"`
 	}
-	if err := fetchJSON(ctx, m.client, endpoint, &ratingRes); err != nil {
+	if err := m.client.FetchJSON(ctx, endpoint, &ratingRes); err != nil {
 		return 0, err
 	}
 	if strings.ToLower(ratingRes.Result) != "ok" {
@@ -195,7 +195,7 @@ func (m *Mangadex) getMangaInfo(mangaID string) (mangadexSeries, error) {
 		} `json:"data"`
 	}
 
-	if err := fetchJSON(ctx, m.client, endpoint, &mangaRes); err != nil {
+	if err := m.client.FetchJSON(ctx, endpoint, &mangaRes); err != nil {
 		return mangadexSeries{}, err
 	}
 	if strings.ToLower(mangaRes.Result) != "ok" {
@@ -398,7 +398,7 @@ func (m *Mangadex) getChapters(mangaID string) ([]string, error) {
 		endpoint += "?" + q.Encode()
 	}
 
-	body, err := fetchBytes(ctx, m.client, endpoint)
+	body, err := m.client.FetchBytes(ctx, endpoint)
 	if err != nil {
 		return nil, err
 	}
@@ -484,7 +484,7 @@ func (m *Mangadex) getChapterInfo(chapterID string) (chapterInfo mangadexChapter
 		} `json:"data"`
 	}
 
-	if err := fetchJSON(ctx, m.client, endpoint, &chapterRes); err != nil {
+	if err := m.client.FetchJSON(ctx, endpoint, &chapterRes); err != nil {
 		return mangadexChapter{}, err
 	}
 	if strings.ToLower(chapterRes.Result) != "ok" {
@@ -505,7 +505,7 @@ func (m *Mangadex) getChapterInfo(chapterID string) (chapterInfo mangadexChapter
 		} `json:"chapter"`
 	}
 
-	if err := fetchJSON(ctx, m.client, imagesEndpoint, &imagesRes); err != nil {
+	if err := m.client.FetchJSON(ctx, imagesEndpoint, &imagesRes); err != nil {
 		return mangadexChapter{}, err
 	}
 	if strings.ToLower(imagesRes.Result) != "ok" {

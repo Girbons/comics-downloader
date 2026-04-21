@@ -45,7 +45,7 @@ func (m *Mangatown) retrieveImageLinks(comic *core.ComicIssue) ([]string, error)
 	ctx, cancel := m.requestContext()
 	defer cancel()
 
-	response, err := fetchHTML(ctx, m.options.Client, comic.Source.URL)
+	response, err := m.options.Client.FetchHTML(ctx, comic.Source.URL)
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +60,7 @@ func (m *Mangatown) retrieveImageLinks(comic *core.ComicIssue) ([]string, error)
 		ctx, cancel := m.requestContext()
 		defer cancel()
 
-		response, err := fetchHTML(ctx, m.options.Client, link)
+		response, err := m.options.Client.FetchHTML(ctx, link)
 		if err != nil {
 			return nil, err
 		}
@@ -87,7 +87,7 @@ func (m *Mangatown) retrieveLastIssue(url string) (string, error) {
 	ctx, cancel := m.requestContext()
 	defer cancel()
 
-	response, err := fetchHTML(ctx, m.options.Client, url)
+	response, err := m.options.Client.FetchHTML(ctx, url)
 	if err != nil {
 		return "", err
 	}
@@ -118,7 +118,7 @@ func (m *Mangatown) RetrieveIssueLinks() ([]string, error) {
 	ctx, cancel := m.requestContext()
 	defer cancel()
 
-	response, err := fetchHTML(ctx, m.options.Client, url)
+	response, err := m.options.Client.FetchHTML(ctx, url)
 	if err != nil {
 		return nil, err
 	}

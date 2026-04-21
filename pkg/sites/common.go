@@ -21,7 +21,7 @@ func MangaKakalotGetInfo(options *config.Options, domain string, url string) (na
 	ctx, cancel := mangaKakalotRequestContext(options)
 	defer cancel()
 
-	res, err := fetchHTML(ctx, options.Client, url)
+	res, err := options.Client.FetchHTML(ctx, url)
 	if err != nil {
 		return "", "", err
 	}
@@ -54,7 +54,7 @@ func MangaKakalotInitialize(options *config.Options, comic *core.ComicIssue) err
 	ctx, cancel := mangaKakalotRequestContext(options)
 	defer cancel()
 
-	res, err := fetchHTML(ctx, options.Client, comic.Source.URL)
+	res, err := options.Client.FetchHTML(ctx, comic.Source.URL)
 	if err != nil {
 		return err
 	}
@@ -78,7 +78,7 @@ func MangaKakalotRetrieveIssueLinks(options *config.Options, domain string, url 
 	ctx, cancel := mangaKakalotRequestContext(options)
 	defer cancel()
 
-	res, err := fetchHTML(ctx, options.Client, url)
+	res, err := options.Client.FetchHTML(ctx, url)
 	if err != nil {
 		return nil, err
 	}

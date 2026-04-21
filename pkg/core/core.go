@@ -337,7 +337,7 @@ func (comic *ComicIssue) DownloadImages(options *config.Options) (*DownloadResul
 			}
 			request = request.WithContext(reqCtx)
 
-			response, err := client.Do(request)
+			response, err := client.DoRaw(request)
 			if err != nil {
 				return err
 			}

@@ -31,7 +31,7 @@ func (m *Mangareader) retrieveImageLinks(comic *core.ComicIssue) ([]string, erro
 	ctx, cancel := m.requestContext()
 	defer cancel()
 
-	response, err := fetchHTML(ctx, m.options.Client, comic.Source.URL)
+	response, err := m.options.Client.FetchHTML(ctx, comic.Source.URL)
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,7 @@ func (m *Mangareader) retrieveLastIssue(url string) (string, error) {
 	ctx, cancel := m.requestContext()
 	defer cancel()
 
-	response, err := fetchHTML(ctx, m.options.Client, url)
+	response, err := m.options.Client.FetchHTML(ctx, url)
 	if err != nil {
 		return "", err
 	}
@@ -92,7 +92,7 @@ func (m *Mangareader) RetrieveIssueLinks() ([]string, error) {
 	ctx, cancel := m.requestContext()
 	defer cancel()
 
-	response, err := fetchHTML(ctx, m.options.Client, url)
+	response, err := m.options.Client.FetchHTML(ctx, url)
 	if err != nil {
 		return nil, err
 	}

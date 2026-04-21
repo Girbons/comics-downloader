@@ -9,6 +9,7 @@ import (
 	"github.com/Girbons/comics-downloader/internal/logger"
 	"github.com/Girbons/comics-downloader/pkg/config"
 	"github.com/Girbons/comics-downloader/pkg/core"
+	httpclient "github.com/Girbons/comics-downloader/pkg/http"
 	"github.com/stretchr/testify/require"
 )
 
@@ -65,11 +66,17 @@ func TestManganatoScraper(t *testing.T) {
 	server := newManganatoServer()
 	defer server.Close()
 
+	client := httpclient.NewComicClient(
+		httpclient.WithHTTPClient(server.Client()),
+		httpclient.WithRetry(0, 0),
+	)
+
 	opts := &config.Options{
 		URL:            server.URL + manganatoListPath,
 		SourceName:     "manganato.com",
 		Logger:         logger.NewLogger(false, nil),
 		RequestTimeout: config.DefaulltRequestTimeout,
+		Client:         client,
 	}
 
 	scraper := NewManganato(opts)

@@ -8,6 +8,7 @@ import (
 	"github.com/Girbons/comics-downloader/internal/logger"
 	"github.com/Girbons/comics-downloader/pkg/config"
 	"github.com/Girbons/comics-downloader/pkg/core"
+	httpclient "github.com/Girbons/comics-downloader/pkg/http"
 	"github.com/stretchr/testify/require"
 )
 
@@ -59,10 +60,16 @@ func TestMangareaderScraper(t *testing.T) {
 	server := newMangareaderServer()
 	defer server.Close()
 
+	client := httpclient.NewComicClient(
+		httpclient.WithHTTPClient(server.Client()),
+		httpclient.WithRetry(0, 0),
+	)
+
 	opts := &config.Options{
 		URL:            server.URL + mangareaderIssuePath,
 		Logger:         logger.NewLogger(false, nil),
 		RequestTimeout: config.DefaulltRequestTimeout,
+		Client:         client,
 	}
 
 	scraper := NewMangareader(opts)

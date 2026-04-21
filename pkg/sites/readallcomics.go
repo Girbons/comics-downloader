@@ -33,7 +33,7 @@ func (r *Readallcomics) retrieveImageLinks(comic *core.ComicIssue) ([]string, er
 	ctx, cancel := r.requestContext()
 	defer cancel()
 
-	response, err := fetchHTML(ctx, r.options.Client, comic.Source.URL)
+	response, err := r.options.Client.FetchHTML(ctx, comic.Source.URL)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +65,7 @@ func (r *Readallcomics) getIssues(url string) ([]string, error) {
 	ctx, cancel := r.requestContext()
 	defer cancel()
 
-	response, err := fetchHTML(ctx, r.options.Client, url)
+	response, err := r.options.Client.FetchHTML(ctx, url)
 	if err != nil {
 		return nil, err
 	}

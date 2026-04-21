@@ -1,4 +1,4 @@
-package sites
+package http
 
 import (
 	"context"
@@ -7,8 +7,6 @@ import (
 	"net/http/httptest"
 	"sync/atomic"
 	"testing"
-
-	httpclient "github.com/Girbons/comics-downloader/pkg/http"
 )
 
 func TestFetchHTMLUsesMetadataCache(t *testing.T) {
@@ -19,18 +17,18 @@ func TestFetchHTMLUsesMetadataCache(t *testing.T) {
 	}))
 	defer server.Close()
 
-	client := httpclient.NewComicClient(
-		httpclient.WithHTTPClient(server.Client()),
-		httpclient.WithRetry(0, 0),
-		httpclient.WithResponseCache(httpclient.NewInMemoryResponseCache(64)),
+	client := NewComicClient(
+		WithHTTPClient(server.Client()),
+		WithRetry(0, 0),
+		WithResponseCache(NewInMemoryResponseCache(64)),
 	)
 
 	ctx := context.Background()
-	first, err := fetchHTML(ctx, client, server.URL+"/metadata")
+	first, err := client.FetchHTML(ctx, server.URL+"/metadata")
 	if err != nil {
 		t.Fatalf("first fetch failed: %v", err)
 	}
-	second, err := fetchHTML(ctx, client, server.URL+"/metadata")
+	second, err := client.FetchHTML(ctx, server.URL+"/metadata")
 	if err != nil {
 		t.Fatalf("second fetch failed: %v", err)
 	}
@@ -50,18 +48,18 @@ func TestFetchHTMLCacheKeyIncludesRequestHeaders(t *testing.T) {
 	}))
 	defer server.Close()
 
-	client := httpclient.NewComicClient(
-		httpclient.WithHTTPClient(server.Client()),
-		httpclient.WithRetry(0, 0),
-		httpclient.WithResponseCache(httpclient.NewInMemoryResponseCache(64)),
+	client := NewComicClient(
+		WithHTTPClient(server.Client()),
+		WithRetry(0, 0),
+		WithResponseCache(NewInMemoryResponseCache(64)),
 	)
 
 	ctx := context.Background()
-	_, err := fetchHTML(ctx, client, server.URL+"/metadata", withHttpHeader("Accept", "text/html"))
+	_, err := client.FetchHTML(ctx, server.URL+"/metadata", WithHttpHeader("Accept", "text/html"))
 	if err != nil {
 		t.Fatalf("first fetch failed: %v", err)
 	}
-	_, err = fetchHTML(ctx, client, server.URL+"/metadata", withHttpHeader("Accept", "application/json"))
+	_, err = client.FetchHTML(ctx, server.URL+"/metadata", WithHttpHeader("Accept", "application/json"))
 	if err != nil {
 		t.Fatalf("second fetch failed: %v", err)
 	}
@@ -79,18 +77,18 @@ func TestFetchHTMLDoesNotCacheErrorResponses(t *testing.T) {
 	}))
 	defer server.Close()
 
-	client := httpclient.NewComicClient(
-		httpclient.WithHTTPClient(server.Client()),
-		httpclient.WithRetry(0, 0),
-		httpclient.WithResponseCache(httpclient.NewInMemoryResponseCache(64)),
+	client := NewComicClient(
+		WithHTTPClient(server.Client()),
+		WithRetry(0, 0),
+		WithResponseCache(NewInMemoryResponseCache(64)),
 	)
 
 	ctx := context.Background()
-	_, err := fetchHTML(ctx, client, server.URL+"/metadata")
+	_, err := client.FetchHTML(ctx, server.URL+"/metadata")
 	if err == nil {
 		t.Fatalf("expected first fetch to fail")
 	}
-	_, err = fetchHTML(ctx, client, server.URL+"/metadata")
+	_, err = client.FetchHTML(ctx, server.URL+"/metadata")
 	if err == nil {
 		t.Fatalf("expected second fetch to fail")
 	}

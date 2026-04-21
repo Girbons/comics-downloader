@@ -79,7 +79,7 @@ func (c *ReadComicOnline) retrieveImageLinks(comic *core.ComicIssue) ([]string, 
 	ctx, cancel := c.requestContext()
 	defer cancel()
 
-	response, err := fetchHTML(ctx, c.options.Client, fetchURL)
+	response, err := c.options.Client.FetchHTML(ctx, fetchURL)
 	if err != nil {
 		if c.options.Logger != nil {
 			c.options.Logger.Errorf("readcomiconline: request to %s failed: %v", fetchURL, err)
@@ -136,7 +136,7 @@ func (c *ReadComicOnline) retrieveLastIssue(url string) (string, error) {
 	ctx, cancel := c.requestContext()
 	defer cancel()
 
-	response, err := fetchHTML(ctx, c.options.Client, url)
+	response, err := c.options.Client.FetchHTML(ctx, url)
 	if err != nil {
 		return "", err
 	}
@@ -173,7 +173,7 @@ func (c *ReadComicOnline) RetrieveIssueLinks() ([]string, error) {
 	ctx, cancel := c.requestContext()
 	defer cancel()
 
-	response, err := fetchHTML(ctx, c.options.Client, url)
+	response, err := c.options.Client.FetchHTML(ctx, url)
 	if err != nil {
 		return nil, err
 	}

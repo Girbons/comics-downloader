@@ -9,6 +9,7 @@ import (
 	"github.com/Girbons/comics-downloader/internal/logger"
 	"github.com/Girbons/comics-downloader/pkg/config"
 	"github.com/Girbons/comics-downloader/pkg/core"
+	httpclient "github.com/Girbons/comics-downloader/pkg/http"
 	"github.com/stretchr/testify/require"
 )
 
@@ -50,6 +51,11 @@ func TestReadComicOnlineScraper(t *testing.T) {
 	server := newReadComicOnlineServer()
 	defer server.Close()
 
+	client := httpclient.NewComicClient(
+		httpclient.WithHTTPClient(server.Client()),
+		httpclient.WithRetry(0, 0),
+	)
+
 	originalBase := baseUrl
 	baseUrl = server.URL
 	defer func() { baseUrl = originalBase }()
@@ -58,6 +64,7 @@ func TestReadComicOnlineScraper(t *testing.T) {
 		URL:            server.URL + rcoIssuePath,
 		Logger:         logger.NewLogger(false, nil),
 		RequestTimeout: config.DefaulltRequestTimeout,
+		Client:         client,
 	}
 
 	scraper := NewReadComiconline(opts)
