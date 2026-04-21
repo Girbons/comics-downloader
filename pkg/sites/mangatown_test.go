@@ -1,77 +1,115 @@
 package sites
 
 import (
+	"fmt"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/Girbons/comics-downloader/internal/logger"
 	"github.com/Girbons/comics-downloader/pkg/config"
 	"github.com/Girbons/comics-downloader/pkg/core"
-	"github.com/stretchr/testify/assert"
+	httpclient "github.com/Girbons/comics-downloader/pkg/http"
+	"github.com/stretchr/testify/require"
 )
 
-func TestMangatownGetInfo(t *testing.T) {
-	opt :=
-		&config.Options{
-			URL:    "http://www.mangatown.com/manga/naruto/v63/c684/",
-			All:    false,
-			Last:   false,
-			Debug:  false,
-			Logger: logger.NewLogger(false, make(chan string)),
-		}
-	mt := NewMangatown(opt)
-	name, issueNumber := mt.GetInfo("http://www.mangatown.com/manga/naruto/v63/c684/")
+const (
+	mangatownIssuePath = "/manga/naruto/v63/c684/"
+)
 
-	assert.Equal(t, "naruto", name)
-	assert.Equal(t, "c684", issueNumber)
+func newMangatownServer() *httptest.Server {
+	firstPage := `
+        <html>
+            <body>
+                <div class="page_select">
+                    <select>
+                        <option>Featured</option>
+                        <option>1</option>
+                        <option>2</option>
+                    </select>
+                </div>
+                <div id="viewer"><a><img src="//cdn.example.com/naruto/001.jpg"/></a></div>
+            </body>
+        </html>`
+
+	secondPage := `
+        <html>
+            <body>
+                <div id="viewer"><a><img src="//cdn.example.com/naruto/002.jpg"/></a></div>
+            </body>
+        </html>`
+
+	listHTML := `
+        <html>
+            <body>
+                <ul class="chapter_list">
+                    <a href="/manga/naruto/v63/c684/"></a>
+                    <a href="/manga/naruto/v63/c685/"></a>
+                </ul>
+            </body>
+        </html>`
+
+	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case mangatownIssuePath:
+			_, _ = fmt.Fprint(w, firstPage)
+		case "/manga/naruto/v63/c684/1.html":
+			_, _ = fmt.Fprint(w, firstPage)
+		case "/manga/naruto/v63/c684/2.html":
+			_, _ = fmt.Fprint(w, secondPage)
+		case "/manga/naruto/v63":
+			_, _ = fmt.Fprint(w, listHTML)
+		case "/manga/naruto":
+			_, _ = fmt.Fprint(w, listHTML)
+		case "/manga/naruto/":
+			_, _ = fmt.Fprint(w, listHTML)
+		default:
+			http.NotFound(w, r)
+		}
+	}))
 }
 
-func TestMangatownSetup(t *testing.T) {
-	opt :=
-		&config.Options{
-			URL:    "http://www.mangatown.com/manga/naruto/v63/c684/",
-			All:    false,
-			Last:   false,
-			Debug:  false,
-			Logger: logger.NewLogger(false, make(chan string)),
-		}
-	mt := NewMangatown(opt)
-	comic := new(core.Comic)
-	comic.URLSource = "http://www.mangatown.com/manga/naruto/v63/c684/"
+func TestMangatownScraper(t *testing.T) {
+	server := newMangatownServer()
+	defer server.Close()
 
-	err := mt.Initialize(comic)
+	client := httpclient.NewComicClient(
+		httpclient.WithHTTPClient(server.Client()),
+		httpclient.WithRetry(0, 0),
+	)
 
-	assert.Nil(t, err)
-	assert.Equal(t, 22, len(comic.Links))
-}
+	opts := &config.Options{
+		URL:            server.URL + mangatownIssuePath,
+		Logger:         logger.NewLogger(false, nil),
+		RequestTimeout: config.DefaulltRequestTimeout,
+		Client:         client,
+	}
 
-func TestMangatownRetrieveIssueLinks(t *testing.T) {
-	opt :=
-		&config.Options{
-			URL:    "http://www.mangatown.com/manga/naruto/v63/c684/",
-			All:    true,
-			Last:   false,
-			Debug:  false,
-			Logger: logger.NewLogger(false, make(chan string)),
-		}
-	mt := NewMangatown(opt)
-	issues, err := mt.RetrieveIssueLinks()
+	scraper := NewMangatown(opts)
 
-	assert.Nil(t, err)
-	assert.Equal(t, 752, len(issues))
-}
+	comic := &core.ComicIssue{
+		Source: &core.ComicSource{Name: "test-source", URL: server.URL + mangatownIssuePath},
+	}
+	require.NoError(t, scraper.Initialize(comic))
+	require.Equal(t, []string{
+		"https://cdn.example.com/naruto/001.jpg",
+		"https://cdn.example.com/naruto/002.jpg",
+	}, comic.ImageLinks)
 
-func TestMangatownRetrieveIssueLinksLastChapter(t *testing.T) {
-	opt :=
-		&config.Options{
-			URL:    "http://www.mangatown.com/manga/naruto/",
-			All:    false,
-			Last:   true,
-			Debug:  false,
-			Logger: logger.NewLogger(false, make(chan string)),
-		}
-	mt := NewMangatown(opt)
-	issues, err := mt.RetrieveIssueLinks()
+	opts.All = true
+	scraper = NewMangatown(opts)
+	issues, err := scraper.RetrieveIssueLinks()
+	require.NoError(t, err)
+	require.Equal(t, []string{
+		"https://mangatown.com/manga/naruto/v63/c684/",
+		"https://mangatown.com/manga/naruto/v63/c685/",
+	}, issues)
 
-	assert.Nil(t, err)
-	assert.Equal(t, 1, len(issues))
+	opts.All = false
+	opts.Last = true
+	opts.URL = server.URL + "/manga/naruto/"
+	scraper = NewMangatown(opts)
+	last, err := scraper.RetrieveIssueLinks()
+	require.NoError(t, err)
+	require.Equal(t, []string{"https://www.mangatown.com/manga/naruto/v63/c684/"}, last)
 }

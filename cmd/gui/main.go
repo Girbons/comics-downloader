@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	"fyne.io/fyne"
 	"fyne.io/fyne/app"
@@ -12,19 +13,54 @@ import (
 	"github.com/Girbons/comics-downloader/internal/version"
 )
 
-func watchLogs(logSection *container.Scroll, box *widget.Box) {
-	for {
-		box.Append(widget.NewLabel(<-downloader.Messages))
-		logSection.Resize(logSection.Size())
+func watchLogs(logSection *container.Scroll, box *widget.Box, statusLabel *widget.Label) {
+	for message := range downloader.Messages {
+		trimmed := strings.TrimSpace(message)
+		if trimmed == "" {
+			continue
+		}
+
+		level := ""
+		text := trimmed
+		if parts := strings.SplitN(trimmed, ":", 2); len(parts) == 2 {
+			level = strings.ToUpper(strings.TrimSpace(parts[0]))
+			text = strings.TrimSpace(parts[1])
+		}
+
+		switch level {
+		case "INFO", "DEBUG":
+			if text == "" {
+				statusLabel.SetText(level)
+			} else {
+				statusLabel.SetText(text)
+			}
+		case "WARNING", "ERROR":
+			statusLabel.SetText(trimmed)
+			box.Append(widget.NewLabel(trimmed))
+			logSection.ScrollToBottom()
+		default:
+			statusLabel.SetText(trimmed)
+		}
 	}
 }
 
-func appStatus(downloadButton *widget.Button) {
-	for {
-		if <-downloader.AppStatus {
+func appStatus(downloadButton *widget.Button, progress *widget.ProgressBarInfinite, statusLabel *widget.Label) {
+	for running := range downloader.AppStatus {
+		if running {
 			downloadButton.Disable()
+			if !progress.Visible() {
+				progress.Show()
+			}
+			if !progress.Running() {
+				progress.Start()
+			}
+			statusLabel.SetText("Downloading...")
 		} else {
+			progress.Hide()
 			downloadButton.Enable()
+			if statusLabel.Text == "Downloading..." {
+				statusLabel.SetText("Ready")
+			}
 		}
 	}
 }
@@ -65,6 +101,12 @@ func main() {
 
 	issuesRange := widget.NewEntry()
 	issuesRange.SetPlaceHolder("1-10")
+
+	statusLabel := widget.NewLabel("Ready")
+	statusLabel.Wrapping = fyne.TextWrapWord
+
+	progress := widget.NewProgressBarInfinite()
+	progress.Hide()
 
 	d := &Downloader{
 		URL:               urlEntry,
@@ -116,10 +158,12 @@ func main() {
 	// logSection := widget.NewScrollContainer(box)
 	logSection := container.NewScroll(box)
 
-	go watchLogs(logSection, box)
-	go appStatus(submitButton)
+	footer := container.NewVBox(statusLabel, progress, buttons)
 
-	w.SetContent(fyne.NewContainerWithLayout(layout.NewBorderLayout(form, buttons, nil, nil), form, buttons, logSection))
+	go watchLogs(logSection, box, statusLabel)
+	go appStatus(submitButton, progress, statusLabel)
+
+	w.SetContent(fyne.NewContainerWithLayout(layout.NewBorderLayout(form, footer, nil, nil), form, footer, logSection))
 	w.Resize(fyne.NewSize(800, 400))
 	w.ShowAndRun()
 }

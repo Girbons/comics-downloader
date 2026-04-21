@@ -1,6 +1,7 @@
 package sites
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
@@ -22,15 +23,27 @@ func NewMangareader(options *config.Options) *Mangareader {
 	}
 }
 
-func (m *Mangareader) retrieveImageLinks(comic *core.Comic) ([]string, error) {
-	var links []string
+func init() {
+	SupportedSites["mangareader"] = SupportedSite{
+		IsEnabled: true,
+		Loader:    func(opts *config.Options) BaseSite { return NewMangareader(opts) },
+	}
+}
 
-	response, err := soup.Get(comic.URLSource)
+func (m *Mangareader) requestContext() (context.Context, context.CancelFunc) {
+	return context.WithTimeout(context.Background(), m.options.RequestTimeout)
+}
 
+func (m *Mangareader) retrieveImageLinks(comic *core.ComicIssue) ([]string, error) {
+	ctx, cancel := m.requestContext()
+	defer cancel()
+
+	response, err := m.options.Client.FetchHTML(ctx, comic.Source.URL)
 	if err != nil {
 		return nil, err
 	}
 
+	var links []string
 	doc := soup.HTMLParse(response)
 	for _, t := range doc.FindAll("img") {
 		imageURL := t.Attrs()["data-src"]
@@ -53,7 +66,10 @@ func (m *Mangareader) isSingleIssue(url string) bool {
 func (m *Mangareader) retrieveLastIssue(url string) (string, error) {
 	url = strings.Join(util.TrimAndSplitURL(url)[:4], "/")
 
-	response, err := soup.Get(url)
+	ctx, cancel := m.requestContext()
+	defer cancel()
+
+	response, err := m.options.Client.FetchHTML(ctx, url)
 	if err != nil {
 		return "", err
 	}
@@ -80,13 +96,15 @@ func (m *Mangareader) RetrieveIssueLinks() ([]string, error) {
 		return []string{url}, nil
 	}
 
-	var links []string
+	ctx, cancel := m.requestContext()
+	defer cancel()
 
-	response, err := soup.Get(url)
+	response, err := m.options.Client.FetchHTML(ctx, url)
 	if err != nil {
 		return nil, err
 	}
 
+	var links []string
 	doc := soup.HTMLParse(response)
 	nodes := doc.Find("table", "class", "d48").FindAll("tr")
 	for _, node := range nodes {
@@ -107,22 +125,29 @@ func (m *Mangareader) RetrieveIssueLinks() ([]string, error) {
 }
 
 // GetInfo extracts the basic info from the given URL.
-func (m *Mangareader) GetInfo(url string) (string, string) {
+func (m *Mangareader) GetInfo(url string) (string, string, error) {
 	parts := util.TrimAndSplitURL(url)
 	name := parts[3]
 	issueNumber := parts[4]
 
-	return name, issueNumber
+	return name, issueNumber, nil
 }
 
 // Initialize loads links and metadata from mangareader
-func (m *Mangareader) Initialize(comic *core.Comic) error {
-	name, issueNumber := m.GetInfo(comic.URLSource)
-	comic.Name = name
-	comic.IssueNumber = issueNumber
+func (m *Mangareader) Initialize(comic *core.ComicIssue) error {
+	if comic.SeriesMetadata == nil {
+		comic.SeriesMetadata = &core.SeriesMetadata{}
+	}
+
+	parts := util.TrimAndSplitURL(comic.Source.URL)
+	if len(parts) >= 5 {
+		comic.ChapterName = parts[3]
+		comic.SeriesMetadata.Title = parts[3]
+		comic.IssueNumber = parts[4]
+	}
 
 	links, err := m.retrieveImageLinks(comic)
-	comic.Links = links
+	comic.ImageLinks = links
 
 	return err
 }

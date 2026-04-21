@@ -1,6 +1,7 @@
 package sites
 
 import (
+	"context"
 	"fmt"
 	"regexp"
 	"sort"
@@ -8,26 +9,41 @@ import (
 
 	"github.com/Girbons/comics-downloader/pkg/config"
 	"github.com/Girbons/comics-downloader/pkg/core"
+	httpclient "github.com/Girbons/comics-downloader/pkg/http"
 	"github.com/Girbons/comics-downloader/pkg/util"
 	"github.com/anaskhan96/soup"
 )
 
+func init() {
+	SupportedSites["comicextra"] = SupportedSite{
+		IsEnabled: true,
+		Loader:    func(opts *config.Options) BaseSite { return NewComicextra(opts) },
+	}
+}
+
 // Comicextra represents comicextra instance.
 type Comicextra struct {
 	options *config.Options
+	client  *httpclient.ComicClient
 }
 
 // NewComicextra returs a comicextra instance.
 func NewComicextra(options *config.Options) *Comicextra {
 	return &Comicextra{
 		options: options,
+		client:  options.Client,
 	}
 }
 
-func (c *Comicextra) retrieveImageLinks(comic *core.Comic) ([]string, error) {
-	var links []string
+func (c *Comicextra) requestContext() (context.Context, context.CancelFunc) {
+	return context.WithTimeout(context.Background(), c.options.RequestTimeout)
+}
 
-	response, err := soup.Get(comic.URLSource)
+func (c *Comicextra) retrieveImageLinks(comic *core.ComicIssue) ([]string, error) {
+	ctx, cancel := c.requestContext()
+	defer cancel()
+
+	response, err := c.client.FetchHTML(ctx, comic.Source.URL)
 	if err != nil {
 		return nil, err
 	}
@@ -35,10 +51,11 @@ func (c *Comicextra) retrieveImageLinks(comic *core.Comic) ([]string, error) {
 	re := regexp.MustCompile(util.IMAGEREGEX)
 	match := re.FindAllStringSubmatch(response, -1)
 
+	var links []string
 	for i := range match {
-		url := match[i][1]
-		if util.IsURLValid(url) {
-			links = append(links, url)
+		link := deobfuscateURL(match[i][1])
+		if util.IsURLValid(link) {
+			links = append(links, link)
 		}
 	}
 
@@ -54,10 +71,10 @@ func (c *Comicextra) isSingleIssue(url string) bool {
 }
 
 func (c *Comicextra) retrieveLastIssue(url string) (string, error) {
-	var lastIssue string
+	ctx, cancel := c.requestContext()
+	defer cancel()
 
-	response, err := soup.Get(url)
-
+	response, err := c.client.FetchHTML(ctx, url)
 	if err != nil {
 		return "", err
 	}
@@ -77,7 +94,7 @@ func (c *Comicextra) retrieveLastIssue(url string) (string, error) {
 
 	sort.Strings(validLinks)
 
-	lastIssue = validLinks[len(validLinks)-1]
+	lastIssue := validLinks[len(validLinks)-1]
 
 	return lastIssue, nil
 }
@@ -103,7 +120,7 @@ func (c *Comicextra) RetrieveIssueLinks() ([]string, error) {
 	}
 
 	if c.options.All && c.isSingleIssue(url) {
-		url = "https://" + c.options.Source + "/comic/" + comicName
+		url = "https://" + c.options.SourceName + "/comic/" + comicName
 	} else if c.isSingleIssue(url) {
 
 		if !strings.HasSuffix(url, "/full") {
@@ -118,7 +135,10 @@ func (c *Comicextra) RetrieveIssueLinks() ([]string, error) {
 		elements []soup.Root
 	)
 
-	response, err := soup.Get(url)
+	ctx, cancel := c.requestContext()
+	defer cancel()
+
+	response, err := c.client.FetchHTML(ctx, url)
 	if err != nil {
 		return nil, err
 	}
@@ -149,20 +169,31 @@ func (c *Comicextra) RetrieveIssueLinks() ([]string, error) {
 }
 
 // GetInfo extracts the basic info from the given url.
-func (c *Comicextra) GetInfo(url string) (string, string) {
+func (c *Comicextra) GetInfo(url string) (string, string, error) {
 	parts := util.TrimAndSplitURL(url)
 
 	name := parts[3]
 	issueNumber := parts[4]
 
-	return name, issueNumber
+	return name, issueNumber, nil
 }
 
 // Initialize will initialize the comic based
 // on comicextra.com
-func (c *Comicextra) Initialize(comic *core.Comic) error {
+func (c *Comicextra) Initialize(comic *core.ComicIssue) error {
+	if comic.SeriesMetadata == nil {
+		comic.SeriesMetadata = &core.SeriesMetadata{}
+	}
+
+	parts := util.TrimAndSplitURL(comic.Source.URL)
+	if len(parts) >= 5 {
+		comic.ChapterName = parts[3]
+		comic.SeriesMetadata.Title = parts[3]
+		comic.IssueNumber = parts[4]
+	}
+
 	links, err := c.retrieveImageLinks(comic)
-	comic.Links = links
+	comic.ImageLinks = links
 
 	return err
 }

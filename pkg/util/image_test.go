@@ -7,10 +7,10 @@ import (
 )
 
 func TestImageType(t *testing.T) {
-	assert.Equal(t, ImageType("image/jpg"), "jpg")
-	assert.Equal(t, ImageType("image/jpeg"), "jpg")
-	assert.Equal(t, ImageType("image/png"), "png")
-	assert.Equal(t, ImageType("image/gif"), "gif")
-	assert.Equal(t, ImageType("image/webp"), "webp")
-	assert.Equal(t, ImageType("foo"), "unknown")
+	assert.Equal(t, ImageType("image/jpg"), ImageFormat("jpg"))
+	assert.Equal(t, ImageType("image/jpeg"), ImageFormat("jpg"))
+	assert.Equal(t, ImageType("image/png"), ImageFormat("png"))
+	assert.Equal(t, ImageType("image/gif"), ImageFormat("gif"))
+	assert.Equal(t, ImageType("image/webp"), ImageFormat("webp"))
+	assert.Equal(t, ImageType("foo"), ImageFormat("unknown"))
 }

@@ -1,6 +1,7 @@
 package sites
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
@@ -24,21 +25,37 @@ func NewReadallcomics(options *config.Options) *Readallcomics {
 	}
 }
 
-func (r *Readallcomics) retrieveImageLinks(comic *core.Comic) ([]string, error) {
-	var links []string
+func init() {
+	SupportedSites["readallcomics"] = SupportedSite{
+		IsEnabled: true,
+		Loader:    func(opts *config.Options) BaseSite { return NewReadallcomics(opts) },
+	}
+}
 
-	response, err := soup.Get(comic.URLSource)
+func (r *Readallcomics) requestContext() (context.Context, context.CancelFunc) {
+	return context.WithTimeout(context.Background(), r.options.RequestTimeout)
+}
+
+func (r *Readallcomics) retrieveImageLinks(comic *core.ComicIssue) ([]string, error) {
+	ctx, cancel := r.requestContext()
+	defer cancel()
+
+	response, err := r.options.Client.FetchHTML(ctx, comic.Source.URL)
 	if err != nil {
-		return links, err
+		return nil, err
 	}
 
 	document := soup.HTMLParse(response)
 
+	var links []string
 	images := document.FindAll("img")
 	for _, img := range images {
-		url := img.Attrs()["src"]
-		if util.IsURLValid(url) {
-			links = append(links, url)
+		src, ok := img.Attrs()["src"]
+		if !ok {
+			continue
+		}
+		if util.IsURLValid(src) && !util.IsValueInSlice(src, links) {
+			links = append(links, src)
 		}
 	}
 
@@ -51,31 +68,89 @@ func (r *Readallcomics) retrieveImageLinks(comic *core.Comic) ([]string, error) 
 
 // Retrieve issues links from main comic page or from comic issue.
 func (r *Readallcomics) getIssues(url string) ([]string, error) {
-	var links []string
 
-	response, err := soup.Get(url)
+	ctx, cancel := r.requestContext()
+	defer cancel()
+
+	response, err := r.options.Client.FetchHTML(ctx, url)
 	if err != nil {
 		return nil, err
 	}
 
 	doc := soup.HTMLParse(response)
 
+	var links []string
 	if strings.Contains(url, "category") {
-		chapters := doc.Find("ul", "class", "list-story").FindAll("a")
-		for _, chapter := range chapters {
-			issueUrl := chapter.Attrs()["href"]
-			if util.IsURLValid(issueUrl) {
-				links = append(links, issueUrl)
-			}
+		chapterList := doc.Find("ul", "class", "list-story")
+		if chapterList.Error != nil {
+			return nil, fmt.Errorf("readallcomics: unable to find chapter list on %s", url)
+		}
 
+		for _, chapter := range chapterList.FindAll("a") {
+			issueURL, ok := chapter.Attrs()["href"]
+			if !ok {
+				continue
+			}
+			issueURL = strings.TrimSpace(issueURL)
+			if issueURL == "" {
+				continue
+			}
+			if !strings.HasPrefix(issueURL, "http") {
+				issueURL = fmt.Sprintf("%s/%s", strings.TrimRight(DefaultUrl, "/"), strings.TrimLeft(issueURL, "/"))
+			}
+			if util.IsURLValid(issueURL) && !util.IsValueInSlice(issueURL, links) {
+				links = append(links, issueURL)
+			}
 		}
 	} else {
-		chapters := doc.Find("select", "id", "selectbox").FindAll("option")
-		for _, chapter := range chapters {
-			issueUrl := chapter.Attrs()["value"]
-			if util.IsURLValid(issueUrl) {
-				links = append(links, issueUrl)
+		selectBox := doc.Find("select", "id", "selectbox")
+		if selectBox.Error == nil {
+			for _, chapter := range selectBox.FindAll("option") {
+				issueURL, ok := chapter.Attrs()["value"]
+				if !ok {
+					continue
+				}
+				issueURL = strings.TrimSpace(issueURL)
+				if issueURL == "" {
+					continue
+				}
+				if !strings.HasPrefix(issueURL, "http") {
+					issueURL = fmt.Sprintf("%s/%s", strings.TrimRight(DefaultUrl, "/"), strings.TrimLeft(issueURL, "/"))
+				}
+				if util.IsURLValid(issueURL) && !util.IsValueInSlice(issueURL, links) {
+					links = append(links, issueURL)
+				}
 			}
+		}
+
+		if len(links) == 0 {
+			// fallback: scan for anchors that point to issues
+			for _, chapter := range doc.FindAll("a") {
+				issueURL, ok := chapter.Attrs()["href"]
+				if !ok {
+					continue
+				}
+				issueURL = strings.TrimSpace(issueURL)
+				if issueURL == "" {
+					continue
+				}
+				if !strings.HasPrefix(issueURL, "http") {
+					issueURL = fmt.Sprintf("%s/%s", strings.TrimRight(DefaultUrl, "/"), strings.TrimLeft(issueURL, "/"))
+				}
+				if !strings.Contains(issueURL, DefaultUrl) {
+					continue
+				}
+				if strings.Contains(issueURL, "/category/") {
+					continue
+				}
+				if util.IsURLValid(issueURL) && !util.IsValueInSlice(issueURL, links) {
+					links = append(links, issueURL)
+				}
+			}
+		}
+
+		if len(links) == 0 {
+			return nil, fmt.Errorf("readallcomics: unable to find issue references on %s", url)
 		}
 	}
 
@@ -103,6 +178,10 @@ func (r *Readallcomics) RetrieveIssueLinks() ([]string, error) {
 			return nil, err
 		}
 
+		if len(chapters) == 0 {
+			return nil, fmt.Errorf("readallcomics: no chapters found at %s", url)
+		}
+
 		if r.options.Last {
 			return []string{chapters[len(chapters)-1]}, nil
 		}
@@ -117,14 +196,19 @@ func (r *Readallcomics) RetrieveIssueLinks() ([]string, error) {
 }
 
 // GetInfo extracts the comic info from the given URL.
-func (r *Readallcomics) GetInfo(url string) (string, string) {
+func (r *Readallcomics) GetInfo(url string) (string, string, error) {
+	return r.extractInfoFromURL(url)
+}
+
+func (r *Readallcomics) extractInfoFromURL(url string) (string, string, error) {
 	parts := util.TrimAndSplitURL(url)
 	lastPart := parts[len(parts)-1]
 	urlParts := strings.Split(lastPart, "-")
 
 	// Handle simple case with no hyphens
 	if len(urlParts) <= 1 {
-		return r.parseSimpleFormat(lastPart)
+		name, issueNumber := r.parseSimpleFormat(lastPart)
+		return name, issueNumber, nil
 	}
 
 	// Find potential issue number indices
@@ -135,16 +219,19 @@ func (r *Readallcomics) GetInfo(url string) (string, string) {
 
 	// Extract name and issue number based on split index
 	if splitIndex > 0 {
-		return r.extractInfoWithSplitIndex(urlParts, splitIndex)
+		name, issueNumber := r.extractInfoWithSplitIndex(urlParts, splitIndex)
+		return name, issueNumber, nil
 	}
 
 	// Handle year suffix pattern (e.g., "name-issue-year")
 	if r.hasYearSuffix(urlParts) {
-		return r.parseYearSuffixFormat(urlParts)
+		name, issueNumber := r.parseYearSuffixFormat(urlParts)
+		return name, issueNumber, nil
 	}
 
 	// Default fallback: last part is issue number
-	return r.parseDefaultFormat(urlParts)
+	name, issueNumber := r.parseDefaultFormat(urlParts)
+	return name, issueNumber, nil
 }
 
 // parseSimpleFormat handles URLs with no hyphens in the last part
@@ -341,9 +428,25 @@ func isNumeric(s string) bool {
 }
 
 // Initialize prepare the comic instance with links and images.
-func (r *Readallcomics) Initialize(comic *core.Comic) error {
-	links, err := r.retrieveImageLinks(comic)
-	comic.Links = links
+func (r *Readallcomics) Initialize(comic *core.ComicIssue) error {
+	name, issueNumber, err := r.extractInfoFromURL(comic.Source.URL)
+	if err != nil {
+		return err
+	}
 
-	return err
+	links, err := r.retrieveImageLinks(comic)
+	if err != nil {
+		return err
+	}
+
+	if comic.SeriesMetadata == nil {
+		comic.SeriesMetadata = &core.SeriesMetadata{}
+	}
+
+	comic.ChapterName = name
+	comic.SeriesMetadata.Title = name
+	comic.IssueNumber = issueNumber
+	comic.ImageLinks = links
+
+	return nil
 }

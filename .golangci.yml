@@ -1,0 +1,22 @@
+run:
+  timeout: 5m
+  tests: false
+  skip-dirs:
+    - comics
+
+linters:
+  enable:
+    - errcheck
+    - govet
+    - staticcheck
+    - gosimple
+    - ineffassign
+    - typecheck
+
+linters-settings:
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+
+issues:
+  exclude-use-default: false

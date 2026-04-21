@@ -1,23 +1,22 @@
 module github.com/Girbons/comics-downloader
 
-go 1.23.0
-
-toolchain go1.24.4
+go 1.25.0
 
 require (
 	fyne.io/fyne v1.4.3
 	github.com/anaskhan96/soup v1.2.5
+	github.com/beevik/etree v1.6.0
 	github.com/bmaupin/go-epub v1.1.0
+	github.com/chai2010/webp v1.4.0
 	github.com/dlclark/regexp2 v1.10.0
-	github.com/google/go-github v17.0.0+incompatible
 	github.com/jung-kurt/gofpdf v1.16.2
 	github.com/mholt/archives v0.1.2
+	github.com/pixiv/go-libjpeg v0.0.0-20190822045933-3da21a74767d
 	github.com/schollz/progressbar/v2 v2.15.0
 	github.com/sirupsen/logrus v1.9.3
-	github.com/stretchr/testify v1.9.0
-	golang.org/x/image v0.18.0
-	golang.org/x/mod v0.17.0
-	golang.org/x/sync v0.12.0
+	github.com/stretchr/testify v1.11.1
+	golang.org/x/mod v0.35.0
+	golang.org/x/sync v0.20.0
 )
 
 require (
@@ -36,8 +35,6 @@ require (
 	github.com/godbus/dbus/v5 v5.0.3 // indirect
 	github.com/gofrs/uuid v3.1.0+incompatible // indirect
 	github.com/goki/freetype v0.0.0-20181231101311-fa8a33aabaff // indirect
-	github.com/google/go-cmp v0.5.9 // indirect
-	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/hashicorp/golang-lru/v2 v2.0.7 // indirect
@@ -56,8 +53,9 @@ require (
 	github.com/ulikunitz/xz v0.5.12 // indirect
 	github.com/vincent-petithory/dataurl v0.0.0-20191104211930-d1553a71de50 // indirect
 	go4.org v0.0.0-20230225012048-214862532bf5 // indirect
-	golang.org/x/net v0.38.0 // indirect
-	golang.org/x/sys v0.31.0 // indirect
-	golang.org/x/text v0.23.0 // indirect
+	golang.org/x/image v0.39.0 // indirect
+	golang.org/x/net v0.47.0 // indirect
+	golang.org/x/sys v0.38.0 // indirect
+	golang.org/x/text v0.36.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

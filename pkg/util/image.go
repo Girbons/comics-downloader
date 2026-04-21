@@ -1,70 +1,103 @@
 package util
 
 import (
+	"bufio"
 	"errors"
 	"image"
 	"image/gif"
-	"image/jpeg"
 	"image/png"
 	"io"
 	"strings"
-	
-	"golang.org/x/image/webp"
+
+	"github.com/Girbons/comics-downloader/internal/logger"
+	"github.com/chai2010/webp"
 )
 
 // IMAGEREGEX to extract the image html tag
 const IMAGEREGEX = `<img[^>]+src="([^">]+)"`
 
+type ImageFormat string
+
+func (f ImageFormat) String() string {
+	return string(f)
+}
+
+const (
+	ImgFormatPNG     ImageFormat = "png"
+	ImgFormatJPG     ImageFormat = "jpg"
+	ImgFormatGIF     ImageFormat = "gif"
+	ImgFormatWEBP    ImageFormat = "webp"
+	ImgFormatIMG     ImageFormat = "img"
+	ImgFormatUnknown ImageFormat = "unknown"
+)
+
 // ImageType return the image type
-func ImageType(mimeStr string) (tp string) {
-	switch mimeStr {
+func ImageType(mimeStr string) (format ImageFormat) {
+	switch strings.ToLower(strings.TrimSpace(mimeStr)) {
 	case "image/png", "png":
-		tp = "png"
-	case "image/jpg", "jpg":
-		tp = "jpg"
-	case "image/jpeg", "jpeg":
-		tp = "jpg"
+		format = ImgFormatPNG
+	case "image/jpg", "jpg", "image/jpeg", "jpeg":
+		format = ImgFormatJPG
 	case "image/gif", "gif":
-		tp = "gif"
+		format = ImgFormatGIF
 	case "image/webp", "webp":
-		tp = "webp"
+		format = ImgFormatWEBP
 	case "img":
-		tp = "img"
+		format = ImgFormatIMG
 	default:
-		tp = "unknown"
+		format = ImgFormatUnknown
 	}
 	return
 }
 
 // SaveImage saves an image from a given format
-func SaveImage(w io.Writer, content io.Reader, format string, isWebp bool) error {
+func SaveImage(logger *logger.Logger, w io.Writer, content io.Reader, outputFormat ImageFormat, providedImageFormat ImageFormat) error {
 	var (
-          img image.Image
-          err error
-        )
-	
-	if isWebp {
-		img, err = webp.Decode(content)
-	} else {
-		img, _, err = image.Decode(content)
+		img image.Image
+		err error
+	)
+
+	if strings.EqualFold(outputFormat.String(), ImgFormatIMG.String()) {
+		_, err = io.Copy(w, content)
+		return err
 	}
 
+	// TODO: we can optimize this by only decoding the image if the output format is different from the input format, otherwise we can just copy the content to the writer without decoding and encoding again
+	// TODO: add avif support
+
+	img, err = decodeInputImage(content, providedImageFormat)
 	if err != nil {
 		return err
 	}
 
-	switch strings.ToLower(format) {
+	switch strings.ToLower(outputFormat.String()) {
 	case "img":
 		_, err = io.Copy(w, content)
 		return err
 	case "gif":
 		return gif.Encode(w, img, nil)
 	case "jpg", "jpeg":
-		return jpeg.Encode(w, img, &jpeg.Options{Quality: 100})
+		return encodeJPEG(w, img)
 	case "png":
 		pngEncoder := png.Encoder{CompressionLevel: png.BestCompression}
 		return pngEncoder.Encode(w, img)
+	case "webp":
+		return webp.Encode(w, img, &webp.Options{Lossless: true})
 	default:
 		return errors.New("format not found")
 	}
+}
+
+func decodeInputImage(content io.Reader, providedImageFormat ImageFormat) (image.Image, error) {
+	if providedImageFormat == ImgFormatWEBP {
+		return webp.Decode(content)
+	}
+
+	bufferedContent := bufio.NewReader(content)
+	if providedImageFormat == ImgFormatJPG {
+		return decodeJPEG(bufferedContent)
+	}
+
+	img, _, err := image.Decode(bufferedContent)
+	return img, err
 }

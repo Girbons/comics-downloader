@@ -1,6 +1,7 @@
 package sites
 
 import (
+	"context"
 	"encoding/base64"
 	"fmt"
 	"regexp"
@@ -9,7 +10,6 @@ import (
 	"github.com/Girbons/comics-downloader/pkg/config"
 	"github.com/Girbons/comics-downloader/pkg/core"
 	"github.com/Girbons/comics-downloader/pkg/util"
-	"github.com/anaskhan96/soup"
 )
 
 var baseUrl = "https://readcomiconline.li"
@@ -24,6 +24,17 @@ func NewReadComiconline(options *config.Options) *ReadComicOnline {
 	return &ReadComicOnline{
 		options: options,
 	}
+}
+
+func init() {
+	SupportedSites["readcomiconline"] = SupportedSite{
+		IsEnabled: true,
+		Loader:    func(opts *config.Options) BaseSite { return NewReadComiconline(opts) },
+	}
+}
+
+func (c *ReadComicOnline) requestContext() (context.Context, context.CancelFunc) {
+	return context.WithTimeout(context.Background(), c.options.RequestTimeout)
 }
 
 func deobfuscateUrl(imageLink string) (string, error) {
@@ -61,14 +72,26 @@ func deobfuscateUrl(imageLink string) (string, error) {
 	return link, nil
 }
 
-func (c *ReadComicOnline) retrieveImageLinks(comic *core.Comic) ([]string, error) {
+func (c *ReadComicOnline) retrieveImageLinks(comic *core.ComicIssue) ([]string, error) {
 	var links []string
+	const debugSnippetLimit = 4096
 
-	comic.URLSource = strings.Split(comic.URLSource, "?")[0]
+	comic.Source.URL = strings.Split(comic.Source.URL, "?")[0]
+	fetchURL := comic.Source.URL + "?quality=hd&readType=1"
 
-	response, err := soup.Get(comic.URLSource + "?quality=hd&readType=1")
+	if c.options.Debug && c.options.Logger != nil {
+		c.options.Logger.Debugf("readcomiconline: fetching %s", fetchURL)
+	}
+
+	ctx, cancel := c.requestContext()
+	defer cancel()
+
+	response, err := c.options.Client.FetchHTML(ctx, fetchURL)
 	if err != nil {
-		return nil, err
+		if c.options.Logger != nil {
+			c.options.Logger.Errorf("readcomiconline: request to %s failed: %v", fetchURL, err)
+		}
+		return nil, fmt.Errorf("readcomiconline: fetch %s: %w", fetchURL, err)
 	}
 
 	re := regexp.MustCompile(`push\(\'(.*?)\'\)`)
@@ -87,7 +110,24 @@ func (c *ReadComicOnline) retrieveImageLinks(comic *core.Comic) ([]string, error
 		}
 	}
 
-	if c.options.Debug {
+	if c.options.Debug && c.options.Logger != nil {
+		c.options.Logger.Debugf("readcomiconline: found %d obfuscated entries, %d valid links for %s", len(match), len(links), comic.Source.URL)
+		snippet := response
+		if len(snippet) > debugSnippetLimit {
+			snippet = snippet[:debugSnippetLimit]
+		}
+		encoded := base64.StdEncoding.EncodeToString([]byte(snippet))
+		c.options.Logger.Debugf("readcomiconline: response snippet (base64, trimmed to %d bytes) = %s", len(snippet), encoded)
+		if len(match) > 0 {
+			c.options.Logger.Debugf("readcomiconline: first obfuscated entry (base64) = %s", base64.StdEncoding.EncodeToString([]byte(match[0][1])))
+		}
+		if len(links) > 0 {
+			preview := links[0]
+			if len(preview) > 256 {
+				preview = preview[:256] + "..."
+			}
+			c.options.Logger.Debugf("readcomiconline: first decoded link = %s", preview)
+		}
 		c.options.Logger.Debug(fmt.Sprintf("Image Links found: %s", strings.Join(links, " ")))
 	}
 
@@ -100,9 +140,10 @@ func (c *ReadComicOnline) isSingleIssue(url string) bool {
 }
 
 func (c *ReadComicOnline) retrieveLastIssue(url string) (string, error) {
-	var lastIssue string
+	ctx, cancel := c.requestContext()
+	defer cancel()
 
-	response, err := soup.Get(url)
+	response, err := c.options.Client.FetchHTML(ctx, url)
 	if err != nil {
 		return "", err
 	}
@@ -110,7 +151,7 @@ func (c *ReadComicOnline) retrieveLastIssue(url string) (string, error) {
 	name := util.TrimAndSplitURL(url)[4]
 	re := regexp.MustCompile("<a[^>]+href=\"([^\">]+" + "/" + name + "/.+)\"")
 	match := re.FindAllStringSubmatch(response, -1)
-	lastIssue = baseUrl + strings.Split(match[0][1], "?")[0]
+	lastIssue := baseUrl + strings.Split(match[0][1], "?")[0]
 
 	return lastIssue, nil
 }
@@ -136,7 +177,10 @@ func (c *ReadComicOnline) RetrieveIssueLinks() ([]string, error) {
 		links []string
 	)
 
-	response, err := soup.Get(url)
+	ctx, cancel := c.requestContext()
+	defer cancel()
+
+	response, err := c.options.Client.FetchHTML(ctx, url)
 	if err != nil {
 		return nil, err
 	}
@@ -163,19 +207,30 @@ func (c *ReadComicOnline) RetrieveIssueLinks() ([]string, error) {
 }
 
 // GetInfo extracts the basic info from the given url.
-func (c *ReadComicOnline) GetInfo(url string) (string, string) {
+func (c *ReadComicOnline) GetInfo(url string) (string, string, error) {
 	parts := util.TrimAndSplitURL(url)
 	name := parts[4]
 	issueNumber := strings.Split(strings.ReplaceAll(parts[5], "Issue-", ""), "?")[0]
 
-	return name, issueNumber
+	return name, issueNumber, nil
 }
 
 // Initialize will initialize the comic based
 // on ReadComicOnline.to
-func (c *ReadComicOnline) Initialize(comic *core.Comic) error {
+func (c *ReadComicOnline) Initialize(comic *core.ComicIssue) error {
+	if comic.SeriesMetadata == nil {
+		comic.SeriesMetadata = &core.SeriesMetadata{}
+	}
+
+	parts := util.TrimAndSplitURL(comic.Source.URL)
+	if len(parts) >= 6 {
+		comic.ChapterName = parts[4]
+		comic.SeriesMetadata.Title = parts[4]
+		comic.IssueNumber = strings.Split(strings.ReplaceAll(parts[5], "Issue-", ""), "?")[0]
+	}
+
 	links, err := c.retrieveImageLinks(comic)
-	comic.Links = links
+	comic.ImageLinks = links
 
 	return err
 }

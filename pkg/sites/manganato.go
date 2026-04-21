@@ -16,17 +16,30 @@ func NewManganato(options *config.Options) *Manganato {
 	}
 }
 
+func init() {
+	SupportedSites["manganato"] = SupportedSite{
+		IsEnabled: true,
+		Loader:    func(opts *config.Options) BaseSite { return NewManganato(opts) },
+	}
+}
+
 // GetInfo extracts the basic info from the given url.
-func (m *Manganato) GetInfo(url string) (string, string) {
-	return MangaKakalotGetInfo("manganato.com", url)
+func (m *Manganato) GetInfo(url string) (string, string, error) {
+	name, issueNumber, err := MangaKakalotGetInfo(m.options, "manganato.com", url)
+	if err != nil {
+
+		return "", "", err
+	}
+
+	return name, issueNumber, nil
 }
 
 // Initialize loads links and metadata from manganato
-func (m *Manganato) Initialize(comic *core.Comic) error {
-	return MangaKakalotInitialize(comic)
+func (m *Manganato) Initialize(comic *core.ComicIssue) error {
+	return MangaKakalotInitialize(m.options, comic)
 }
 
 // RetrieveIssueLinks retrieve the issue links for the given comic.
 func (m *Manganato) RetrieveIssueLinks() ([]string, error) {
-	return MangaKakalotRetrieveIssueLinks("manganato.com", m.options.URL)
+	return MangaKakalotRetrieveIssueLinks(m.options, "manganato.com", m.options.URL)
 }

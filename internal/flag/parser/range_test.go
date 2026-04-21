@@ -25,6 +25,11 @@ func TestParseIssuesRange(t *testing.T) {
 		{"2-1", 0, 0, true},
 		{"1", 0, 0, true},
 		{"wrong range", 0, 0, true},
+		// Volume.issue format tests
+		{"4.78-4.99", 4.78, 4.99, false},     // Nightwing V4 #078-099
+		{"4.078-4.099", 4.078, 4.099, false}, // Same with leading zeros
+		{"1.10-1.20", 1.10, 1.20, false},     // Volume 1, issues 10-20
+		{"2.01-2.05", 2.01, 2.05, false},     // Volume 2, issues 01-05
 	}
 
 	for _, tc := range tt {

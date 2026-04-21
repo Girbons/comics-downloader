@@ -14,7 +14,7 @@
 - https://readcomiconline.li/  ⚠️
 - https://www.mangareader.tv/  ⚠️
 - https://www.mangatown.com/   ⚠️
-- https://mangadex.org/        ⚠️
+- https://mangadex.org/        
 - https://mangakakalot.com/    ⚠️
 - https://manganato.com/       ⚠️
 
@@ -197,6 +197,16 @@ Default is **jpg**.
 
 ```bash
 ./comics-downloader -url=[your url] -images-only -images-format=jpg
+```
+
+### Work Around Site Protection
+
+Some sources employ rotating fingerprints or require a logged-in session. You can rotate multiple User-Agent strings and forward session cookies collected from your browser:
+
+```bash
+./comics-downloader -url=[your url] \
+  --user-agents="Mozilla/5.0 ...,Mozilla/5.0 (Macintosh; ...)" \
+  --session-cookie="cf_clearance=...; other=value"
 ```
 
 ### Avoid Default Folder Structure

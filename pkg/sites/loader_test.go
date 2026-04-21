@@ -1,200 +1,315 @@
 package sites
 
 import (
-	"fmt"
-	"os"
-	"path/filepath"
+	"errors"
 	"testing"
 
+	"github.com/Girbons/comics-downloader/internal/logger"
 	"github.com/Girbons/comics-downloader/pkg/config"
+	"github.com/Girbons/comics-downloader/pkg/core"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-func TestSiteLoaderMangatown(t *testing.T) {
-	url := "https://www.mangatown.com/manga/naruto/v63/c693/"
-	outputFolder := filepath.Dir(os.Args[0])
-
-	options := &config.Options{
-		All:          false,
-		Last:         false,
-		ImagesOnly:   false,
-		Source:       "www.mangatown.com",
-		URL:          url,
-		Format:       "pdf",
-		ImagesFormat: "png",
-		OutputFolder: outputFolder,
-	}
-
-	collection, err := LoadComicFromSource(options)
-
-	assert.Nil(t, err)
-	assert.Equal(t, len(collection), 1)
-
-	comic := collection[0]
-
-	assert.Equal(t, "www.mangatown.com", comic.Source)
-	assert.Equal(t, url, comic.URLSource)
-	assert.Equal(t, "naruto", comic.Name)
-	assert.Equal(t, "c693", comic.IssueNumber)
-	assert.Equal(t, 20, len(comic.Links))
+type stubSite struct {
+	issues []string
+	comics map[string]*core.ComicIssue
 }
 
-func TestCustomComicName(t *testing.T) {
-	url := "https://www.mangatown.com/manga/naruto/v63/c693/"
-	outputFolder := filepath.Dir(os.Args[0])
-
-	options := &config.Options{
-		All:             false,
-		Last:            false,
-		ImagesOnly:      false,
-		Source:          "www.mangatown.com",
-		URL:             url,
-		Format:          "pdf",
-		ImagesFormat:    "png",
-		CustomComicName: "Naruto",
-		OutputFolder:    outputFolder,
+func (s *stubSite) Initialize(comic *core.ComicIssue) error {
+	if stub, ok := s.comics[comic.Source.URL]; ok {
+		*comic = *stub
+		return nil
 	}
-
-	collection, err := LoadComicFromSource(options)
-
-	assert.Nil(t, err)
-	assert.Equal(t, len(collection), 1)
-
-	comic := collection[0]
-
-	assert.Equal(t, "www.mangatown.com", comic.Source)
-	assert.Equal(t, url, comic.URLSource)
-	assert.Equal(t, "Naruto", comic.Name)
-	assert.Equal(t, "c693", comic.IssueNumber)
-	assert.Equal(t, 20, len(comic.Links))
+	return errors.New("missing comic")
 }
 
-//func TestSiteLoaderMangareader(t *testing.T) {
-//url := "https://www.mangareader.net/naruto/700"
-//outputFolder := filepath.Dir(os.Args[0])
-
-//options := &config.Options{
-//All:          false,
-//Last:         false,
-//ImagesOnly:   false,
-//Source:       "www.mangareader.net",
-//Url:          url,
-//Format:       "pdf",
-//ImagesFormat: "png",
-//OutputFolder: outputFolder,
-//}
-
-//collection, err := LoadComicFromSource(options)
-
-//assert.Nil(t, err)
-//assert.Equal(t, len(collection), 1)
-
-//comic := collection[0]
-
-//assert.Equal(t, "www.mangareader.net", comic.Source)
-//assert.Equal(t, url, comic.URLSource)
-//assert.Equal(t, "naruto", comic.Name)
-//assert.Equal(t, "700", comic.IssueNumber)
-//assert.Equal(t, 23, len(comic.Links))
-//}
-
-func TestSiteLoaderComicExtra(t *testing.T) {
-	url := "https://comicextra.me/batman-unseen/issue-5/full"
-	outputFolder := filepath.Dir(os.Args[0])
-	options := &config.Options{
-		All:          false,
-		Last:         false,
-		ImagesOnly:   false,
-		Source:       "comicextra.net",
-		URL:          url,
-		Format:       "pdf",
-		ImagesFormat: "png",
-		OutputFolder: outputFolder,
+func (s *stubSite) GetInfo(url string) (string, string, error) {
+	if stub, ok := s.comics[url]; ok {
+		return stub.ChapterName, stub.IssueNumber, nil
 	}
-	collection, err := LoadComicFromSource(options)
-
-	assert.Nil(t, err)
-	assert.Equal(t, 1, len(collection))
-
-	comic := collection[0]
-
-	assert.Equal(t, "comicextra.net", comic.Source)
-	assert.Equal(t, url, comic.URLSource)
-	assert.Equal(t, "batman-unseen", comic.Name)
-	assert.Equal(t, "issue-5", comic.IssueNumber)
-	assert.Equal(t, 23, len(comic.Links))
+	return "", "", errors.New("missing comic")
 }
 
-func TestLoaderUnknownSource(t *testing.T) {
-	url := "http://example.com"
-	outputFolder := filepath.Dir(os.Args[0])
-
-	options := &config.Options{
-		All:          false,
-		Last:         false,
-		ImagesOnly:   false,
-		Source:       "example.com",
-		URL:          url,
-		Format:       "pdf",
-		ImagesFormat: "png",
-		OutputFolder: outputFolder,
-	}
-
-	collection, err := LoadComicFromSource(options)
-
-	if assert.NotNil(t, err) {
-		assert.Equal(t, fmt.Errorf("source unknown"), err)
-	}
-	assert.Equal(t, len(collection), 0)
+func (s *stubSite) RetrieveIssueLinks() ([]string, error) {
+	return s.issues, nil
 }
 
-func TestIssuesRange(t *testing.T) {
-	url := "https://comicextra.net/batman-unseen/issue-5/full"
-	outputFolder := filepath.Dir(os.Args[0])
+func TestInitializeCollectionFiltersIssues(t *testing.T) {
 	options := &config.Options{
-		All:          true,
-		Last:         false,
-		ImagesOnly:   false,
-		Source:       "comicextra.net",
-		URL:          url,
-		Format:       "pdf",
-		ImagesFormat: "png",
-		OutputFolder: outputFolder,
-		IssuesRange:  "1-3",
-	}
-	collection, err := LoadComicFromSource(options)
-
-	assert.Nil(t, err)
-	assert.Equal(t, len(collection), 3)
-
-	issues := make([]string, 0, len(collection))
-	for _, c := range collection {
-		issues = append(issues, c.IssueNumber)
+		SourceName:         "test-source",
+		OutputFormat:       "pdf",
+		OutputImagesFormat: "png",
+		IssuesRange:        "1-2",
+		All:                true,
+		Logger:             logger.NewLogger(false, nil),
 	}
 
-	assert.Contains(t, issues, "issue-1")
-	assert.Contains(t, issues, "issue-2")
-	assert.Contains(t, issues, "issue-3")
+	site := &stubSite{
+		issues: []string{"url-1", "url-2", "url-3"},
+		comics: map[string]*core.ComicIssue{
+			"url-1": {ChapterName: "series", IssueNumber: "issue-1", Source: &core.ComicSource{Name: "test-source", URL: "url-1"}},
+			"url-2": {ChapterName: "series", IssueNumber: "issue-2", Source: &core.ComicSource{Name: "test-source", URL: "url-2"}},
+			"url-3": {ChapterName: "series", IssueNumber: "issue-3", Source: &core.ComicSource{Name: "test-source", URL: "url-3"}},
+		},
+	}
+
+	collection, err := initializeCollection(site.issues, options, site)
+	require.NoError(t, err)
+	require.Len(t, collection, 2)
+	require.Equal(t, "issue-1", collection[0].IssueNumber)
+	require.Equal(t, "issue-2", collection[1].IssueNumber)
 }
 
-func TestFloatIssuesRange(t *testing.T) {
+func TestLoadComicFromSourceUnknown(t *testing.T) {
+	options := &config.Options{SourceName: "unknown", Logger: logger.NewLogger(false, nil)}
+	collection, err := LoadComicFromSource(options)
+	require.Error(t, err)
+	require.Empty(t, collection)
+}
+
+func TestNotInIssuesRange(t *testing.T) {
+	testCases := []struct {
+		issue string
+		start float64
+		end   float64
+		skip  bool
+	}{
+		{"1", 1, 2, false},
+		{"3", 1, 2, true},
+		{"2.5", 2, 3, false},
+		{"abc", 1, 2, true},
+	}
+
+	for _, tc := range testCases {
+		require.Equal(t, tc.skip, notInIssuesRange(tc.issue, tc.start, tc.end))
+	}
+}
+
+func TestVolumeIssuesRange(t *testing.T) {
 	tt := []struct {
+		name        string
 		input       string
 		start       float64
 		end         float64
 		returnValue bool
 	}{
-		{"1", 1, 1, false},
-		{"19", 20, 21, true},
-		{"20", 20, 21, false},
-		{"20.5", 20, 21, false},
-		{"21", 20, 21, false},
-		{"22", 20, 21, true},
+		// Volume 4, Issue 78-99 range tests (user specifies: -range=4.78-4.99)
+		{"v4-078 in range", "v4-078-2016", 4.78, 4.99, false},
+		{"v4-099 in range", "v4-099-2016", 4.78, 4.99, false},
+		{"v4-077 out of range (too low)", "v4-077-2016", 4.78, 4.99, true},
+		{"v4-100 out of range (too high)", "v4-100-2016", 4.78, 4.99, true},
+		{"v3-078 wrong volume", "v3-078-2016", 4.78, 4.99, true},
+		{"v5-078 wrong volume", "v5-078-2016", 4.78, 4.99, true},
+
+		// Volume 2, Issue 1-50 range tests (user specifies: -range=2.01-2.50)
+		{"v2-001 in range", "v2-001-1989", 2.01, 2.50, false},
+		{"v2-025 in range", "v2-025-1989", 2.01, 2.50, false},
+		{"v2-050 in range", "v2-050-1989", 2.01, 2.50, false},
+		{"v2-051 out of range", "v2-051-1989", 2.01, 2.50, true},
+
+		// Edge cases with different formats
+		{"v4-078 without year", "v4-078", 4.78, 4.99, false},
+		{"v4_078 with underscore", "v4_078", 4.78, 4.99, false},
+		{"v10-005 two-digit volume", "v10-005", 10.05, 10.10, false},
+
+		// Backwards compatibility with simple numeric issues
+		{"078 simple format", "078", 78, 99, false},
+		{"100 simple format out of range", "100", 78, 99, true},
+		{"issue-1 with prefix", "issue-1", 1, 3, false},
+		{"issue-5 with prefix out of range", "issue-5", 1, 3, true},
 	}
 
 	for _, tc := range tt {
-		t.Run(tc.input, func(t *testing.T) {
-			assert.Equal(t, notInIssuesRange(tc.input, tc.start, tc.end), tc.returnValue)
+		t.Run(tc.name, func(t *testing.T) {
+			assert.Equal(t, tc.returnValue, notInIssuesRange(tc.input, tc.start, tc.end),
+				"Issue %s with range %.2f-%.2f", tc.input, tc.start, tc.end)
 		})
 	}
+}
+
+func TestExtractIssueNumberForRange(t *testing.T) {
+	tt := []struct {
+		name     string
+		input    string
+		expected float64
+	}{
+		// Volume and issue format
+		{"v4-078-2016", "v4-078-2016", 4.78},
+		{"v4-099-2016", "v4-099-2016", 4.99},
+		{"v2-075-1989", "v2-075-1989", 2.75},
+		{"v4-078 no year", "v4-078", 4.78},
+		{"v4_078 underscore", "v4_078", 4.78},
+		{"v10-005 two-digit volume", "v10-005", 10.05},
+
+		// Simple numeric format
+		{"078", "078", 78},
+		{"99", "99", 99},
+		{"1", "1", 1},
+
+		// Decimal format
+		{"20.5", "20.5", 20.5},
+		{"3.14", "3.14", 3.14},
+
+		// With prefixes
+		{"issue-1", "issue-1", 1},
+		{"issue-123", "issue-123", 123},
+
+		// Edge cases
+		{"empty", "", 0},
+		{"no numbers", "abc", 0},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.name, func(t *testing.T) {
+			assert.Equal(t, tc.expected, extractIssueNumberForRange(tc.input),
+				"Issue %s should extract to %.2f", tc.input, tc.expected)
+		})
+	}
+}
+
+func TestLoadComicFromSourceWithRegistry(t *testing.T) {
+	// Save original registry to restore it after the test
+	originalRegistry := make(map[string]SupportedSite)
+	for k, v := range SupportedSites {
+		originalRegistry[k] = v
+	}
+	defer func() {
+		SupportedSites = originalRegistry
+	}()
+
+	// Create a test site implementation
+	testSite := &stubSite{
+		issues: []string{"url-1", "url-2"},
+		comics: map[string]*core.ComicIssue{
+			"url-1": {ChapterName: "test-series", IssueNumber: "1", Source: &core.ComicSource{Name: "test-site", URL: "url-1"}},
+			"url-2": {ChapterName: "test-series", IssueNumber: "2", Source: &core.ComicSource{Name: "test-site", URL: "url-2"}},
+		},
+	}
+
+	// Register the test site in the registry
+	SupportedSites["test-site"] = SupportedSite{
+		IsEnabled: true,
+		Loader: func(opts *config.Options) BaseSite {
+			return testSite
+		},
+	}
+
+	options := &config.Options{
+		SourceName:         "test-site",
+		URL:                "http://test-site.com",
+		OutputFormat:       "pdf",
+		OutputImagesFormat: "png",
+		Logger:             logger.NewLogger(false, nil),
+	}
+
+	collection, err := LoadComicFromSource(options)
+	require.NoError(t, err)
+	require.Len(t, collection, 2)
+	assert.Equal(t, "test-series", collection[0].ChapterName)
+	assert.Equal(t, "1", collection[0].IssueNumber)
+	assert.Equal(t, "test-series", collection[1].ChapterName)
+	assert.Equal(t, "2", collection[1].IssueNumber)
+}
+
+func TestLoadComicFromSourceDisabledSite(t *testing.T) {
+	// Save original registry
+	originalRegistry := make(map[string]SupportedSite)
+	for k, v := range SupportedSites {
+		originalRegistry[k] = v
+	}
+	defer func() {
+		SupportedSites = originalRegistry
+	}()
+
+	// Register a disabled test site
+	testSite := &stubSite{
+		issues: []string{"url-1"},
+		comics: map[string]*core.ComicIssue{
+			"url-1": {ChapterName: "test-series", IssueNumber: "1", Source: &core.ComicSource{Name: "disabled-test-site", URL: "url-1"}},
+		},
+	}
+
+	SupportedSites["disabled-test-site"] = SupportedSite{
+		IsEnabled: false,
+		Loader: func(opts *config.Options) BaseSite {
+			return testSite
+		},
+	}
+
+	options := &config.Options{
+		SourceName: "disabled-test-site",
+		URL:        "http://disabled-test-site.com",
+		Logger:     logger.NewLogger(false, nil),
+	}
+
+	collection, err := LoadComicFromSource(options)
+	require.Error(t, err)
+	require.Empty(t, collection)
+	assert.Contains(t, err.Error(), "disabled")
+}
+
+func TestLoadComicFromSourcePartialMatch(t *testing.T) {
+	// Save original registry
+	originalRegistry := make(map[string]SupportedSite)
+	for k, v := range SupportedSites {
+		originalRegistry[k] = v
+	}
+	defer func() {
+		SupportedSites = originalRegistry
+	}()
+
+	testSite := &stubSite{
+		issues: []string{"url-1"},
+		comics: map[string]*core.ComicIssue{
+			"url-1": {ChapterName: "my-comic", IssueNumber: "42", Source: &core.ComicSource{Name: "mysite.com", URL: "url-1"}},
+		},
+	}
+
+	SupportedSites["mysite"] = SupportedSite{
+		IsEnabled: true,
+		Loader: func(opts *config.Options) BaseSite {
+			return testSite
+		},
+	}
+
+	// Test with full domain name to verify partial matching works
+	options := &config.Options{
+		SourceName:         "mysite.com",
+		URL:                "http://mysite.com/comic",
+		OutputFormat:       "pdf",
+		OutputImagesFormat: "png",
+		Logger:             logger.NewLogger(false, nil),
+	}
+
+	collection, err := LoadComicFromSource(options)
+	require.NoError(t, err)
+	require.Len(t, collection, 1)
+	assert.Equal(t, "my-comic", collection[0].ChapterName)
+	assert.Equal(t, "42", collection[0].IssueNumber)
+}
+
+func TestLoadComicFromSourceUnsupportedSite(t *testing.T) {
+	// Save original registry
+	originalRegistry := make(map[string]SupportedSite)
+	for k, v := range SupportedSites {
+		originalRegistry[k] = v
+	}
+	defer func() {
+		SupportedSites = originalRegistry
+	}()
+
+	// Clear registry to ensure no sites are registered
+	SupportedSites = make(map[string]SupportedSite)
+
+	options := &config.Options{
+		SourceName: "unsupported-site.com",
+		URL:        "http://unsupported-site.com/comic",
+		Logger:     logger.NewLogger(false, nil),
+	}
+
+	collection, err := LoadComicFromSource(options)
+	require.Error(t, err)
+	require.Empty(t, collection)
+	assert.Contains(t, err.Error(), "unknown")
 }

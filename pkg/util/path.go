@@ -4,7 +4,10 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 )
+
+const NameLength = 100
 
 // createPath create folders given the path.
 func createPath(path string) (string, error) {
@@ -21,11 +24,19 @@ func createPath(path string) (string, error) {
 	return dir, err
 }
 
-// PathSetup creates the folders where the comic will be saved.
+// TrimNameLength trims the name to a maximum length defined by NameLength constant
+func TrimNameLength(name string) string {
+	if len(name) > NameLength {
+		return name[:NameLength]
+	}
+	return name
+}
+
+// OutputPathSetup creates the folders where the comic will be saved.
 // when `createDefaultPath` is false the comic is stored without prepending
 // the default folder path `comics/source/name/[comic.format]`.
-func PathSetup(createDefaultPath bool, outputFolder, source, name string) (string, error) {
-	path := fmt.Sprintf("%s/comics/%s/%s/", outputFolder, source, name)
+func OutputPathSetup(createDefaultPath bool, outputFolder, source, seriesName string) (string, error) {
+	path := fmt.Sprintf("%s/comics/%s/%s/", outputFolder, source, strings.TrimSpace(TrimNameLength(seriesName)))
 
 	if !createDefaultPath {
 		path = fmt.Sprintf("%s/", outputFolder)
@@ -37,11 +48,11 @@ func PathSetup(createDefaultPath bool, outputFolder, source, name string) (strin
 // ImagesPathSetup creates the folders for the images to be saved.
 // when `createDefaultPath` is false the images are stored without prepending
 // the default folder path `comics/source/name/[comic.format]`.
-func ImagesPathSetup(createDefaultPath bool, outputFolder, source, name, issueFolderName, issueNumber string) (string, error) {
-	path := fmt.Sprintf("%s/comics/%s/%s/images-%s/", outputFolder, source, name, issueNumber)
+func ImagesPathSetup(createDefaultPath bool, outputFolder, source, seriesName, issueFolderName, issueNumber string) (string, error) {
+	path := fmt.Sprintf("%s/comics/%s/%s/images-%s/", outputFolder, source, strings.TrimSpace(TrimNameLength(seriesName)), strings.TrimSpace(TrimNameLength(issueNumber)))
 
 	if !createDefaultPath {
-		path = fmt.Sprintf("%s/%s%s", outputFolder, issueFolderName, issueNumber)
+		path = fmt.Sprintf("%s/%s", outputFolder, strings.TrimSpace(TrimNameLength(issueFolderName+issueNumber)))
 	}
 
 	return createPath(path)
@@ -64,9 +75,9 @@ func DirectoryOrFileDoesNotExist(filePath string) bool {
 }
 
 // GetPathToFile returns the path where the file should be saved.
-func GetPathToFile(dir, name, issueNumber, format string, issueNumberOnly bool) string {
+func GetPathToFile(dir, comicName, issueNumber, format string, issueNumberOnly bool) string {
 	if issueNumberOnly {
-		return fmt.Sprintf("%s/%s.%s", dir, issueNumber, format)
+		return fmt.Sprintf("%s/%s.%s", dir, strings.TrimSpace(TrimNameLength(issueNumber)), format)
 	}
-	return fmt.Sprintf("%s/%s-%s.%s", dir, name, issueNumber, format)
+	return fmt.Sprintf("%s/%s - %s.%s", dir, strings.TrimSpace(TrimNameLength(comicName)), strings.TrimSpace(TrimNameLength(issueNumber)), format)
 }

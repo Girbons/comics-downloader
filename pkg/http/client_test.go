@@ -1,10 +1,24 @@
 package http
 
 import (
+	"context"
+	"net/http"
+	"net/http/httptest"
+	"sync/atomic"
 	"testing"
+	"time"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
+
+type stubLimiter struct {
+	count int32
+}
+
+func (s *stubLimiter) Wait(ctx context.Context) error {
+	atomic.AddInt32(&s.count, 1)
+	return nil
+}
 
 func TestPrepareRequestMangakakalot(t *testing.T) {
 	cc := NewComicClient()
@@ -12,15 +26,159 @@ func TestPrepareRequestMangakakalot(t *testing.T) {
 	source := "mangakakalot.com"
 	req, err := cc.PrepareRequest(link, source)
 
-	assert.Equal(t, req.Header["Referer"], []string{link})
-	assert.Nil(t, err)
+	require.NoError(t, err)
+	require.Equal(t, link, req.Header.Get("Referer"))
+	require.Equal(t, defaultUserAgent, req.Header.Get("User-Agent"))
 }
 
-func TestPrepareRequest(t *testing.T) {
+func TestPrepareRequestGenericHost(t *testing.T) {
 	cc := NewComicClient()
 	link := "http://foo.com"
 	req, err := cc.PrepareRequest(link, "foo")
 
-	assert.Equal(t, len(req.Header["Referer"]), 0)
-	assert.Nil(t, err)
+	require.NoError(t, err)
+	require.Empty(t, req.Header.Values("Referer"))
+	require.Equal(t, defaultUserAgent, req.Header.Get("User-Agent"))
+}
+
+func TestGetRetriesOnServerError(t *testing.T) {
+	var hits int32
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		call := atomic.AddInt32(&hits, 1)
+		if call == 1 {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer server.Close()
+
+	client := NewComicClient(
+		WithHTTPClient(server.Client()),
+		WithRetry(1, 0),
+	)
+
+	resp, err := client.Get(server.URL, "example.com")
+	require.NoError(t, err)
+	require.NotNil(t, resp)
+	require.Equal(t, int32(2), atomic.LoadInt32(&hits))
+}
+
+func TestRateLimiterInvoked(t *testing.T) {
+	limiter := &stubLimiter{}
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer server.Close()
+
+	client := NewComicClient(
+		WithHTTPClient(server.Client()),
+		WithRetry(0, 0),
+		WithRateLimiter(limiter),
+	)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	req, err := client.PrepareRequest(server.URL, "example.com")
+	require.NoError(t, err)
+
+	req = req.WithContext(ctx)
+	_, err = client.DoRaw(req)
+	require.NoError(t, err)
+	require.Equal(t, int32(1), atomic.LoadInt32(&limiter.count))
+}
+
+func TestUserAgentRotation(t *testing.T) {
+	agents := []string{"UA-1", "UA-2"}
+	// we need to ensure rotation occurs across calls
+	client := NewComicClient(WithUserAgents(agents))
+
+	req1, err := client.PrepareRequest("http://example.com", "example.com")
+	require.NoError(t, err)
+	req2, err := client.PrepareRequest("http://example.com", "example.com")
+	require.NoError(t, err)
+
+	if req1.Header.Get("User-Agent") == req2.Header.Get("User-Agent") {
+		t.Fatalf("expected rotating user agents, got identical headers %q", req1.Header.Get("User-Agent"))
+	}
+
+	req3, err := client.PrepareRequest("http://example.com", "example.com")
+	require.NoError(t, err)
+
+	require.Equal(t, req1.Header.Get("User-Agent"), req3.Header.Get("User-Agent"), "rotation should loop back to first entry")
+}
+
+func TestAdditionalHeadersApplied(t *testing.T) {
+	client := NewComicClient(WithHeaders(map[string]string{
+		"Cookie":      "cf_clearance=abc",
+		"X-Custom-Id": "123",
+	}))
+
+	req, err := client.PrepareRequest("http://example.com", "example.com")
+	require.NoError(t, err)
+
+	require.Equal(t, "cf_clearance=abc", req.Header.Get("Cookie"))
+	require.Equal(t, "123", req.Header.Get("X-Custom-Id"))
+}
+
+func TestExponentialBackoff(t *testing.T) {
+	baseRetryWait := 50 * time.Millisecond
+	var hits int32
+	hitsMu := &atomic.Value{}
+	hitsMu.Store([]time.Time{})
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		call := atomic.AddInt32(&hits, 1)
+		times := hitsMu.Load().([]time.Time)
+		times = append(times, time.Now())
+		hitsMu.Store(times)
+
+		// Only succeed on the third attempt
+		if call == 3 {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+		w.WriteHeader(http.StatusInternalServerError)
+	}))
+	defer server.Close()
+
+	client := NewComicClient(
+		WithHTTPClient(server.Client()),
+		WithRetry(2, baseRetryWait),
+	)
+
+	resp, err := client.Get(server.URL, "example.com")
+	require.NoError(t, err)
+	require.NotNil(t, resp)
+	require.Equal(t, int32(3), atomic.LoadInt32(&hits))
+
+	times := hitsMu.Load().([]time.Time)
+	require.Equal(t, 3, len(times))
+
+	// Verify exponential backoff pattern:
+	// First attempt at time T
+	// Second attempt at time T + baseRetryWait (2^0 * baseRetryWait)
+	// Third attempt at time T + baseRetryWait + 2*baseRetryWait = T + 3*baseRetryWait
+
+	firstToSecond := times[1].Sub(times[0])
+	secondToThird := times[2].Sub(times[1])
+
+	// First backoff should be approximately baseRetryWait * 2^0 = baseRetryWait
+	expectedFirstBackoff := baseRetryWait
+	if firstToSecond < expectedFirstBackoff {
+		t.Errorf("first backoff %v is less than expected %v", firstToSecond, expectedFirstBackoff)
+	}
+
+	// Second backoff should be approximately baseRetryWait * 2^1 = 2*baseRetryWait
+	expectedSecondBackoff := 2 * baseRetryWait
+	if secondToThird < expectedSecondBackoff {
+		t.Errorf("second backoff %v is less than expected %v", secondToThird, expectedSecondBackoff)
+	}
+
+	// The second backoff should be roughly double the first backoff
+	ratio := float64(secondToThird) / float64(firstToSecond)
+	if ratio < 1.5 || ratio > 2.5 {
+		t.Logf("backoff ratio %.2f is not close to 2x (may be due to timing variations)", ratio)
+	}
 }

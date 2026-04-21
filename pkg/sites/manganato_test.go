@@ -1,59 +1,104 @@
 package sites
 
 import (
+	"fmt"
+	"net/http"
+	"net/http/httptest"
 	"testing"
-
-	"github.com/Girbons/comics-downloader/pkg/core"
 
 	"github.com/Girbons/comics-downloader/internal/logger"
 	"github.com/Girbons/comics-downloader/pkg/config"
-	"github.com/stretchr/testify/assert"
+	"github.com/Girbons/comics-downloader/pkg/core"
+	httpclient "github.com/Girbons/comics-downloader/pkg/http"
+	"github.com/stretchr/testify/require"
 )
 
-func TestManganatoGetInfo(t *testing.T) {
-	opt := &config.Options{
-		URL:    "https://chapmanganato.com/manga-ng952689",
-		All:    false,
-		Last:   false,
-		Debug:  false,
-		Logger: logger.NewLogger(false, make(chan string)),
-	}
-	mg := NewManganato(opt)
-	// readmanganato.com
-	name, issueNumber := mg.GetInfo("https://chapmanganato.com/manga-ng952689/chapter-700.5")
-	assert.Equal(t, "Uzumaki Naruto", name)
-	assert.Equal(t, "700.5", issueNumber)
+const (
+	manganatoChapterPath = "/chapter/manga-title/chapter-2"
+	manganatoListPath    = "/read/manga-title"
+)
+
+func newManganatoServer() *httptest.Server {
+	chapterHTML := `
+        <html>
+            <body>
+                <div class="panel-breadcrumb">
+                    <a class="a-h">Home</a>
+                    <a class="a-h">Chapter 2 : My Manga</a>
+                </div>
+                <div class="container-chapter-reader">
+                    <img src="https://cdn.example.com/manga-title/001.jpg"/>
+                    <img src="https://cdn.example.com/manga-title/002.jpg"/>
+                </div>
+            </body>
+        </html>`
+
+	listHTMLTemplate := `
+        <html>
+            <body>
+                <div class="panel-story-chapter-list">
+                    <li class="a-h">
+                        <a href="%s` + manganatoChapterPath + `"></a>
+                    </li>
+                    <li class="a-h">
+                        <a href="%s/chapter/manga-title/chapter-1"></a>
+                    </li>
+                </div>
+            </body>
+        </html>`
+
+	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case manganatoChapterPath:
+			_, _ = fmt.Fprint(w, chapterHTML)
+		case manganatoListPath:
+			base := "http://" + r.Host
+			_, _ = fmt.Fprintf(w, listHTMLTemplate, base, base)
+		case "/chapter/manga-title/chapter-1":
+			_, _ = fmt.Fprint(w, "<html></html>")
+		default:
+			http.NotFound(w, r)
+		}
+	}))
 }
 
-func TestManganatoSetup(t *testing.T) {
-	opt := &config.Options{
-		URL:    "https://chapmanganato.com/manga-ng952689",
-		All:    false,
-		Last:   false,
-		Debug:  false,
-		Logger: logger.NewLogger(false, make(chan string)),
+func TestManganatoScraper(t *testing.T) {
+	server := newManganatoServer()
+	defer server.Close()
+
+	client := httpclient.NewComicClient(
+		httpclient.WithHTTPClient(server.Client()),
+		httpclient.WithRetry(0, 0),
+	)
+
+	opts := &config.Options{
+		URL:            server.URL + manganatoListPath,
+		SourceName:     "manganato.com",
+		Logger:         logger.NewLogger(false, nil),
+		RequestTimeout: config.DefaulltRequestTimeout,
+		Client:         client,
 	}
-	mk := NewManganato(opt)
-	comic := new(core.Comic)
-	comic.URLSource = "https://chapmanganato.com/manga-ng952689/chapter-700.5"
 
-	err := mk.Initialize(comic)
+	scraper := NewManganato(opts)
 
-	assert.Nil(t, err)
-	assert.Equal(t, 18, len(comic.Links))
-}
+	title, issue, err := scraper.GetInfo(server.URL + manganatoChapterPath)
+	require.NoError(t, err)
+	require.Equal(t, "My Manga", title)
+	require.Equal(t, "2", issue)
 
-func TestManganatoRetrieveIssueLinks(t *testing.T) {
-	opt := &config.Options{
-		URL:    "https://chapmanganato.com/manga-ng952689",
-		All:    false,
-		Last:   false,
-		Debug:  false,
-		Logger: logger.NewLogger(false, make(chan string)),
+	comic := &core.ComicIssue{
+		Source: &core.ComicSource{Name: "test-source", URL: server.URL + manganatoChapterPath},
 	}
-	mk := NewManganato(opt)
-	links, err := mk.RetrieveIssueLinks()
+	require.NoError(t, scraper.Initialize(comic))
+	require.Equal(t, []string{
+		"https://cdn.example.com/manga-title/001.jpg",
+		"https://cdn.example.com/manga-title/002.jpg",
+	}, comic.ImageLinks)
 
-	assert.Nil(t, err)
-	assert.Equal(t, 748, len(links))
+	links, err := scraper.RetrieveIssueLinks()
+	require.NoError(t, err)
+	require.Equal(t, []string{
+		server.URL + manganatoChapterPath,
+		server.URL + "/chapter/manga-title/chapter-1",
+	}, links)
 }
