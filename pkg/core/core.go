@@ -293,11 +293,17 @@ func (comic *ComicIssue) DownloadImages(options *config.Options) (*DownloadResul
 	}
 
 	results := make([]string, len(comic.ImageLinks))
+
+	perRequestTimeout := options.RequestTimeout
+	if perRequestTimeout <= 10 {
+		perRequestTimeout = 30 * time.Second
+	}
+
 	// Calculate timeout dynamically: 5 minutes base + (delay + jitter + download time) per image
 	// This prevents context deadline exceeded errors on large batches
 	// Factor in RequestDelay, RequestDelayJitter, and per-image download timeout (30s)
 	baseTimeout := 5 * time.Minute
-	timePerImage := options.RequestDelay + options.RequestDelayJitter + 30*time.Second
+	timePerImage := options.RequestDelay + options.RequestDelayJitter + perRequestTimeout
 	totalTimeout := baseTimeout + time.Duration(len(jobs))*timePerImage
 	ctx, cancel := context.WithTimeout(context.Background(), totalTimeout)
 	defer cancel()
@@ -325,7 +331,7 @@ func (comic *ComicIssue) DownloadImages(options *config.Options) (*DownloadResul
 				}
 			}()
 
-			reqCtx, cancelReq := context.WithTimeout(ctx, 30*time.Second)
+			reqCtx, cancelReq := context.WithTimeout(ctx, perRequestTimeout)
 			defer cancelReq()
 
 			request, err := client.PrepareRequest(job.link, comic.Source.Name)
