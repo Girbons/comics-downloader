@@ -78,8 +78,8 @@ func initializeCollection(issues []string, options *config.Options, base BaseSit
 				Name:        name,
 				IssueNumber: issueNumber,
 
-				OutputFormat: outputFormat,
-				ImagesFormat: options.ImagesFormat,
+				OutputFormat:       outputFormat,
+				OutputImagesFormat: options.OutputImagesFormat,
 
 				Source: &core.ComicSource{
 					Name: options.SourceName,

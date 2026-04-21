@@ -68,11 +68,11 @@ func TestDownloadImagesCreatesFiles(t *testing.T) {
 	opts := newTestOptions(t, server)
 
 	comic := &ComicIssue{
-		Name:         "foo",
-		Source:       &ComicSource{Name: "test-source", URL: server.URL},
-		IssueNumber:  "1",
-		ImagesFormat: "png",
-		ImageLinks:   buildLinks(server, 3),
+		Name:               "foo",
+		Source:             &ComicSource{Name: "test-source", URL: server.URL},
+		IssueNumber:        "1",
+		OutputImagesFormat: "png",
+		ImageLinks:         buildLinks(server, 3),
 	}
 
 	result, err := comic.DownloadImages(opts)
@@ -96,12 +96,12 @@ func TestMakeComicPDF(t *testing.T) {
 	opts := newTestOptions(t, server)
 
 	comic := &ComicIssue{
-		Name:         "foo",
-		Source:       &ComicSource{Name: "test-source", URL: server.URL},
-		IssueNumber:  "1",
-		OutputFormat: PDF,
-		ImagesFormat: "png",
-		ImageLinks:   buildLinks(server, 2),
+		Name:               "foo",
+		Source:             &ComicSource{Name: "test-source", URL: server.URL},
+		IssueNumber:        "1",
+		OutputFormat:       PDF,
+		OutputImagesFormat: "png",
+		ImageLinks:         buildLinks(server, 2),
 	}
 
 	require.NoError(t, comic.MakeComic(opts))
@@ -117,13 +117,13 @@ func TestMakeComicEPUB(t *testing.T) {
 	opts := newTestOptions(t, server)
 
 	comic := &ComicIssue{
-		Name:           "bar",
-		Source:         &ComicSource{Name: "test-source", URL: server.URL},
-		IssueNumber:    "42",
-		OutputFormat:   EPUB,
-		ImagesFormat:   "png",
-		ImageLinks:     buildLinks(server, 2),
-		SeriesMetadata: &SeriesMetadata{},
+		Name:               "bar",
+		Source:             &ComicSource{Name: "test-source", URL: server.URL},
+		IssueNumber:        "42",
+		OutputFormat:       EPUB,
+		OutputImagesFormat: "png",
+		ImageLinks:         buildLinks(server, 2),
+		SeriesMetadata:     &SeriesMetadata{},
 	}
 
 	require.NoError(t, comic.MakeComic(opts))
@@ -141,10 +141,10 @@ func TestMakeComicCBZ(t *testing.T) {
 	comic := &ComicIssue{
 		Name: "baz",
 
-		IssueNumber:  "7",
-		OutputFormat: CBZ,
-		ImagesFormat: "png",
-		ImageLinks:   buildLinks(server, 2),
+		IssueNumber:        "7",
+		OutputFormat:       CBZ,
+		OutputImagesFormat: "png",
+		ImageLinks:         buildLinks(server, 2),
 
 		Source: &ComicSource{Name: "test-source", URL: server.URL},
 		SeriesMetadata: &SeriesMetadata{

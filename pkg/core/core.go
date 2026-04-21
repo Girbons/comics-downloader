@@ -119,7 +119,7 @@ func (comic *ComicIssue) makePDF(options *config.Options, images *DownloadResult
 
 	pdf := gofpdf.New("P", "mm", "A4", "")
 
-	imageOptions := gofpdf.ImageOptions{ImageType: util.ImageType(comic.ImagesFormat), ReadDpi: true, AllowNegativePosition: false}
+	imageOptions := gofpdf.ImageOptions{ImageType: util.ImageType(comic.OutputImagesFormat), ReadDpi: true, AllowNegativePosition: false}
 	for _, fileName := range images.FilePaths {
 		mmWd = 210.0
 		mmHt = 297.0
@@ -273,7 +273,7 @@ func (comic *ComicIssue) DownloadImages(options *config.Options) (*DownloadResul
 		progress = progressbar.NewOptions(len(comic.ImageLinks), progressbar.OptionSetRenderBlankState(true), progressbar.OptionSetDescription(fmt.Sprintf("#%s", comic.IssueNumber)))
 	}
 
-	format := util.ImageType(comic.ImagesFormat)
+	outputFormat := util.ImageType(comic.OutputImagesFormat)
 
 	requestDelay := options.RequestDelay
 	requestJitter := options.RequestDelayJitter
@@ -403,7 +403,7 @@ func (comic *ComicIssue) DownloadImages(options *config.Options) (*DownloadResul
 				options.Logger.Errorf("Unexpected content type '%s' while downloading image number: %d - url: %s (bytes=%d, snippet_base64=%s)", contentType, job.index, job.link, len(data), snippet)
 			}
 
-			fileName := fmt.Sprintf("%04d-image.%s", job.index, format)
+			fileName := fmt.Sprintf("%04d-image.%s", job.index, outputFormat)
 			targetPath := filepath.Join(dir, fileName)
 			imgFile, err := os.Create(targetPath)
 			if err != nil {
@@ -411,7 +411,7 @@ func (comic *ComicIssue) DownloadImages(options *config.Options) (*DownloadResul
 			}
 
 			reader := bytes.NewReader(data)
-			if err := util.SaveImage(imgFile, reader, format, isWebp); err != nil {
+			if err := util.SaveImage(imgFile, reader, outputFormat, isWebp); err != nil {
 				if options.Logger != nil {
 					reportLen := len(data)
 					if reportLen > sniffLimit {

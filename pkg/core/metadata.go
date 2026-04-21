@@ -91,9 +91,9 @@ type ComicIssue struct {
 	ReleaseDate *time.Time
 	ComicFormat *ComicFormat
 
-	ImageLinks   []string
-	OutputFormat ComicOutputFormat
-	ImagesFormat string
+	ImageLinks         []string
+	OutputFormat       ComicOutputFormat
+	OutputImagesFormat string // the image format to use when saving images
 
 	Source         *ComicSource
 	SeriesMetadata *SeriesMetadata

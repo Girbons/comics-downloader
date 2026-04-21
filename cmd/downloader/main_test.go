@@ -102,7 +102,7 @@ func TestBuildOptionsCopiesGlobals(t *testing.T) {
 		t.Fatalf("expected boolean flags to be copied into options: %+v", opts)
 	}
 
-	if opts.ImagesFormat != "png" || opts.Country != "jp" || opts.OutputFormat != "epub" {
+	if opts.OutputImagesFormat != "png" || opts.Country != "jp" || opts.OutputFormat != "epub" {
 		t.Fatalf("expected string values to be copied, got %+v", opts)
 	}
 

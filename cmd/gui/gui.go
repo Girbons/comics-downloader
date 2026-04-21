@@ -43,18 +43,18 @@ func (d *Downloader) ClearOutputFolderField() {
 // Submit calls the downloader api with the given options.
 func (d *Downloader) Submit() {
 	opts := &config.Options{
-		Debug:             d.Debug.Checked,
-		All:               d.AllChapters.Checked,
-		Last:              d.LastChapter.Checked,
-		URL:               strings.TrimSpace(d.URL.Text),
-		OutputFormat:      d.Format.Selected,
-		Country:           d.Country.Text,
-		ImagesFormat:      d.ImagesFormat.Selected,
-		ImagesOnly:        d.ImagesOnly.Checked,
-		OutputFolder:      d.OutputFolder.Text,
-		CreateDefaultPath: d.CreateDefaultPath.Checked,
-		IssuesRange:       d.IssuesRange.Text,
-		CustomComicName:   d.CustomComicName.Text,
+		Debug:              d.Debug.Checked,
+		All:                d.AllChapters.Checked,
+		Last:               d.LastChapter.Checked,
+		URL:                strings.TrimSpace(d.URL.Text),
+		OutputFormat:       d.Format.Selected,
+		Country:            d.Country.Text,
+		OutputImagesFormat: d.ImagesFormat.Selected,
+		ImagesOnly:         d.ImagesOnly.Checked,
+		OutputFolder:       d.OutputFolder.Text,
+		CreateDefaultPath:  d.CreateDefaultPath.Checked,
+		IssuesRange:        d.IssuesRange.Text,
+		CustomComicName:    d.CustomComicName.Text,
 	}
 
 	go downloader.GuiRun(opts)

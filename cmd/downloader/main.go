@@ -59,7 +59,7 @@ func init() {
 	flag.BoolVar(&debug, "debug", false, "Shows Debug log")
 	flag.BoolVar(&all, "all", false, "Download all issues of the Comic or Comics")
 	flag.BoolVar(&daemon, "daemon", false, "Run the download as daemon")
-	flag.BoolVar(&imagesOnly, "images-only", false, "Download comic/manga images")
+	flag.BoolVar(&imagesOnly, "images-only", false, "Download comic/manga images without creating a PDF/CBZ/EPUB")
 	flag.BoolVar(&last, "last", false, "Download the last Comic issue")
 	flag.BoolVar(&versionFlag, "version", false, "Display release version")
 	flag.BoolVar(&createDefaultPath, "create-default-path", true, "Using this flag your comics/issue will be downloaded without prepending the default folder structure, `comics/[source]/[name]/`")
@@ -67,7 +67,7 @@ func init() {
 	flag.BoolVar(&forceAspect, "force-aspect", false, "Force images to A4 Portrait aspect ratio")
 	flag.StringVar(&outputFormat, "format", "pdf", "Comic format output, supported formats are pdf,epub,cbr,cbz")
 	flag.StringVar(&customComicName, "custom-comic-name", "", "Use a custom name for the comic output.")
-	flag.StringVar(&imagesFormat, "images-format", "jpg", "To use with `images-only` flag, choose the image format, available png,jpeg,img")
+	flag.StringVar(&imagesFormat, "images-format", "jpg", "Choose the output image format, available png,jpeg,img")
 	flag.BoolVar(&issueNumberNameOnly, "issue-number-only", false, "Force only saving with issue number instead of chapter name + issue number.")
 	flag.StringVar(&url, "url", "", "Comic URL or Comic URLS by separating each site with a comma without the use of spaces")
 	flag.StringVar(&outputFolder, "output", "", "Folder where the comics will be saved")
@@ -91,7 +91,7 @@ func buildOptions() config.Options {
 		Last:                last,
 		Country:             country,
 		ImagesOnly:          imagesOnly,
-		ImagesFormat:        imagesFormat,
+		OutputImagesFormat:  imagesFormat,
 		IssueNumberNameOnly: issueNumberNameOnly,
 		URL:                 url,
 		ForceAspect:         forceAspect,

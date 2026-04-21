@@ -8,7 +8,7 @@ import (
 	"image/png"
 	"io"
 	"strings"
-	
+
 	"golang.org/x/image/webp"
 )
 
@@ -39,10 +39,10 @@ func ImageType(mimeStr string) (tp string) {
 // SaveImage saves an image from a given format
 func SaveImage(w io.Writer, content io.Reader, format string, isWebp bool) error {
 	var (
-          img image.Image
-          err error
-        )
-	
+		img image.Image
+		err error
+	)
+
 	if isWebp {
 		img, err = webp.Decode(content)
 	} else {

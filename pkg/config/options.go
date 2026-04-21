@@ -24,7 +24,7 @@ type Options struct {
 	ImagesOnly          bool
 	Daemon              bool
 	DaemonTimeout       int
-	ImagesFormat        string
+	OutputImagesFormat  string
 	Country             string
 	OutputFormat        string
 	CustomComicName     string

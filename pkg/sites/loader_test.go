@@ -37,12 +37,12 @@ func (s *stubSite) RetrieveIssueLinks() ([]string, error) {
 
 func TestInitializeCollectionFiltersIssues(t *testing.T) {
 	options := &config.Options{
-		SourceName:   "test-source",
-		OutputFormat: "pdf",
-		ImagesFormat: "png",
-		IssuesRange:  "1-2",
-		All:          true,
-		Logger:       logger.NewLogger(false, nil),
+		SourceName:         "test-source",
+		OutputFormat:       "pdf",
+		OutputImagesFormat: "png",
+		IssuesRange:        "1-2",
+		All:                true,
+		Logger:             logger.NewLogger(false, nil),
 	}
 
 	site := &stubSite{
@@ -196,11 +196,11 @@ func TestLoadComicFromSourceWithRegistry(t *testing.T) {
 	}
 
 	options := &config.Options{
-		SourceName:   "test-site",
-		URL:          "http://test-site.com",
-		OutputFormat: "pdf",
-		ImagesFormat: "png",
-		Logger:       logger.NewLogger(false, nil),
+		SourceName:         "test-site",
+		URL:                "http://test-site.com",
+		OutputFormat:       "pdf",
+		OutputImagesFormat: "png",
+		Logger:             logger.NewLogger(false, nil),
 	}
 
 	collection, err := LoadComicFromSource(options)
@@ -275,11 +275,11 @@ func TestLoadComicFromSourcePartialMatch(t *testing.T) {
 
 	// Test with full domain name to verify partial matching works
 	options := &config.Options{
-		SourceName:   "mysite.com",
-		URL:          "http://mysite.com/comic",
-		OutputFormat: "pdf",
-		ImagesFormat: "png",
-		Logger:       logger.NewLogger(false, nil),
+		SourceName:         "mysite.com",
+		URL:                "http://mysite.com/comic",
+		OutputFormat:       "pdf",
+		OutputImagesFormat: "png",
+		Logger:             logger.NewLogger(false, nil),
 	}
 
 	collection, err := LoadComicFromSource(options)
