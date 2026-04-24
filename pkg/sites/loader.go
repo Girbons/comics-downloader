@@ -65,24 +65,50 @@ func initializeCollection(issues []string, options *config.Options, base BaseSit
 	return collection, nil
 }
 
-var onlyNumbers = regexp.MustCompile("[^0-9]+[^.][^0-9]+")
+var volumeAndIssuePattern = regexp.MustCompile(`v(\d+)[-_]0*(\d+)`)
+var onlyDigits = regexp.MustCompile(`\d+`)
 
 func notInIssuesRange(issueNumber string, start, end float64) bool {
 	if start == 0 || end == 0 {
 		return false
 	}
 
-	normalizedNumber := onlyNumbers.ReplaceAllString(issueNumber, "")
-	if normalizedNumber == "" {
-		return true
-	}
-
-	number, err := strconv.ParseFloat(normalizedNumber, 64)
-	if err != nil {
+	number := extractIssueNumberForRange(issueNumber)
+	if number == 0 {
 		return true
 	}
 
 	return number < start || number > end
+}
+
+// extractIssueNumberForRange extracts a numeric value from an issue number string
+// for range comparison. It supports:
+//  1. Volume.Issue format where v<vol>-<issue> becomes <vol>.<issue> as a decimal
+//     (e.g., "v4-078" -> 4.78 for Volume 4, Issue 78)
+//  2. Simple numeric format (e.g., "078" -> 78, "20.5" -> 20.5)
+func extractIssueNumberForRange(issueNumber string) float64 {
+	// Try to match volume and issue pattern (e.g., "v4-078-2016")
+	if matches := volumeAndIssuePattern.FindStringSubmatch(issueNumber); matches != nil {
+		volume, _ := strconv.Atoi(matches[1])
+		issue, _ := strconv.Atoi(matches[2])
+		// Combine as volume.issue decimal (e.g., volume 4, issue 78 becomes 4.78)
+		// This allows users to specify ranges like "4.78-4.99" for V4 issues 78-99
+		return float64(volume) + float64(issue)/100.0
+	}
+
+	// Try to parse as a simple float (e.g., "20.5")
+	if number, err := strconv.ParseFloat(issueNumber, 64); err == nil {
+		return number
+	}
+
+	// Extract the first sequence of digits (e.g., "078" from "078-something")
+	if matches := onlyDigits.FindString(issueNumber); matches != "" {
+		if number, err := strconv.ParseFloat(matches, 64); err == nil {
+			return number
+		}
+	}
+
+	return 0
 }
 
 // LoadComicFromSource will return an `comic` instance initialized based on the source
