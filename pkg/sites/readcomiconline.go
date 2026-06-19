@@ -26,9 +26,10 @@ func NewReadComiconline(options *config.Options) *ReadComicOnline {
 	}
 }
 
-func deobfuscateUrl(imageLink string) (string, error) {
-	imageLink = strings.ReplaceAll(imageLink, "_x236", "d")
-	imageLink = strings.ReplaceAll(imageLink, "_x945", "g")
+func deobfuscateUrl(imageLink string, token string) (string, error) {
+	imageLink = strings.ReplaceAll(imageLink, token, "d")
+	imageLink = strings.ReplaceAll(imageLink, "pw_.g28x", "b")
+	imageLink = strings.ReplaceAll(imageLink, "d2pr.x_27", "h")
 
 	if strings.HasPrefix(imageLink, "https://2.bp.blogspot.com") {
 		return imageLink, nil
@@ -44,8 +45,8 @@ func deobfuscateUrl(imageLink string) (string, error) {
 		quality = "=s1600"
 	}
 
-	imageLink = imageLink[4:22] + imageLink[25:]
-	imageLink = imageLink[0:len(imageLink)-6] + imageLink[len(imageLink)-2:]
+	imageLink = imageLink[15:33] + imageLink[50:]
+	imageLink = imageLink[0:len(imageLink)-11] + imageLink[len(imageLink)-2:]	
 
 	sd, err := base64.StdEncoding.DecodeString(imageLink)
 	if err != nil {
@@ -71,13 +72,15 @@ func (c *ReadComicOnline) retrieveImageLinks(comic *core.Comic) ([]string, error
 		return nil, err
 	}
 
-	re := regexp.MustCompile(`push\(\'(.*?)\'\)`)
+	re := regexp.MustCompile(`pth = \'(.+?)\'`)
 	match := re.FindAllStringSubmatch(response, -1)
+	re = regexp.MustCompile(`pth = pth.replace\(\/(.*?)\/g, \'d\'\);`)
+	token := re.FindStringSubmatch(response)
 
 	for i := range match {
 		url := match[i][1]
 
-		clearUrl, err := deobfuscateUrl(url)
+		clearUrl, err := deobfuscateUrl(url, token[1])
 		if err != nil {
 			return links, err
 		}
