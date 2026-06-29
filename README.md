@@ -11,7 +11,7 @@
 
 - https://comicextra.net/
 - https://readallcomics.com/
-- https://readcomiconline.li/  ⚠️
+- https://readcomicsonline.ru/
 - https://www.mangareader.tv/  ⚠️
 - https://www.mangatown.com/   ⚠️
 - https://mangadex.org/        ⚠️
@@ -92,7 +92,7 @@ Usage:
 | http://www.comicextra.com/  | &#x2713; | &#x2717; | &#x2713; |
 | http://www.mangatown.com/   | &#x2713; | &#x2717; | &#x2713; |
 | https://mangadex.org/       | &#x2713; | &#x2713; | &#x2717; |
-| https://readcomiconline.li/ | &#x2713; | &#x2717; | &#x2713; |
+| https://readcomicsonline.ru/ | &#x2713; | &#x2717; | &#x2713; |
 | https://www.mangareader.tv/ | &#x2713; | &#x2717; | &#x2713; |
 | https://www.mangakalot.com/ | &#x2713; | &#x2717; | &#x2713; |
 | https://www.manganato.com/  | &#x2713; | &#x2717; | &#x2713; |
@@ -197,6 +197,16 @@ Default is **jpg**.
 
 ```bash
 ./comics-downloader -url=[your url] -images-only -images-format=jpg
+```
+
+### Work Around Site Protection
+
+Some sources employ rotating fingerprints or require a logged-in session. You can rotate multiple User-Agent strings and forward session cookies collected from your browser:
+
+```bash
+./comics-downloader -url=[your url] \
+  --user-agents="Mozilla/5.0 ...,Mozilla/5.0 (Macintosh; ...)" \
+  --session-cookie="cf_clearance=...; other=value"
 ```
 
 ### Avoid Default Folder Structure

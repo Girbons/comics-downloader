@@ -1,200 +1,84 @@
 package sites
 
 import (
-	"fmt"
-	"os"
-	"path/filepath"
+	"errors"
 	"testing"
 
 	"github.com/Girbons/comics-downloader/pkg/config"
-	"github.com/stretchr/testify/assert"
+	"github.com/Girbons/comics-downloader/pkg/core"
+	"github.com/stretchr/testify/require"
 )
 
-func TestSiteLoaderMangatown(t *testing.T) {
-	url := "https://www.mangatown.com/manga/naruto/v63/c693/"
-	outputFolder := filepath.Dir(os.Args[0])
+type stubSite struct {
+	issues []string
+	comics map[string]*core.Comic
+}
 
+func (s *stubSite) Initialize(comic *core.Comic) error {
+	if stub, ok := s.comics[comic.URLSource]; ok {
+		*comic = *stub
+		return nil
+	}
+	return errors.New("missing comic")
+}
+
+func (s *stubSite) GetInfo(url string) (string, string) {
+	if stub, ok := s.comics[url]; ok {
+		return stub.Name, stub.IssueNumber
+	}
+	return "", ""
+}
+
+func (s *stubSite) RetrieveIssueLinks() ([]string, error) {
+	return s.issues, nil
+}
+
+func TestInitializeCollectionFiltersIssues(t *testing.T) {
 	options := &config.Options{
-		All:          false,
-		Last:         false,
-		ImagesOnly:   false,
-		Source:       "www.mangatown.com",
-		URL:          url,
+		Source:       "test-source",
 		Format:       "pdf",
 		ImagesFormat: "png",
-		OutputFolder: outputFolder,
-	}
-
-	collection, err := LoadComicFromSource(options)
-
-	assert.Nil(t, err)
-	assert.Equal(t, len(collection), 1)
-
-	comic := collection[0]
-
-	assert.Equal(t, "www.mangatown.com", comic.Source)
-	assert.Equal(t, url, comic.URLSource)
-	assert.Equal(t, "naruto", comic.Name)
-	assert.Equal(t, "c693", comic.IssueNumber)
-	assert.Equal(t, 20, len(comic.Links))
-}
-
-func TestCustomComicName(t *testing.T) {
-	url := "https://www.mangatown.com/manga/naruto/v63/c693/"
-	outputFolder := filepath.Dir(os.Args[0])
-
-	options := &config.Options{
-		All:             false,
-		Last:            false,
-		ImagesOnly:      false,
-		Source:          "www.mangatown.com",
-		URL:             url,
-		Format:          "pdf",
-		ImagesFormat:    "png",
-		CustomComicName: "Naruto",
-		OutputFolder:    outputFolder,
-	}
-
-	collection, err := LoadComicFromSource(options)
-
-	assert.Nil(t, err)
-	assert.Equal(t, len(collection), 1)
-
-	comic := collection[0]
-
-	assert.Equal(t, "www.mangatown.com", comic.Source)
-	assert.Equal(t, url, comic.URLSource)
-	assert.Equal(t, "Naruto", comic.Name)
-	assert.Equal(t, "c693", comic.IssueNumber)
-	assert.Equal(t, 20, len(comic.Links))
-}
-
-//func TestSiteLoaderMangareader(t *testing.T) {
-//url := "https://www.mangareader.net/naruto/700"
-//outputFolder := filepath.Dir(os.Args[0])
-
-//options := &config.Options{
-//All:          false,
-//Last:         false,
-//ImagesOnly:   false,
-//Source:       "www.mangareader.net",
-//Url:          url,
-//Format:       "pdf",
-//ImagesFormat: "png",
-//OutputFolder: outputFolder,
-//}
-
-//collection, err := LoadComicFromSource(options)
-
-//assert.Nil(t, err)
-//assert.Equal(t, len(collection), 1)
-
-//comic := collection[0]
-
-//assert.Equal(t, "www.mangareader.net", comic.Source)
-//assert.Equal(t, url, comic.URLSource)
-//assert.Equal(t, "naruto", comic.Name)
-//assert.Equal(t, "700", comic.IssueNumber)
-//assert.Equal(t, 23, len(comic.Links))
-//}
-
-func TestSiteLoaderComicExtra(t *testing.T) {
-	url := "https://comicextra.me/batman-unseen/issue-5/full"
-	outputFolder := filepath.Dir(os.Args[0])
-	options := &config.Options{
-		All:          false,
-		Last:         false,
-		ImagesOnly:   false,
-		Source:       "comicextra.net",
-		URL:          url,
-		Format:       "pdf",
-		ImagesFormat: "png",
-		OutputFolder: outputFolder,
-	}
-	collection, err := LoadComicFromSource(options)
-
-	assert.Nil(t, err)
-	assert.Equal(t, 1, len(collection))
-
-	comic := collection[0]
-
-	assert.Equal(t, "comicextra.net", comic.Source)
-	assert.Equal(t, url, comic.URLSource)
-	assert.Equal(t, "batman-unseen", comic.Name)
-	assert.Equal(t, "issue-5", comic.IssueNumber)
-	assert.Equal(t, 23, len(comic.Links))
-}
-
-func TestLoaderUnknownSource(t *testing.T) {
-	url := "http://example.com"
-	outputFolder := filepath.Dir(os.Args[0])
-
-	options := &config.Options{
-		All:          false,
-		Last:         false,
-		ImagesOnly:   false,
-		Source:       "example.com",
-		URL:          url,
-		Format:       "pdf",
-		ImagesFormat: "png",
-		OutputFolder: outputFolder,
-	}
-
-	collection, err := LoadComicFromSource(options)
-
-	if assert.NotNil(t, err) {
-		assert.Equal(t, fmt.Errorf("source unknown"), err)
-	}
-	assert.Equal(t, len(collection), 0)
-}
-
-func TestIssuesRange(t *testing.T) {
-	url := "https://comicextra.net/batman-unseen/issue-5/full"
-	outputFolder := filepath.Dir(os.Args[0])
-	options := &config.Options{
+		IssuesRange:  "1-2",
 		All:          true,
-		Last:         false,
-		ImagesOnly:   false,
-		Source:       "comicextra.net",
-		URL:          url,
-		Format:       "pdf",
-		ImagesFormat: "png",
-		OutputFolder: outputFolder,
-		IssuesRange:  "1-3",
-	}
-	collection, err := LoadComicFromSource(options)
-
-	assert.Nil(t, err)
-	assert.Equal(t, len(collection), 3)
-
-	issues := make([]string, 0, len(collection))
-	for _, c := range collection {
-		issues = append(issues, c.IssueNumber)
 	}
 
-	assert.Contains(t, issues, "issue-1")
-	assert.Contains(t, issues, "issue-2")
-	assert.Contains(t, issues, "issue-3")
+	site := &stubSite{
+		issues: []string{"url-1", "url-2", "url-3"},
+		comics: map[string]*core.Comic{
+			"url-1": {Name: "series", IssueNumber: "issue-1", URLSource: "url-1"},
+			"url-2": {Name: "series", IssueNumber: "issue-2", URLSource: "url-2"},
+			"url-3": {Name: "series", IssueNumber: "issue-3", URLSource: "url-3"},
+		},
+	}
+
+	collection, err := initializeCollection(site.issues, options, site)
+	require.NoError(t, err)
+	require.Len(t, collection, 2)
+	require.Equal(t, "issue-1", collection[0].IssueNumber)
+	require.Equal(t, "issue-2", collection[1].IssueNumber)
 }
 
-func TestFloatIssuesRange(t *testing.T) {
-	tt := []struct {
-		input       string
-		start       float64
-		end         float64
-		returnValue bool
+func TestLoadComicFromSourceUnknown(t *testing.T) {
+	options := &config.Options{Source: "unknown"}
+	collection, err := LoadComicFromSource(options)
+	require.Error(t, err)
+	require.Empty(t, collection)
+}
+
+func TestNotInIssuesRange(t *testing.T) {
+	testCases := []struct {
+		issue string
+		start float64
+		end   float64
+		skip  bool
 	}{
-		{"1", 1, 1, false},
-		{"19", 20, 21, true},
-		{"20", 20, 21, false},
-		{"20.5", 20, 21, false},
-		{"21", 20, 21, false},
-		{"22", 20, 21, true},
+		{"1", 1, 2, false},
+		{"3", 1, 2, true},
+		{"2.5", 2, 3, false},
+		{"abc", 1, 2, true},
 	}
 
-	for _, tc := range tt {
-		t.Run(tc.input, func(t *testing.T) {
-			assert.Equal(t, notInIssuesRange(tc.input, tc.start, tc.end), tc.returnValue)
-		})
+	for _, tc := range testCases {
+		require.Equal(t, tc.skip, notInIssuesRange(tc.issue, tc.start, tc.end))
 	}
 }

@@ -34,3 +34,28 @@ which requires [Docker](https://www.docker.com/get-started).
 ```
 go test -v ./...
 ```
+
+## Lint
+
+Install golangci-lint once with:
+
+```
+go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.59.1
+```
+
+Then run the full static analysis suite with:
+
+```
+golangci-lint run
+```
+
+### Cloudflare / Request Tweaks
+
+Some sources require browser-like fingerprints. The CLI accepts:
+
+```
+--user-agents "UA1,UA2"          # rotate these agents per request
+--session-cookie "cf_clearance=...; other=value"
+```
+
+Capture values from a working browser session when needed.

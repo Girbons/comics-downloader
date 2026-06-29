@@ -50,3 +50,6 @@ builds: # Creates executables for OSX/Windows/Linux
 
 remove-builds: # Remove executables
 	@rm -rf build/
+
+lint: # Run static analysis
+	@golangci-lint run

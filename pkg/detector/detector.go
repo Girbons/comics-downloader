@@ -16,7 +16,7 @@ var SupportedSites = map[string]map[string]bool{
 	"manganato":       {"isDisabled": false},
 	"mangatown":       {"isDisabled": false},
 	"readallcomics":   {"isDisabled": false},
-	"readcomiconline": {"isDisabled": false},
+	"readcomicsonline": {"isDisabled": false},
 }
 
 // DetectComic will look for the url source to check if a source is supported.

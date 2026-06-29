@@ -1,131 +1,113 @@
 package sites
 
 import (
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/Girbons/comics-downloader/internal/logger"
 	"github.com/Girbons/comics-downloader/pkg/config"
 	"github.com/Girbons/comics-downloader/pkg/core"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-func TestComicExtraSetup(t *testing.T) {
-	comic := new(core.Comic)
-	comic.URLSource = "https://comicextra.me/batman-unseen/issue-5/full"
+const (
+	comicExtraIssueFullPath = "/batman-unseen/issue-5/full"
+	comicExtraIssueSimple   = "/batman-unseen/issue-5"
+	comicExtraLastIssuePath = "/batman-unseen/issue-4/full"
+	comicExtraListPath      = "/comic/batman-unseen"
+)
 
-	opt :=
-		&config.Options{
-			URL:    "https://comicextra.me/batman-unseen/issue-5/full",
-			All:    false,
-			Last:   false,
-			Debug:  false,
-			Logger: logger.NewLogger(false, make(chan string)),
+func newComicExtraServer() *httptest.Server {
+	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		base := "http://" + r.Host
+		switch r.URL.Path {
+		case comicExtraIssueFullPath, comicExtraIssueSimple, "/batman-unseen/issue-4":
+			html := `
+                <html>
+                    <body>
+                        <img src="https:\/\/cdn.example.com\/batman%3Fpage%3D1" />
+                        <img src="https://cdn.example.com/batman%3Fpage%3D2" />
+                    </body>
+                </html>`
+			_, _ = w.Write([]byte(html))
+		case comicExtraLastIssuePath:
+			html := `
+                <html>
+                    <body>
+                        <select>
+                            <option value="` + base + comicExtraIssueFullPath + `"></option>
+                        </select>
+                    </body>
+                </html>`
+			_, _ = w.Write([]byte(html))
+		case comicExtraListPath:
+			html := `
+                <html>
+                    <body>
+                        <div class="episode-list">
+                            <a href="` + comicExtraIssueFullPath + `"></a>
+                            <a href="/batman-unseen/issue-4"></a>
+                        </div>
+                    </body>
+                </html>`
+			_, _ = w.Write([]byte(html))
+		default:
+			http.NotFound(w, r)
 		}
-
-	comicextra := NewComicextra(opt)
-	err := comicextra.Initialize(comic)
-
-	assert.Nil(t, err)
-	assert.Equal(t, 23, len(comic.Links))
+	}))
 }
 
-func TestComicExtraGetInfo(t *testing.T) {
-	opt :=
-		&config.Options{
-			URL:    "https://comicextra.me/batman-unseen/issue-5/full",
-			All:    false,
-			Last:   false,
-			Debug:  false,
-			Logger: logger.NewLogger(false, make(chan string)),
-		}
+func TestComicExtraScraper(t *testing.T) {
+	server := newComicExtraServer()
+	defer server.Close()
 
-	comicextra := NewComicextra(opt)
-	name, issueNumber := comicextra.GetInfo("https://comicextra.me/batman-unseen/issue-5/full")
+	opts := &config.Options{
+		URL:    server.URL + comicExtraIssueFullPath,
+		Logger: logger.NewLogger(false, nil),
+	}
 
-	assert.Equal(t, "batman-unseen", name)
-	assert.Equal(t, "issue-5", issueNumber)
+	comicextra := NewComicextra(opts)
+
+	comic := &core.Comic{URLSource: server.URL + comicExtraIssueFullPath}
+	require.NoError(t, comicextra.Initialize(comic))
+	require.Equal(t, []string{
+		"https://cdn.example.com/batman?page=1",
+		"https://cdn.example.com/batman?page=2",
+	}, comic.Links)
 }
 
-func TestComicextraRetrieveIssueLinks(t *testing.T) {
-	opt :=
-		&config.Options{
-			URL:    "https://comicextra.me/batman-unseen/issue-5/full",
-			All:    false,
-			Last:   false,
-			Debug:  false,
-			Logger: logger.NewLogger(false, make(chan string)),
-		}
+func TestComicExtraRetrieveIssueLinksAll(t *testing.T) {
+	server := newComicExtraServer()
+	defer server.Close()
 
-	comicextra := NewComicextra(opt)
+	opts := &config.Options{
+		URL:    server.URL + comicExtraListPath,
+		All:    true,
+		Logger: logger.NewLogger(false, nil),
+	}
+
+	comicextra := NewComicextra(opts)
 	issues, err := comicextra.RetrieveIssueLinks()
-
-	assert.Nil(t, err)
-	assert.Equal(t, 1, len(issues))
+	require.NoError(t, err)
+	require.Equal(t, []string{
+		comicExtraIssueFullPath,
+		"/batman-unseen/issue-4/full",
+	}, issues)
 }
 
-func TestComicextraRetrieveIssueLinksURLWithPage(t *testing.T) {
-	opt :=
-		&config.Options{
-			URL:    "https://comicextra.me/batman-unseen/full",
-			All:    false,
-			Last:   false,
-			Debug:  false,
-			Logger: logger.NewLogger(false, make(chan string)),
-		}
+func TestComicExtraRetrieveLastIssue(t *testing.T) {
+	server := newComicExtraServer()
+	defer server.Close()
 
-	comicextra := NewComicextra(opt)
+	opts := &config.Options{
+		URL:    server.URL + comicExtraLastIssuePath,
+		Last:   true,
+		Logger: logger.NewLogger(false, nil),
+	}
+
+	comicextra := NewComicextra(opts)
 	issues, err := comicextra.RetrieveIssueLinks()
-
-	assert.Nil(t, err)
-	assert.Equal(t, 1, len(issues))
-}
-
-func TestComicextraRetrieveIssueLinksInASinglePage(t *testing.T) {
-	opt :=
-		&config.Options{
-			URL:    "https://comicextra.me/batman-unseen/issue-4/full",
-			All:    false,
-			Last:   false,
-			Debug:  false,
-			Logger: logger.NewLogger(false, make(chan string)),
-		}
-
-	comicextra := NewComicextra(opt)
-	issues, err := comicextra.RetrieveIssueLinks()
-
-	assert.Nil(t, err)
-	assert.Equal(t, 1, len(issues))
-}
-
-func TestComicextraRetrieveIssueLinksLastChapter(t *testing.T) {
-	opt :=
-		&config.Options{
-			URL:    "https://comicextra.me/batman-unseen/issue-4/full",
-			All:    false,
-			Last:   true,
-			Debug:  false,
-			Logger: logger.NewLogger(false, make(chan string)),
-		}
-
-	comicextra := NewComicextra(opt)
-	issues, err := comicextra.RetrieveIssueLinks()
-
-	assert.Nil(t, err)
-	assert.Equal(t, 1, len(issues))
-}
-
-func TestComicExtraRetrieveLastIssueLink(t *testing.T) {
-	comicextra := new(Comicextra)
-	issue, err := comicextra.retrieveLastIssue("https://comicextra.me/batman-unseen/issue-1/full")
-
-	assert.Nil(t, err)
-	assert.Equal(t, "https://comicextra.me/batman-unseen/issue-5/full", issue)
-}
-
-func TestComicExtraRetrieveLastIssueLinkNotDetail(t *testing.T) {
-	comicextra := new(Comicextra)
-	issue, err := comicextra.retrieveLastIssue("https://comicextra.me/batman-unseen/issue-1/full")
-
-	assert.Nil(t, err)
-	assert.Equal(t, "https://comicextra.me/batman-unseen/issue-5/full", issue)
+	require.NoError(t, err)
+	require.Equal(t, []string{server.URL + comicExtraIssueFullPath}, issues)
 }

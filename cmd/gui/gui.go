@@ -1,6 +1,8 @@
 package main
 
 import (
+	"strings"
+
 	"fyne.io/fyne/widget"
 
 	downloader "github.com/Girbons/comics-downloader/cmd/app"
@@ -44,7 +46,7 @@ func (d *Downloader) Submit() {
 		Debug:             d.Debug.Checked,
 		All:               d.AllChapters.Checked,
 		Last:              d.LastChapter.Checked,
-		URL:               d.URL.Text,
+		URL:               strings.TrimSpace(d.URL.Text),
 		Format:            d.Format.Selected,
 		Country:           d.Country.Text,
 		ImagesFormat:      d.ImagesFormat.Selected,
@@ -55,5 +57,5 @@ func (d *Downloader) Submit() {
 		CustomComicName:   d.CustomComicName.Text,
 	}
 
-	downloader.GuiRun(opts)
+	go downloader.GuiRun(opts)
 }

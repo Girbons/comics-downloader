@@ -36,9 +36,9 @@ func (c *Comicextra) retrieveImageLinks(comic *core.Comic) ([]string, error) {
 	match := re.FindAllStringSubmatch(response, -1)
 
 	for i := range match {
-		url := match[i][1]
-		if util.IsURLValid(url) {
-			links = append(links, url)
+		link := deobfuscateURL(match[i][1])
+		if util.IsURLValid(link) {
+			links = append(links, link)
 		}
 	}
 

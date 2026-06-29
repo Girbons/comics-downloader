@@ -1,144 +1,124 @@
 package sites
 
-//import (
-//"testing"
+import (
+	"fmt"
+	"net/http"
+	"net/http/httptest"
+	"strings"
+	"testing"
 
-//"github.com/Girbons/comics-downloader/internal/logger"
-//"github.com/Girbons/comics-downloader/pkg/config"
-//"github.com/Girbons/comics-downloader/pkg/core"
-//"github.com/stretchr/testify/assert"
-//)
+	"github.com/Girbons/comics-downloader/internal/logger"
+	"github.com/Girbons/comics-downloader/pkg/config"
+	"github.com/Girbons/comics-downloader/pkg/core"
+	httpclient "github.com/Girbons/comics-downloader/pkg/http"
+	"github.com/stretchr/testify/require"
+)
 
-//const testMangadexBase string = "mangadex.org"
-//const testMangadexURL string = "https://" + testMangadexBase + "/"
+func setupMangadexServer() *httptest.Server {
+	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch {
+		case strings.HasPrefix(r.URL.Path, "/manga/series-1/aggregate"):
+			w.Header().Set("Content-Type", "application/json")
+			fmt.Fprint(w, `{
+				"result":"ok",
+				"volumes":{
+					"1":{
+						"chapters":{
+							"1":{"id":"chapter-1","chapter":"1"}
+						}
+					}
+				}
+			}`)
+		case strings.HasPrefix(r.URL.Path, "/manga/series-1"):
+			w.Header().Set("Content-Type", "application/json")
+			fmt.Fprint(w, `{
+				"result":"ok",
+				"data":{
+					"attributes":{
+						"title":{"en":"Test Manga","jp":"テスト"}
+					}
+				}
+			}`)
+		case strings.HasPrefix(r.URL.Path, "/chapter/chapter-1"):
+			w.Header().Set("Content-Type", "application/json")
+			fmt.Fprint(w, `{
+				"result":"ok",
+				"data":{
+					"attributes":{"volume":"1","chapter":"1","title":"Start"},
+					"relationships":[{"id":"series-1","type":"manga"}]
+				}
+			}`)
+		case strings.HasPrefix(r.URL.Path, "/at-home/server/chapter-1"):
+			w.Header().Set("Content-Type", "application/json")
+			fmt.Fprint(w, `{
+				"result":"ok",
+				"chapter":{"hash":"HASH","data":["001.png","002.png"]}
+			}`)
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+}
 
-//func TestMangadexGetInfo(t *testing.T) {
-//opt := &config.Options{
-//Url:     testMangadexURL + "chapter/155061/1",
-//Country: "",
-//Source:  testMangadexBase,
-//Debug:   false,
-//Logger:  logger.NewLogger(false, make(chan string)),
-//}
-//md := NewMangadex(opt)
-//name, issueNumber := md.GetInfo(testMangadexURL + "chapter/155061/1")
+func newTestMangadex(t *testing.T) (*Mangadex, func()) {
+	t.Helper()
 
-//assert.Equal(t, "Naruto", name)
-//assert.Equal(t, "Vol 60 Chapter 575, A Will of Stone", issueNumber)
-//}
+	server := setupMangadexServer()
 
-//func TestMangadexSetup(t *testing.T) {
-//opt := &config.Options{
-//Url:     testMangadexURL + "chapter/155061/1",
-//Country: "",
-//Source:  testMangadexBase,
-//Debug:   false,
-//Logger:  logger.NewLogger(false, make(chan string)),
-//}
-//comic := new(core.Comic)
-//comic.URLSource = testMangadexURL + "chapter/155061/1"
+	client := httpclient.NewComicClient(
+		httpclient.WithHTTPClient(server.Client()),
+		httpclient.WithRetry(0, 0),
+	)
 
-//md := NewMangadex(opt)
-//err := md.Initialize(comic)
+	opts := &config.Options{
+		URL:     server.URL + "/title/series-1/naruto",
+		Country: "en",
+		Source:  "mangadex.org",
+		Logger:  logger.NewLogger(false, nil),
+		Client:  client,
+	}
 
-//assert.Nil(t, err)
-//assert.Equal(t, 14, len(comic.Links))
-//}
+	md := NewMangadex(opts)
+	md.apiBase = server.URL
+	md.chapterBase = server.URL + "/chapter"
+	md.uploadsBase = server.URL + "/data"
 
-//func TestMangadexRetrieveIssueLinks(t *testing.T) {
-//opt := &config.Options{
-//Url:     testMangadexURL + "chapter/155061/",
-//Country: "",
-//Source:  testMangadexBase,
-//Last:    false,
-//All:     false,
-//Debug:   false,
-//Logger:  logger.NewLogger(false, make(chan string)),
-//}
-//md := NewMangadex(opt)
-//urls, err := md.RetrieveIssueLinks()
-//assert.Nil(t, err)
-//assert.Equal(t, 1, len(urls))
-//}
+	cleanup := func() {
+		server.Close()
+	}
 
-//func TestMangadexRetrieveIssueLinksAllChapter(t *testing.T) {
-//opt := &config.Options{
-//Url:     testMangadexURL + "title/5/naruto/",
-//Country: "gb",
-//Source:  testMangadexBase,
-//Last:    false,
-//All:     true,
-//Debug:   false,
-//Logger:  logger.NewLogger(false, make(chan string)),
-//}
-//md := NewMangadex(opt)
-//urls, err := md.RetrieveIssueLinks()
-//assert.Nil(t, err)
-//assert.Len(t, urls, 713)
-//}
+	return md, cleanup
+}
 
-//func TestMangadexRetrieveIssueLinksLastChapter(t *testing.T) {
-//opt := &config.Options{
-//Url:     testMangadexURL + "title/5/naruto/",
-//Country: "gb",
-//Source:  testMangadexBase,
-//Last:    true,
-//All:     false,
-//Debug:   false,
-//Logger:  logger.NewLogger(false, make(chan string)),
-//}
-//md := NewMangadex(opt)
-//urls, err := md.RetrieveIssueLinks()
-//assert.Nil(t, err)
-//assert.Len(t, urls, 1)
-//}
+func TestMangadexRetrieveIssueLinks(t *testing.T) {
+	md, cleanup := newTestMangadex(t)
+	defer cleanup()
 
-//func TestMangadexUnsupportedURL(t *testing.T) {
-//opt := &config.Options{
-//Url:     testMangadexURL,
-//Country: "",
-//Source:  testMangadexBase,
-//Last:    false,
-//All:     false,
-//Debug:   false,
-//Logger:  logger.NewLogger(false, make(chan string)),
-//}
-//md := NewMangadex(opt)
-//_, err := md.RetrieveIssueLinks()
-//assert.EqualError(t, err, "URL not supported")
+	md.options.All = true
 
-//md.options.Url = testMangadexURL + "test/0/"
-//_, err = md.RetrieveIssueLinks()
-//assert.EqualError(t, err, "URL not supported")
-//}
+	links, err := md.RetrieveIssueLinks()
+	require.NoError(t, err)
+	require.Equal(t, []string{md.chapterBase + "/chapter-1"}, links)
+}
 
-//func TestMangadexNoManga(t *testing.T) {
-//opt := &config.Options{
-//Url:     testMangadexURL + "title/0/",
-//Country: "",
-//Source:  testMangadexBase,
-//Last:    false,
-//All:     false,
-//Debug:   false,
-//Logger:  logger.NewLogger(false, make(chan string)),
-//}
-//md := NewMangadex(opt)
-//_, err := md.RetrieveIssueLinks()
-//assert.Error(t, err)
-//assert.Contains(t, err.Error(), "could not get manga 0")
-//}
+func TestMangadexInitialize(t *testing.T) {
+	md, cleanup := newTestMangadex(t)
+	defer cleanup()
 
-//func TestMangadexNoChapters(t *testing.T) {
-//opt := &config.Options{
-//Url:     testMangadexURL + "title/5/naruto/",
-//Country: "xyz",
-//Source:  testMangadexBase,
-//Last:    false,
-//All:     true,
-//Debug:   false,
-//Logger:  logger.NewLogger(false, make(chan string)),
-//}
-//md := NewMangadex(opt)
-//_, err := md.RetrieveIssueLinks()
-//assert.EqualError(t, err, "no chapters found")
-//}
+	comic := &core.Comic{URLSource: md.chapterBase + "/chapter-1"}
+	err := md.Initialize(comic)
+	require.NoError(t, err)
+	require.Equal(t, []string{
+		md.uploadsBase + "/HASH/001.png",
+		md.uploadsBase + "/HASH/002.png",
+	}, comic.Links)
+}
+
+func TestMangadexGetInfo(t *testing.T) {
+	md, cleanup := newTestMangadex(t)
+	defer cleanup()
+
+	title, chapter := md.GetInfo(md.chapterBase + "/chapter-1")
+	require.Equal(t, "Test Manga", title)
+	require.Equal(t, "Vol 1 Chapter 1, Start", chapter)
+}
