@@ -21,7 +21,7 @@ func NewComicClient() *ComicClient {
 func (c *ComicClient) PrepareRequest(link, hostname string) (*http.Request, error) {
 	req, err := http.NewRequest("GET", link, nil)
 
-	if strings.Contains(hostname, "manganato") || strings.Contains(hostname, "mangakakalot") {
+	if strings.Contains(hostname, "manganato") || strings.Contains(hostname, "mangakakalot") || strings.Contains(hostname, "mangatown") {
 		req.Header.Add("Referer", link)
 	}
 

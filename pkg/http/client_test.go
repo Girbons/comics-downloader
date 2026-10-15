@@ -1,6 +1,8 @@
 package http
 
 import (
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -23,4 +25,44 @@ func TestPrepareRequest(t *testing.T) {
 
 	assert.Equal(t, len(req.Header["Referer"]), 0)
 	assert.Nil(t, err)
+}
+
+func TestGetReferer(t *testing.T) {
+	cases := []struct {
+		source      string
+		wantReferer bool
+	}{
+		{"www.mangatown.com", true},
+		{"mangatown.com", true},
+		{"mangakakalot.com", true},
+		{"manganato.com", true},
+		{"readcomiconline.li", false},
+		{"foo", false},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.source, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				want := ""
+				if tc.wantReferer {
+					want = "http://" + r.Host + r.URL.RequestURI()
+				}
+				if got := r.Header.Get("Referer"); got != want {
+					t.Errorf("Referer = %q, want %q", got, want)
+					w.WriteHeader(http.StatusForbidden)
+					return
+				}
+				w.WriteHeader(http.StatusOK)
+			}))
+			defer server.Close()
+
+			// Image requests can use a different host from the comic source.
+			response, err := NewComicClient().Get(server.URL+"/images/page.jpg", tc.source)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer response.Body.Close()
+			assert.Equal(t, http.StatusOK, response.StatusCode)
+		})
+	}
 }
