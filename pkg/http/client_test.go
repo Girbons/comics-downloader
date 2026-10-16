@@ -66,3 +66,23 @@ func TestGetReferer(t *testing.T) {
 		})
 	}
 }
+
+func TestPrepareRequestInvalidURL(t *testing.T) {
+	for _, source := range []string{"www.mangatown.com", "mangatown.com"} {
+		t.Run(source, func(t *testing.T) {
+			req, err := NewComicClient().PrepareRequest("http://example.com/%zz", source)
+			assert.Error(t, err)
+			assert.Nil(t, req)
+		})
+	}
+}
+
+func TestGetInvalidURL(t *testing.T) {
+	for _, source := range []string{"www.mangatown.com", "mangatown.com"} {
+		t.Run(source, func(t *testing.T) {
+			response, err := NewComicClient().Get("http://example.com/%zz", source)
+			assert.Error(t, err)
+			assert.Nil(t, response)
+		})
+	}
+}

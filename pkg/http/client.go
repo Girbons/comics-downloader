@@ -20,12 +20,15 @@ func NewComicClient() *ComicClient {
 // PrepareRequest setup a `GET` request with customs headers.
 func (c *ComicClient) PrepareRequest(link, hostname string) (*http.Request, error) {
 	req, err := http.NewRequest("GET", link, nil)
+	if err != nil {
+		return nil, err
+	}
 
 	if strings.Contains(hostname, "manganato") || strings.Contains(hostname, "mangakakalot") || strings.Contains(hostname, "mangatown") {
 		req.Header.Add("Referer", link)
 	}
 
-	return req, err
+	return req, nil
 }
 
 // GET Performs a Get request..
